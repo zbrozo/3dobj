@@ -86,6 +86,8 @@ Vertex CalculateNormalVectorToFace(const Vertices& vertexes,
 {
   std::cout << __FUNCTION__ << "\n";
 
+  // wyznaczenie wektora wypadkowego do ściany
+  
   auto v1 = face[0];
   auto v2 = face[1];
   auto v3 = face[2];
@@ -98,18 +100,25 @@ Vertex CalculateNormalVectorToFace(const Vertices& vertexes,
   auto y2 = vertexes[v3].y - vertexes[v1].y;
   auto z2 = vertexes[v3].z - vertexes[v1].z;
   
-  auto x = (y1 * z2 - z1 * y2) >> 8;
-  auto y = (z1 * x2 - x1 * z2) >> 8;
-  auto z = (x1 * y2 - y1 * x2) >> 8;
+  auto x = (y1 * z2 - z1 * y2);
+  auto y = (z1 * x2 - x1 * z2);
+  auto z = (x1 * y2 - y1 * x2);
 
-  Vertex coord;
-  coord.x = x;
-  coord.y = y;
-  coord.z = z;
+  const double len = sqrt(x * x + y * y + z * z);
+
+  if (len != 0)
+    {
+      const short normalizedVectorLength = 60;
+      x = x * normalizedVectorLength / len;
+      y = y * normalizedVectorLength / len;
+      z = z * normalizedVectorLength / len;
+    }
+  
+  Vertex vertex(x, y, z);
 
   std::cout << x << ", " << y << ", " << z << "\n";
   
-  return coord;
+  return vertex;
 }
 
 auto CalculateNormalVectorToFaces(const Vertices& vertexes,
