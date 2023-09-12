@@ -49,7 +49,7 @@ auto PrepareFacesAssignedToVertices(const Vertices& vertexes,
 {
   std::cout << __FUNCTION__ << "\n";
 
-  std::vector<std::vector<unsigned short>> result;
+  FaceNumbersInVertices result;
   
   for(unsigned int i = 0; i < vertexes.size(); i++)
     {
@@ -80,62 +80,21 @@ auto PrepareFacesAssignedToVertices(const Vertices& vertexes,
   return result;
 }
 
-
-Vertex CalculateNormalVectorToFace(const Vertices& vertexes,
-                                  const Face& face)
-{
-  std::cout << __FUNCTION__ << "\n";
-
-  // wyznaczenie wektora wypadkowego do ściany
-  
-  auto v1 = face[0];
-  auto v2 = face[1];
-  auto v3 = face[2];
-
-  auto x1 = vertexes[v2].x - vertexes[v1].x;
-  auto y1 = vertexes[v2].y - vertexes[v1].y;
-  auto z1 = vertexes[v2].z - vertexes[v1].z;
-  
-  auto x2 = vertexes[v3].x - vertexes[v1].x;
-  auto y2 = vertexes[v3].y - vertexes[v1].y;
-  auto z2 = vertexes[v3].z - vertexes[v1].z;
-  
-  auto x = (y1 * z2 - z1 * y2);
-  auto y = (z1 * x2 - x1 * z2);
-  auto z = (x1 * y2 - y1 * x2);
-
-  const double len = sqrt(x * x + y * y + z * z);
-
-  if (len != 0)
-    {
-      const short normalizedVectorLength = 60;
-      x = x * normalizedVectorLength / len;
-      y = y * normalizedVectorLength / len;
-      z = z * normalizedVectorLength / len;
-    }
-  
-  Vertex vertex(x, y, z);
-
-  std::cout << x << ", " << y << ", " << z << "\n";
-  
-  return vertex;
-}
-
 auto CalculateNormalVectorToFaces(const Vertices& vertexes,
                                   const Faces& faces
                                   )
 {
-  Vertices normalFaceVectors;
+  Vertices normalVectors;
   for(auto face : faces)
     {
-      Vertex coord = CalculateNormalVectorToFace(vertexes, face);
-      normalFaceVectors.push_back(coord);
+      const Vertex vertex = face.CalculateNormalVector(vertexes, face);
+      normalVectors.push_back(vertex);
     }
 
-  return normalFaceVectors;
+  return normalVectors;
 }
 
-auto CalculateVectorsInVertices(const Faces& vertexInFaceDependency,
+auto CalculateVectorsInVertices(const FaceNumbersInVertices& vertexInFaceDependency,
                                 const Vertices& normalFaceVectors)
 {
   std::cout << __FUNCTION__ << "\n";
@@ -217,7 +176,7 @@ auto NormalizeVectorsInVertices(Vertices& vectorsInVertices)
 
 void Object3D::CreateNormalVectors()
 {
-  Faces facesAssignedToVertex = PrepareFacesAssignedToVertices(vertices, faces);
+  FaceNumbersInVertices facesAssignedToVertex = PrepareFacesAssignedToVertices(vertices, faces);
   
   normalVectorsInFaces = CalculateNormalVectorToFaces(vertices, faces);
 

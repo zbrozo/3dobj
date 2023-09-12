@@ -16,7 +16,7 @@ int main(int argc, char* argv[])
   //  cube.CreateNormalVectors();
   //  cube.SaveToFile();
   
-	Thorus thorus(18,18);
+	Thorus thorus(8,8);
 	thorus.Generate();
   thorus.LogVertices();
   thorus.LogFaces();
@@ -195,8 +195,8 @@ int main(int argc, char* argv[])
       {
         const int maxValue = 60;
         Vertex lightVector(0,0,maxValue);
-        const auto z = (v.z * lightVector.z) + (maxValue*maxValue);
-        const int id = (z * maxColorNumber) / (maxValue*2*maxValue);
+        const auto z = (v.z * lightVector.z) + (maxValue * maxValue);
+        const int id = (z * maxColorNumber) / (maxValue * 2 * maxValue);
         colorNumbersInFaces.push_back(id);
       }
     

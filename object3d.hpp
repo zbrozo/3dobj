@@ -2,8 +2,9 @@
 #include <vector>
 #include <string>
 #include "vertex.hpp"
+#include "face.hpp"
 
-using Face = std::vector<unsigned short>;
+using FaceNumbersInVertices = std::vector<std::vector<unsigned short>>;
 using Faces = std::vector<Face>;
 
 class Object3D
