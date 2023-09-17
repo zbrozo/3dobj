@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cmath>
 #include "object3d.hpp"
+#include "vector3d.hpp"
 
 namespace
 {
@@ -44,16 +45,16 @@ void WriteLong(std::ofstream& file, unsigned int value)
   file.write(reinterpret_cast<const char*>(&swappedValue), sizeof(unsigned int));
 }
   
-auto PrepareFacesAssignedToVertices(const Vertices& vertexes,
+auto PrepareFacesAssignedToVertices(const Vertices& vertices,
                                     const Faces& faces)
 {
   std::cout << __FUNCTION__ << "\n";
 
   FaceNumbersInVertices result;
   
-  for(unsigned int i = 0; i < vertexes.size(); i++)
+  for(unsigned int i = 0; i < vertices.size(); i++)
     {
-      std::vector<unsigned short> foundFaces;
+      FaceNumbers foundFaceNumbers;
 
       unsigned short faceNr = 0;
       
@@ -61,15 +62,15 @@ auto PrepareFacesAssignedToVertices(const Vertices& vertexes,
         {
           if (std::find(face.begin(), face.end(), i) != face.end())
           {
-            foundFaces.push_back(faceNr);
+            foundFaceNumbers.push_back(faceNr);
           }
           
           ++faceNr;
         }
 
-      result.push_back(foundFaces);
+      result.push_back(foundFaceNumbers);
 
-      for(auto v : foundFaces)
+      for(auto v : foundFaceNumbers)
         {
           std::cout << v << ", ";
         }
@@ -80,26 +81,26 @@ auto PrepareFacesAssignedToVertices(const Vertices& vertexes,
   return result;
 }
 
-auto CalculateNormalVectorToFaces(const Vertices& vertexes,
+auto CalculateNormalVectorToFaces(const Vertices& vertices,
                                   const Faces& faces
                                   )
 {
-  Vertices normalVectors;
+  Vectors normalVectors;
   for(auto face : faces)
     {
-      const Vertex vertex = face.CalculateNormalVector(vertexes, face);
-      normalVectors.push_back(vertex);
+      const auto vector = face.CalculateNormalVector(vertices, face);
+      normalVectors.push_back(vector);
     }
 
   return normalVectors;
 }
 
 auto CalculateVectorsInVertices(const FaceNumbersInVertices& vertexInFaceDependency,
-                                const Vertices& normalFaceVectors)
+                                const Vectors& normalFaceVectors)
 {
   std::cout << __FUNCTION__ << "\n";
 
-  Vertices vectorsInVertices;
+  Vectors vectorsInVertices;
   
   for(auto faces : vertexInFaceDependency)
     {
@@ -125,48 +126,25 @@ auto CalculateVectorsInVertices(const FaceNumbersInVertices& vertexInFaceDepende
           z = z / count;
         }
 
-      Vertex coord;
-      coord.x = x;
-      coord.y = y;
-      coord.z = z;
-
+      Vertex vertex(x, y, z);
       std::cout << x << ", " << y << ", " << z << "\n";
       
-      vectorsInVertices.push_back(coord);      
+      vectorsInVertices.push_back(Vector3d(vertex));      
     }
 
   return vectorsInVertices;
 }
 
-auto NormalizeVectorsInVertices(Vertices& vectorsInVertices)
+auto NormalizeVectorsInVertices(const Vectors& vectorsInVertices)
 {
   std::cout << __FUNCTION__ << "\n";
 
-  Vertices normalizedVectorsInVertices;
+  Vectors normalizedVectorsInVertices;
 
-  const short normalizedVectorLength = 60;
-  
-  for (auto vec : vectorsInVertices)
+  for (auto vector : vectorsInVertices)
     {
-      short x = 0;
-      short y = 0;
-      short z = 0;
-      
-      const double len = sqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
-
-      if (len != 0)
-        {
-          x = vec.x * normalizedVectorLength / len;
-          y = vec.y * normalizedVectorLength / len;
-          z = vec.z * normalizedVectorLength / len;
-        }
-
-      Vertex coord;
-      coord.x = x;
-      coord.y = y;
-      coord.z = z;
-
-      normalizedVectorsInVertices.push_back(coord);
+      vector.Normalize();
+      normalizedVectorsInVertices.push_back(vector);
     }
 
   return normalizedVectorsInVertices;
@@ -180,7 +158,7 @@ void Object3D::CreateNormalVectors()
   
   normalVectorsInFaces = CalculateNormalVectorToFaces(vertices, faces);
 
-  Vertices vectorsInVertices = CalculateVectorsInVertices(facesAssignedToVertex, normalVectorsInFaces);
+  Vectors vectorsInVertices = CalculateVectorsInVertices(facesAssignedToVertex, normalVectorsInFaces);
 
   normalVectorsInVertices = NormalizeVectorsInVertices(vectorsInVertices);
 }

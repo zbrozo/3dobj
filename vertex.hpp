@@ -1,6 +1,6 @@
 #pragma once
 
-#include <vector>
+//#include <vector>
 
 class Vertex
 {
@@ -25,4 +25,4 @@ public:
   
 };
 
-using Vertices = std::vector<Vertex>;
+//using Vertices = std::vector<Vertex>;

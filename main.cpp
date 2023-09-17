@@ -1,3 +1,5 @@
+#include "face.hpp"
+#include "vector3d.hpp"
 #include "cube.hpp"
 #include "thorus.hpp"
 #include "rotation.hpp"
@@ -6,6 +8,14 @@
 #include <SDL2/SDL.h>
 //#include <SDL3/SDL_image.h>
 #include <SDL2/SDL_timer.h>
+
+enum DrawMode
+  {
+    DrawMode_None = 0,
+    DrawMode_Lines = 1,
+    DrawMode_Light = 2
+  };
+
 
 int main(int argc, char* argv[])
 {
@@ -83,8 +93,10 @@ int main(int argc, char* argv[])
   int centerx = 400;
   int centery = 400;
 
-  bool drawLightShadedFaces = false;
-  bool drawLines = false;
+  unsigned short drawMode = 0;
+  
+  //bool drawLightShadedFaces = false;
+  //bool drawLines = false;
   
   const int maxColorNumber = 64;
   SDL_Color colors[maxColorNumber];
@@ -118,11 +130,11 @@ int main(int argc, char* argv[])
           break;
 
         case SDL_SCANCODE_1:
-          drawLines = !drawLines;
+          drawMode = (drawMode & DrawMode_Lines) ? (drawMode ^ DrawMode_Lines) : (drawMode | DrawMode_Lines);
           break;
 
         case SDL_SCANCODE_2:
-          drawLightShadedFaces = !drawLightShadedFaces;
+          drawMode = (drawMode & DrawMode_Light) ? (drawMode ^ DrawMode_Light) : (drawMode | DrawMode_Light);
           break;
           
         case SDL_SCANCODE_W:
@@ -180,13 +192,13 @@ int main(int argc, char* argv[])
         vertices.push_back(v4);
       }
 
-    Vertices normalVectorsInFaces;
+    Vectors normalVectorsInFaces;
     for (auto v : object.normalVectorsInFaces)
       {
         const auto v2 = rotation.rotateX(v, degx);
         const auto v3 = rotation.rotateY(v2, degy);
         const auto v4 = rotation.rotateZ(v3, degz);
-        normalVectorsInFaces.push_back(v4);
+        normalVectorsInFaces.push_back(Vector3d(v4));
       }
 
     // światło
@@ -233,7 +245,7 @@ int main(int argc, char* argv[])
 
         // DRAW
        
-        if (drawLightShadedFaces)
+        if (drawMode & DrawMode_Light)
           {
             std::vector<SDL_Vertex> geometryVertices;
 
@@ -255,7 +267,7 @@ int main(int argc, char* argv[])
             SDL_RenderGeometry(rend, NULL, geometryVertices.data(), geometryVertices.size(), triangleIndices, 6);
           }
 
-        if (drawLines)
+        if (drawMode & DrawMode_Lines)
           {
             for (int i = 0; i < 4; ++i)
               {
