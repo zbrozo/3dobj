@@ -13,9 +13,18 @@ enum DrawMode
   {
     DrawMode_None = 0,
     DrawMode_Lines = 1,
-    DrawMode_Light = 2
+    DrawMode_Light = 1 << 1,
+    DrawMode_NormalVectorsInFaces = 1 << 2,
+    DrawMode_Gouraud = 1 << 3
   };
 
+Vertex CalcPerspective(const Vertex& v)
+{
+  auto z = v.z + 400;
+  auto x = (v.x << 10) / z;
+  auto y = (v.y << 10) / z;
+  return Vertex(x, y, 0);
+}
 
 int main(int argc, char* argv[])
 {
@@ -93,7 +102,13 @@ int main(int argc, char* argv[])
   int centerx = 400;
   int centery = 400;
 
+  int light = 0;
+  const int maxLightValue = 32;
+  
   unsigned short drawMode = 0;
+  auto SwitchDrawMode = [&](DrawMode mode){
+    drawMode = (drawMode & mode) ? (drawMode ^ mode) : (drawMode | mode);
+  };
   
   //bool drawLightShadedFaces = false;
   //bool drawLines = false;
@@ -130,11 +145,19 @@ int main(int argc, char* argv[])
           break;
 
         case SDL_SCANCODE_1:
-          drawMode = (drawMode & DrawMode_Lines) ? (drawMode ^ DrawMode_Lines) : (drawMode | DrawMode_Lines);
+          SwitchDrawMode(DrawMode_Lines);
           break;
 
         case SDL_SCANCODE_2:
-          drawMode = (drawMode & DrawMode_Light) ? (drawMode ^ DrawMode_Light) : (drawMode | DrawMode_Light);
+          SwitchDrawMode(DrawMode_Light);
+          break;
+
+        case SDL_SCANCODE_3:
+          SwitchDrawMode(DrawMode_NormalVectorsInFaces);
+          break;
+
+        case SDL_SCANCODE_4:
+          SwitchDrawMode(DrawMode_Gouraud);
           break;
           
         case SDL_SCANCODE_W:
@@ -154,6 +177,19 @@ int main(int argc, char* argv[])
           degy -= 1;
           break;
 
+        case SDL_SCANCODE_M:
+          if (light < maxLightValue)
+            {
+              light += 1;
+            }
+          break;
+
+        case SDL_SCANCODE_N:
+          if (light > -maxLightValue)
+            {
+              light -= 1;
+            }
+          break;
           
         case SDL_SCANCODE_SPACE:
           if (speedx == 0)
@@ -201,25 +237,40 @@ int main(int argc, char* argv[])
         normalVectorsInFaces.push_back(Vector3d(v4));
       }
 
+    Vectors normalVectorsInVertices;
+    for (auto v : object.normalVectorsInVertices)
+      {
+        const auto v2 = rotation.rotateX(v, degx);
+        const auto v3 = rotation.rotateY(v2, degy);
+        const auto v4 = rotation.rotateZ(v3, degz);
+        normalVectorsInVertices.push_back(Vector3d(v4));
+      }
+    
     // światło
     std::vector<int> colorNumbersInFaces;
     for (auto v : normalVectorsInFaces)
       {
-        const int maxValue = 60;
-        Vertex lightVector(0,0,maxValue);
-        const auto z = (v.z * lightVector.z) + (maxValue * maxValue);
-        const int id = (z * maxColorNumber) / (maxValue * 2 * maxValue);
+        Vertex lightVector(0,0,light); // wektor światła
+        const auto z = (v.z * lightVector.z) + (maxLightValue * maxLightValue);
+        const int id = (z * maxColorNumber) / (maxLightValue * 2 * maxLightValue);
         colorNumbersInFaces.push_back(id);
+      }
+
+    std::vector<int> colorNumbersInVertices;
+    for (auto v : normalVectorsInVertices)
+      {
+        Vertex lightVector(0,0,light); // wektor światła
+        const auto z = (v.z * lightVector.z) + (maxLightValue * maxLightValue);
+        const int id = (z * maxColorNumber) / (maxLightValue * 2 * maxLightValue);
+        colorNumbersInVertices.push_back(id);
       }
     
     // perspektywa
     Vertices vertices2d;
     for (auto v : vertices)
       {
-        auto z = v.z + 300;
-        auto x = (v.x << 10) / z;
-        auto y = (v.y << 10) / z;
-        vertices2d.push_back(Vertex(x,y,0));
+        const auto v2d = CalcPerspective(v);
+        vertices2d.push_back(v2d);
       }
     
     SDL_SetRenderDrawColor(rend, 0xFF, 0, 0, 0xFF);
@@ -267,9 +318,67 @@ int main(int argc, char* argv[])
             SDL_RenderGeometry(rend, NULL, geometryVertices.data(), geometryVertices.size(), triangleIndices, 6);
           }
 
+        if (drawMode & DrawMode_Gouraud)
+          {
+            std::vector<SDL_Vertex> geometryVertices;
+
+            SDL_Vertex vertex;
+            vertex.tex_coord.x = 0;
+            vertex.tex_coord.y = 0;
+        
+            for (unsigned int i = 0; i < face.size(); ++i)
+              {
+                vertex.color = colors[colorNumbersInVertices[face[i]]];
+                
+                const auto x = vertices2d[face[i]].x;
+                const auto y = vertices2d[face[i]].y;
+                vertex.position.x = x + centerx;
+                vertex.position.y = y + centery;
+                geometryVertices.push_back(vertex);
+              }
+
+            const int triangleIndices[] = {0,1,2,3,2,0};
+            SDL_RenderGeometry(rend, NULL, geometryVertices.data(), geometryVertices.size(), triangleIndices, 6);
+          }
+        
+        if (drawMode & DrawMode_NormalVectorsInFaces)
+          {
+            
+            auto faceVector = object.normalVectorsInFaces[faceNr];
+
+            const unsigned int size = face.size();
+
+            short x = 0;
+            short y = 0;
+            short z = 0;
+            
+            for (unsigned int i = 0; i < size; ++i)
+              {
+                x += vertices[face[i]].x;
+                y += vertices[face[i]].y;
+                z += vertices[face[i]].z;
+              }
+
+            x /= size;
+            y /= size;
+            z /= size;
+
+            auto v = Vertex(x, y, z);
+            auto v2 = CalcPerspective(v);
+            auto v3 = v + faceVector;
+            v3 = CalcPerspective(v3);
+
+            SDL_RenderDrawLine(rend,
+                               v2.x + centerx, v2.y + centery,
+                               v3.x + centerx, v3.y + centery
+                               );
+          }
+        
         if (drawMode & DrawMode_Lines)
           {
-            for (int i = 0; i < 4; ++i)
+            const unsigned int size = face.size();
+            
+            for (unsigned int i = 0; i < size; ++i)
               {
                 auto x1 = vertices2d[face[i]].x;
                 auto y1 = vertices2d[face[i]].y;
@@ -277,7 +386,7 @@ int main(int argc, char* argv[])
                 int x2 = 0;
                 int y2 = 0;
             
-                if (i == 3)
+                if (i == size-1)
                   {  
                     x2 = vertices2d[face[0]].x;
                     y2 = vertices2d[face[0]].y;

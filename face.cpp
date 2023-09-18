@@ -6,7 +6,7 @@
 Vector3d Face::CalculateNormalVector(const std::vector<Vertex>& vertices,
                                      const Face& face)
 {
-  //  std::cout << __FUNCTION__ << "\n";
+  //std::cout << __FUNCTION__ << "\n";
 
   // wyznaczenie wektora wypadkowego do ściany
   
@@ -28,23 +28,6 @@ Vector3d Face::CalculateNormalVector(const std::vector<Vertex>& vertices,
 
   Vector3d vector(x, y, z);
   vector.Normalize();
-  
-  /*
-  const double len = sqrt(x * x + y * y + z * z);
-
-  if (len != 0)
-    {
-      const short normalizedVectorLength = 60;
-      x = x * normalizedVectorLength / len;
-      y = y * normalizedVectorLength / len;
-      z = z * normalizedVectorLength / len;
-    }
-  
-  Vertex vertex(x, y, z);
-  */
-
-  
-  //std::cout << x << ", " << y << ", " << z << "\n";
   
   return vector;
 }

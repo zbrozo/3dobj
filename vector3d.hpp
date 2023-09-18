@@ -17,7 +17,6 @@ public:
   {
   }
   void Normalize();
-
 };
 
 //using Vectors = std::vector<Vector3d>;

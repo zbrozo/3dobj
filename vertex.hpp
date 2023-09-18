@@ -22,6 +22,13 @@ public:
     z = _z;
   }
 
+  Vertex operator+(const Vertex& v)
+  {
+    x += v.x;
+    y += v.y;
+    z += v.z;
+    return (*this);
+  }
   
 };
 
