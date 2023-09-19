@@ -1,11 +1,12 @@
 #include "vector3d.hpp"
 #include <cmath>
 
+// iloczyn wektorowy
 Vector3d Vector3d::CrossProduct(const Vector3d& v) const
 {
-  auto newX = y * v.z - z * v.y;
-  auto newY = z * v.x - x * v.z;
-  auto newZ = x * v.y - y * v.x;
+  const auto newX = y * v.z - z * v.y;
+  const auto newY = z * v.x - x * v.z;
+  const auto newZ = x * v.y - y * v.x;
 
   return Vector3d(newX, newY, newZ);
 }

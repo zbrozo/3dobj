@@ -15,7 +15,8 @@ enum DrawMode
     DrawMode_Lines = 1,
     DrawMode_Light = 1 << 1,
     DrawMode_NormalVectorsInFaces = 1 << 2,
-    DrawMode_Gouraud = 1 << 3
+    DrawMode_Gouraud = 1 << 3,
+    DrawMode_NormalVectorsInVertices = 1 << 4,
   };
 
 Vertex CalculatePerspective(const Vertex& v)
@@ -28,11 +29,11 @@ Vertex CalculatePerspective(const Vertex& v)
 
 int main(int argc, char* argv[])
 {
-  //Cube cube;
-  //cube.Generate();
-  //cube.LogVertices();
-  //cube.LogFaces();
-  //  cube.CreateNormalVectors();
+  Cube cube;
+  cube.Generate();
+  cube.LogVertices();
+  cube.LogFaces();
+  cube.CreateNormalVectors();
   //  cube.SaveToFile();
   
 	Thorus thorus(8,8);
@@ -159,6 +160,10 @@ int main(int argc, char* argv[])
         case SDL_SCANCODE_4:
           SwitchDrawMode(DrawMode_Gouraud);
           break;
+
+        case SDL_SCANCODE_5:
+          SwitchDrawMode(DrawMode_NormalVectorsInVertices);
+          break;
           
         case SDL_SCANCODE_W:
         case SDL_SCANCODE_UP:
@@ -275,27 +280,16 @@ int main(int argc, char* argv[])
     
     SDL_SetRenderDrawColor(rend, 0xFF, 0, 0, 0xFF);
 
-    int faceNr = 0;
+    unsigned int faceNr = 0;
+    
     for (auto face : object.faces)
       {
-        // VISIBILITY
-
-        auto xlen = vertices2d[face[1]].x - vertices2d[face[0]].x;
-        auto ylen = vertices2d[face[2]].y - vertices2d[face[1]].y;
-
-        auto x2len = vertices2d[face[2]].x - vertices2d[face[1]].x;
-        auto y2len = vertices2d[face[1]].y - vertices2d[face[0]].y;
-
-        auto visible = xlen * ylen - x2len * y2len; // wektor Z
-
-        if (visible >= 0)
+        if (!face.IsVisible(vertices2d))
           {
             ++faceNr;
             continue;
           }
 
-        // DRAW
-       
         if (drawMode & DrawMode_Light)
           {
             std::vector<SDL_Vertex> geometryVertices;
@@ -343,35 +337,30 @@ int main(int argc, char* argv[])
         
         if (drawMode & DrawMode_NormalVectorsInFaces)
           {
-            
-            auto faceVector = object.normalVectorsInFaces[faceNr];
+            const auto v = face.GetCenter(vertices);
+            const auto v1 = CalculatePerspective(v);
+            const auto v2 = CalculatePerspective(v + normalVectorsInFaces[faceNr]);
 
+            SDL_RenderDrawLine(rend,
+                               v1.x + centerx, v1.y + centery,
+                               v2.x + centerx, v2.y + centery
+                               );
+          }
+        
+        if (drawMode & DrawMode_NormalVectorsInVertices)
+          {
             const unsigned int size = face.size();
-
-            short x = 0;
-            short y = 0;
-            short z = 0;
             
             for (unsigned int i = 0; i < size; ++i)
               {
-                x += vertices[face[i]].x;
-                y += vertices[face[i]].y;
-                z += vertices[face[i]].z;
+                const auto v1 = vertices2d[face[i]];
+                const auto v2 = CalculatePerspective(vertices[face[i]] + normalVectorsInVertices[face[i]]);
+                
+                SDL_RenderDrawLine(rend,
+                                   v1.x + centerx, v1.y + centery,
+                                   v2.x + centerx, v2.y + centery
+                                   );
               }
-
-            x /= size;
-            y /= size;
-            z /= size;
-
-            auto v = Vertex(x, y, z);
-            auto v2 = CalculatePerspective(v);
-            auto v3 = v + faceVector;
-            v3 = CalculatePerspective(v3);
-
-            SDL_RenderDrawLine(rend,
-                               v2.x + centerx, v2.y + centery,
-                               v3.x + centerx, v3.y + centery
-                               );
           }
         
         if (drawMode & DrawMode_Lines)

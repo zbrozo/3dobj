@@ -143,8 +143,7 @@ auto NormalizeVectorsInVertices(const Vectors& vectorsInVertices)
 
   for (auto vector : vectorsInVertices)
     {
-      vector.Normalize();
-      normalizedVectorsInVertices.push_back(vector);
+      normalizedVectorsInVertices.push_back(vector.Normalize());
     }
 
   return normalizedVectorsInVertices;
@@ -251,5 +250,4 @@ void Object3D::LogFaces()
       std::cout << "\n";
     }
 }
-
 
