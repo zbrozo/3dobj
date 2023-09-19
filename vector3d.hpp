@@ -1,6 +1,5 @@
 #pragma once
 #include "vertex.hpp"
-//#include <vector>
 
 class Vector3d : public Vertex
 {
@@ -16,7 +15,7 @@ public:
     Vertex(v)
   {
   }
-  void Normalize();
-};
 
-//using Vectors = std::vector<Vector3d>;
+  Vector3d CrossProduct(const Vector3d& v) const;
+  Vector3d Normalize() const;
+};

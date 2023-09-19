@@ -88,7 +88,7 @@ auto CalculateNormalVectorToFaces(const Vertices& vertices,
   Vectors normalVectors;
   for(auto face : faces)
     {
-      const auto vector = face.CalculateNormalVector(vertices, face);
+      const auto vector = face.CalculateNormalVector(vertices);
       normalVectors.push_back(vector);
     }
 
@@ -108,16 +108,16 @@ auto CalculateVectorsInVertices(const FaceNumbersInVertices& vertexInFaceDepende
       short y = 0;
       short z = 0;
       
-      for(auto face : faces)
+      for(auto faceNr : faces)
         {
-          std::cout << "face: " <<  face << ", " << x << "\n";
+          std::cout << "face: " <<  faceNr << ", " << x << "\n";
           
-          x += normalFaceVectors[face].x;
-          y += normalFaceVectors[face].y;
-          z += normalFaceVectors[face].z;
+          x += normalFaceVectors[faceNr].x;
+          y += normalFaceVectors[faceNr].y;
+          z += normalFaceVectors[faceNr].z;
         }
 
-      short count = faces.size();
+      const short count = faces.size();
       
       if (faces.size() != 0)
         {

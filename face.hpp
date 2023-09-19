@@ -9,7 +9,7 @@ class Face : public std::vector<unsigned short>
 
 public:
 
-  Vector3d CalculateNormalVector(const std::vector<Vertex>& vertices,
-                                 const Face& face);
+  Vector3d CalculateNormalVector(const std::vector<Vertex>& vertices) const;
 
+  //Vertex GetCenter() const;
 };

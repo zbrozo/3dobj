@@ -2,32 +2,26 @@
 #include "vertex.hpp"
 #include "vector3d.hpp"
 #include <cmath>
+#include <stdexcept>
 
-Vector3d Face::CalculateNormalVector(const std::vector<Vertex>& vertices,
-                                     const Face& face)
+Vector3d Face::CalculateNormalVector(const std::vector<Vertex>& vertices) const
 {
-  //std::cout << __FUNCTION__ << "\n";
+  if (this->size() < 3)
+    {
+      throw std::out_of_range("Face vertices size error");
+    }
+  
+  auto n1 = this->at(0);
+  auto n2 = this->at(1);
+  auto n3 = this->at(2);
 
-  // wyznaczenie wektora wypadkowego do ściany
+  auto v1 = Vector3d(vertices[n2].x - vertices[n1].x,
+                     vertices[n2].y - vertices[n1].y,
+                     vertices[n2].z - vertices[n1].z);
   
-  auto v1 = face[0];
-  auto v2 = face[1];
-  auto v3 = face[2];
-
-  auto x1 = vertices[v2].x - vertices[v1].x;
-  auto y1 = vertices[v2].y - vertices[v1].y;
-  auto z1 = vertices[v2].z - vertices[v1].z;
+  auto v2 = Vector3d(vertices[n3].x - vertices[n1].x,
+                     vertices[n3].y - vertices[n1].y,
+                     vertices[n3].z - vertices[n1].z);
   
-  auto x2 = vertices[v3].x - vertices[v1].x;
-  auto y2 = vertices[v3].y - vertices[v1].y;
-  auto z2 = vertices[v3].z - vertices[v1].z;
-  
-  auto x = (y1 * z2 - z1 * y2);
-  auto y = (z1 * x2 - x1 * z2);
-  auto z = (x1 * y2 - y1 * x2);
-
-  Vector3d vector(x, y, z);
-  vector.Normalize();
-  
-  return vector;
+  return v1.CrossProduct(v2).Normalize();
 }

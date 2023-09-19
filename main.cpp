@@ -18,7 +18,7 @@ enum DrawMode
     DrawMode_Gouraud = 1 << 3
   };
 
-Vertex CalcPerspective(const Vertex& v)
+Vertex CalculatePerspective(const Vertex& v)
 {
   auto z = v.z + 400;
   auto x = (v.x << 10) / z;
@@ -269,7 +269,7 @@ int main(int argc, char* argv[])
     Vertices vertices2d;
     for (auto v : vertices)
       {
-        const auto v2d = CalcPerspective(v);
+        const auto v2d = CalculatePerspective(v);
         vertices2d.push_back(v2d);
       }
     
@@ -364,9 +364,9 @@ int main(int argc, char* argv[])
             z /= size;
 
             auto v = Vertex(x, y, z);
-            auto v2 = CalcPerspective(v);
+            auto v2 = CalculatePerspective(v);
             auto v3 = v + faceVector;
-            v3 = CalcPerspective(v3);
+            v3 = CalculatePerspective(v3);
 
             SDL_RenderDrawLine(rend,
                                v2.x + centerx, v2.y + centery,

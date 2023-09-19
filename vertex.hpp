@@ -1,7 +1,5 @@
 #pragma once
 
-//#include <vector>
-
 class Vertex
 {
 
@@ -15,21 +13,17 @@ public:
   {
   }
     
-  Vertex(short _x, short _y, short _z)
+  Vertex(short _x, short _y, short _z) :
+    x(_x), y(_y), z(_z)
   {
-    x = _x;
-    y = _y;
-    z = _z;
   }
 
-  Vertex operator+(const Vertex& v)
+  Vertex operator+(const Vertex& v) const
   {
-    x += v.x;
-    y += v.y;
-    z += v.z;
-    return (*this);
+    const Vertex result(x + v.x,
+                        y + v.y,
+                        z + v.z);
+    return result;
   }
   
 };
-
-//using Vertices = std::vector<Vertex>;
