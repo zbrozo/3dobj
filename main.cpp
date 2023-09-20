@@ -221,7 +221,7 @@ int main(int argc, char* argv[])
     SDL_SetRenderDrawColor(rend, 0, 0, 0, 0);
     SDL_RenderClear(rend);
 
-    const Object3D& object = thorus;
+    const Object3D& object = cube;
     
     Rotation rotation;
     Vertices vertices;

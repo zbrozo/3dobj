@@ -6,7 +6,7 @@ class Vector3d : public Vertex
 
 public:
 
-  Vector3d(int _x, int _y, int _z) :
+  Vector3d(short _x, short _y, short _z) :
     Vertex(_x,_y,_z)
   {
   }

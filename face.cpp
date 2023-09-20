@@ -3,6 +3,7 @@
 #include "vector3d.hpp"
 #include <cmath>
 #include <stdexcept>
+#include <iostream>
 
 #define MIN_FACES 3
 
@@ -67,15 +68,16 @@ bool Face::IsVisible(const std::vector<Vertex>& vertices) const
   const auto n1 = this->at(1);
   const auto n2 = this->at(2);
 
-  auto v1 = Vector3d(vertices[n1].x - vertices[n0].x,
-                     vertices[n2].y - vertices[n1].y,
-                     0);
+  const auto v1 = Vector3d(vertices[n1].x - vertices[n0].x,
+                           vertices[n1].y - vertices[n0].y,
+                           0);
   
-  auto v2 = Vector3d(vertices[n2].x - vertices[n1].x,
-                     vertices[n1].y - vertices[n0].y,
-                     0);
+  const auto v2 = Vector3d(vertices[n2].x - vertices[n1].x,
+                           vertices[n2].y - vertices[n1].y,
+                           0);
 
-  return (v1.x * v1.y - v2.y * v2.x) < 0 ;
+  // cross product w Z (jest większy niż short bo liczony po perspektywie)
+  int result = v1.x * v2.y - v1.y * v2.x; 
 
-  //  return (v1.CrossProduct(v2).z > 0);
+  return (result >= 0);
 }
