@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <iostream>
 
-Vertices Cube::CreateVertices(int step, int degX, int degY)
+void Cube::CreateFaceWithVertices(int step, int degX, int degY, Face& face, Vertices& vertices)
 {
   const short value = 50;
 
@@ -14,8 +14,7 @@ Vertices Cube::CreateVertices(int step, int degX, int degY)
     {value, -value, value},
   };
 
-  Vertices resultVertices;
-  
+  Vertices tmpVertices;
   for (auto vertex : baseVertices)
     {
       Rotation rotation;
@@ -23,13 +22,12 @@ Vertices Cube::CreateVertices(int step, int degX, int degY)
       if (degX)
         {
           auto v = rotation.rotateX(vertex, step * degX);
-          std::cout << v.ToString() << "\n";
-          resultVertices.push_back(v);
+          tmpVertices.push_back(v);
         }
       else if (degY)
         {
           auto v = rotation.rotateY(vertex, step * degY);
-          resultVertices.push_back(v);
+          tmpVertices.push_back(v);
         }
     }
   /*
@@ -38,21 +36,24 @@ Vertices Cube::CreateVertices(int step, int degX, int degY)
                   v = v / 10;
                 });
   */
-  return resultVertices;
+
+  face = Face{0,1,2,3};
+  vertices = tmpVertices;
+
 }
 
-void Cube::CreateFaceWithVertices(const Vertices& tmpVertices,
-                                  Face& oFace,
-                                  Vertices& oVertices)
+void Cube::ProcessFaceWithVertices(Face& face, Vertices& vertices)
 {
-  Face tmpFace{0,1,2,3};
-  for (size_t j = 0; j < tmpFace.size(); ++j)
+  Face resultFace;
+  Vertices resultVertices;
+  
+  for (size_t i = 0; i < face.size(); ++i)
     {
-      auto& vertexNr = tmpFace[j];
-      Vertex vertex = tmpVertices[vertexNr];
+      auto& vertexNr = face[i];
+      Vertex vertex = vertices[vertexNr];
 
       int foundNr = 0;
-      auto found = std::find_if(vertices.begin(), vertices.end(), [&](const Vertex& v){
+      auto found = std::find_if(mVertices.begin(), mVertices.end(), [&](const Vertex& v){
         if ((vertex.x >= v.x - 2 && vertex.x <= v.x + 2)
             && (vertex.y >= v.y - 2 && vertex.y <= v.y + 2)
             && (vertex.z >= v.z - 2 && vertex.z <= v.z + 2))
@@ -64,16 +65,19 @@ void Cube::CreateFaceWithVertices(const Vertices& tmpVertices,
         return false;
       });
 
-      if (found != vertices.end())
+      if (found != mVertices.end())
         {
-          oFace.push_back(foundNr);
+          resultFace.push_back(foundNr);
         }
       else
         {
-          oVertices.push_back(vertex);
-          oFace.push_back((oVertices.size() - 1) + vertices.size());
+          resultVertices.push_back(vertex);
+          resultFace.push_back((resultVertices.size() - 1) + mVertices.size());
         }
     }
+
+  face = resultFace;
+  vertices = resultVertices;
 }
 
 
@@ -82,30 +86,30 @@ void Cube::Generate()
   const size_t facesCount = 4;
   for (size_t i = 0; i < facesCount; ++i)
     {
-      Face resultFace;
-      Vertices resultVertices;
-      const Vertices tmpVertices = CreateVertices(i, 90, 0);
-      CreateFaceWithVertices(tmpVertices, resultFace, resultVertices);
-      vertices.insert(vertices.end(), resultVertices.begin(), resultVertices.end());
-      faces.push_back(resultFace);
+      Face face;
+      Vertices vertices;
+      CreateFaceWithVertices(i, 90, 0, face, vertices);
+      ProcessFaceWithVertices(face, vertices);
+      mVertices.insert(mVertices.end(), vertices.begin(), vertices.end());
+      mFaces.push_back(face);
     }
 
   {
-      Face resultFace;
-      Vertices resultVertices;
-      const Vertices tmpVertices = CreateVertices(1, 0, 90);
-      CreateFaceWithVertices(tmpVertices, resultFace, resultVertices);
-      vertices.insert(vertices.end(), resultVertices.begin(), resultVertices.end());
-      faces.push_back(resultFace);
+      Face face;
+      Vertices vertices;
+      CreateFaceWithVertices(1, 0, 90, face, vertices);
+      ProcessFaceWithVertices(face, vertices);
+      mVertices.insert(mVertices.end(), vertices.begin(), vertices.end());
+      mFaces.push_back(face);
   }
 
   {
-      Face resultFace;
-      Vertices resultVertices;
-      const Vertices tmpVertices = CreateVertices(1, 0, -90);
-      CreateFaceWithVertices(tmpVertices, resultFace, resultVertices);
-      vertices.insert(vertices.end(), resultVertices.begin(), resultVertices.end());
-      faces.push_back(resultFace);
+      Face face;
+      Vertices vertices;
+      CreateFaceWithVertices(1, 0, -90, face, vertices);
+      ProcessFaceWithVertices(face, vertices);
+      mVertices.insert(mVertices.end(), vertices.begin(), vertices.end());
+      mFaces.push_back(face);
   }
   
 }

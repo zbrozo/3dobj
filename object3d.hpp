@@ -20,20 +20,19 @@ using FaceNumbersInVertices = std::vector<FaceNumbers>;
 
 class Object3D
 {
-  std::string name;
+  std::string mName;
   
 public:
 
-  Object3D(const char* _name) :
-    name(_name)
+  Object3D(const char* name) :
+    mName(name)
   {
   }
   
-  Vertices vertices;
-  Faces faces;
-
-  Vectors normalVectorsInFaces;
-  Vectors normalVectorsInVertices;
+  Vertices mVertices;
+  Faces mFaces;
+  Vectors mNormalVectorsInFaces;
+  Vectors mNormalVectorsInVertices;
 
   void CreateNormalVectors();
   

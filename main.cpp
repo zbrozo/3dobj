@@ -35,13 +35,21 @@ int main(int argc, char* argv[])
   cube.LogFaces();
   cube.CreateNormalVectors();
   cube.SaveToFile();
-  
-	Thorus thorus1(4,4, "thorus1");
-	thorus1.Generate();
-  thorus1.LogVertices();
-  thorus1.LogFaces();
-	thorus1.CreateNormalVectors();
-  thorus1.SaveToFile();
+
+  std::vector<int> thorusVerticesNr{4,6,8};
+  std::vector<Thorus> thorusVector;
+ 
+  for (size_t i = 0; i < thorusVerticesNr.size(); ++i)
+    {
+      auto n = thorusVerticesNr[i];
+      Thorus thorus(n,n, ("thorus" + std::to_string(i)).c_str());
+      thorus.Generate();
+      thorus.LogVertices();
+      thorus.LogFaces();
+      thorus.CreateNormalVectors();
+      thorus.SaveToFile();
+      thorusVector.push_back(thorus);
+    }
   
   if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
     printf("error initializing SDL: %s\n", SDL_GetError());
@@ -221,11 +229,11 @@ int main(int argc, char* argv[])
     SDL_SetRenderDrawColor(rend, 0, 0, 0, 0);
     SDL_RenderClear(rend);
 
-    const Object3D& object = thorus1;
+    const Object3D& object = cube;
     
     Rotation rotation;
     Vertices vertices;
-    for (auto v : object.vertices)
+    for (auto v : object.mVertices)
       {
         const auto v2 = rotation.rotateX(v, degx);
         const auto v3 = rotation.rotateY(v2, degy);
@@ -234,7 +242,7 @@ int main(int argc, char* argv[])
       }
 
     Vectors normalVectorsInFaces;
-    for (auto v : object.normalVectorsInFaces)
+    for (auto v : object.mNormalVectorsInFaces)
       {
         const auto v2 = rotation.rotateX(v, degx);
         const auto v3 = rotation.rotateY(v2, degy);
@@ -243,7 +251,7 @@ int main(int argc, char* argv[])
       }
 
     Vectors normalVectorsInVertices;
-    for (auto v : object.normalVectorsInVertices)
+    for (auto v : object.mNormalVectorsInVertices)
       {
         const auto v2 = rotation.rotateX(v, degx);
         const auto v3 = rotation.rotateY(v2, degy);
@@ -282,7 +290,7 @@ int main(int argc, char* argv[])
 
     unsigned int faceNr = 0;
     
-    for (auto face : object.faces)
+    for (auto face : object.mFaces)
       {
         if (!face.IsVisible(vertices2d))
           {

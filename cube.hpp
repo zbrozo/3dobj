@@ -16,10 +16,7 @@ public:
 
 private:
 
-  Vertices CreateVertices(int step, int degX, int degY);
-  void CreateFaceWithVertices(const Vertices& tmpVertices,
-                             Face& oFace,
-                             Vertices& oVertices);
-
+  void CreateFaceWithVertices(int step, int degX, int degY, Face& face, Vertices& vertices);
+  void ProcessFaceWithVertices(Face& face, Vertices& vertices);
 
 };

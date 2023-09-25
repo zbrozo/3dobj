@@ -178,7 +178,7 @@ void Thorus::Generate()
 {
   Vertices circle = CreateCircleVertices(mCircleSize);
   circle = MoveVertices(circle, Vertex(0,50,0));
-  vertices = CreateRingVertices(circle, mRingSize);
+  mVertices = CreateRingVertices(circle, mRingSize);
 
   /// --- Faces ---
 
@@ -186,14 +186,14 @@ void Thorus::Generate()
     
   for (auto face : internalFaces)
     {
-      faces.push_back(face);
+      mFaces.push_back(face);
     }
 
   auto externalFaces = CreateExternalFacesInRing(mCircleSize, mRingSize);
     
   for (auto face : externalFaces)
     {
-      faces.push_back(face);
+      mFaces.push_back(face);
     }
 
 }
