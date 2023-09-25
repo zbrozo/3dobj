@@ -79,5 +79,15 @@ bool Face::IsVisible(const std::vector<Vertex>& vertices) const
   // cross product w Z (jest większy niż short bo liczony po perspektywie)
   int result = v1.x * v2.y - v1.y * v2.x; 
 
-  return (result >= 0);
+  return (result <= 0);
+}
+
+std::string Face::ToString() const
+{
+  std::string s;
+  for (size_t i = 0; i < size(); ++i)
+    {
+      s += std::to_string(at(i)) + ((i != size() - 1) ? ", " : "");
+    }
+  return s;
 }

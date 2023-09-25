@@ -21,7 +21,7 @@ Vector3d Vector3d::Normalize() const
   
   if (len != 0)
     {
-      const short normalizedVectorLength = 32;
+      const short normalizedVectorLength = 64;
       x2 = x * normalizedVectorLength / len;
       y2 = y * normalizedVectorLength / len;
       z2 = z * normalizedVectorLength / len;

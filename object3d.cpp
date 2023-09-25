@@ -164,6 +164,9 @@ void Object3D::CreateNormalVectors()
 
 bool Object3D::SaveToFile()
 {
+  // UWAGA - współrzędne są zapisywane w odwrotnej kolejności
+  // ponieważ funkcja obrotu (na amidze) zapisuje dane w odwrotnej kolejności (jak na stosie)
+
   std::ofstream file(name, std::ios::out | std::ios::binary);
   
   if (!file)
@@ -176,25 +179,20 @@ bool Object3D::SaveToFile()
   WriteWord(file, faces.size());
 
   std::cout << "vertices" << "\n";
-
-  // odwrotna kolejnosc poniewaz funkcja obrotu odwroci ta kolejnosc pozniej
-  std::reverse(vertices.begin(), vertices.end());
-  
-  for(auto value : vertices)
+  for (auto it = vertices.rbegin(); it != vertices.rend(); ++it)
     {
-      std::cout << std::hex << value.x << ", " <<  value.y << ", " <<  value.z << "\n";
+      auto value = *it;
+      std::cout << value.ToString() << "\n";
       WriteWord(file, value.x);
       WriteWord(file, value.y);
       WriteWord(file, value.z);
     }
 
   std::cout << "normalized vectors in vertices" << "\n";
-
-  std::reverse(normalVectorsInVertices.begin(), normalVectorsInVertices.end());
-
-  for(auto value : normalVectorsInVertices)
+  for (auto it = normalVectorsInVertices.rbegin(); it != normalVectorsInVertices.rend(); ++it)
     {
-      std::cout << std::hex << value.x << ", " <<  value.y << ", " <<  value.z << "\n";
+      auto value = *it;
+      std::cout << value.ToString() << "\n";
       WriteWord(file, value.x);
       WriteWord(file, value.y);
       WriteWord(file, value.z);
@@ -213,11 +211,10 @@ bool Object3D::SaveToFile()
 
   std::cout << "normalized face vectors" << "\n";
 
-  std::reverse(normalVectorsInFaces.begin(), normalVectorsInFaces.end());
-
-  for(auto face : normalVectorsInFaces)
+  for (auto it = normalVectorsInFaces.rbegin(); it != normalVectorsInFaces.rend(); ++it)
     {
-      std::cout << std::hex << face.x << ", " <<  face.y << ", " <<  face.z << "\n";
+      auto face = *it;
+      std::cout << face.ToString() << "\n";
       WriteWord(file, face.x);
       WriteWord(file, face.y);
       WriteWord(file, face.z);
@@ -233,21 +230,16 @@ void Object3D::LogVertices()
   std::cout << __FUNCTION__ << "\n";
   for (auto v : vertices)
     {
-      std::cout << v.x << ", " << v.y << ", " << v.z << "\n";
+      std::cout << v.ToString() << "\n";
     }
 }
-
 
 void Object3D::LogFaces()
 {
   std::cout << __FUNCTION__ << "\n";
   for (auto face : faces)
     {
-      for (auto v : face)
-        {
-          std::cout << v << ", ";
-        }
-      std::cout << "\n";
+      std::cout << face.ToString() << "\n";
     }
 }
 

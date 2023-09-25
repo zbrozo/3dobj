@@ -12,11 +12,11 @@
 enum DrawMode
   {
     DrawMode_None = 0,
-    DrawMode_Lines = 1,
-    DrawMode_Light = 1 << 1,
-    DrawMode_NormalVectorsInFaces = 1 << 2,
-    DrawMode_Gouraud = 1 << 3,
-    DrawMode_NormalVectorsInVertices = 1 << 4,
+    DrawMode_LineVectors = 1,
+    DrawMode_FlatVectors = 1 << 1,
+    DrawMode_GouraudVectors = 1 << 2,
+    DrawMode_NormalVectorsInFaces = 1 << 10,
+    DrawMode_NormalVectorsInVertices = 1 << 11,
   };
 
 Vertex CalculatePerspective(const Vertex& v)
@@ -34,14 +34,14 @@ int main(int argc, char* argv[])
   cube.LogVertices();
   cube.LogFaces();
   cube.CreateNormalVectors();
-  //  cube.SaveToFile();
+  cube.SaveToFile();
   
-	Thorus thorus(8,8);
-	thorus.Generate();
-  thorus.LogVertices();
-  thorus.LogFaces();
-	thorus.CreateNormalVectors();
-  //thorus.SaveToFile();
+	Thorus thorus1(4,4, "thorus1");
+	thorus1.Generate();
+  thorus1.LogVertices();
+  thorus1.LogFaces();
+	thorus1.CreateNormalVectors();
+  thorus1.SaveToFile();
   
   if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
     printf("error initializing SDL: %s\n", SDL_GetError());
@@ -104,7 +104,7 @@ int main(int argc, char* argv[])
   int centery = 400;
 
   int light = 0;
-  const int maxLightValue = 32;
+  const int maxLightValue = 64;
   
   unsigned short drawMode = 0;
   auto SwitchDrawMode = [&](DrawMode mode){
@@ -146,19 +146,19 @@ int main(int argc, char* argv[])
           break;
 
         case SDL_SCANCODE_1:
-          SwitchDrawMode(DrawMode_Lines);
+          SwitchDrawMode(DrawMode_LineVectors);
           break;
 
         case SDL_SCANCODE_2:
-          SwitchDrawMode(DrawMode_Light);
+          SwitchDrawMode(DrawMode_FlatVectors);
           break;
 
         case SDL_SCANCODE_3:
-          SwitchDrawMode(DrawMode_NormalVectorsInFaces);
+          SwitchDrawMode(DrawMode_GouraudVectors);
           break;
 
         case SDL_SCANCODE_4:
-          SwitchDrawMode(DrawMode_Gouraud);
+          SwitchDrawMode(DrawMode_NormalVectorsInFaces);
           break;
 
         case SDL_SCANCODE_5:
@@ -221,7 +221,7 @@ int main(int argc, char* argv[])
     SDL_SetRenderDrawColor(rend, 0, 0, 0, 0);
     SDL_RenderClear(rend);
 
-    const Object3D& object = cube;
+    const Object3D& object = thorus1;
     
     Rotation rotation;
     Vertices vertices;
@@ -290,7 +290,7 @@ int main(int argc, char* argv[])
             continue;
           }
 
-        if (drawMode & DrawMode_Light)
+        if (drawMode & DrawMode_FlatVectors)
           {
             std::vector<SDL_Vertex> geometryVertices;
 
@@ -312,7 +312,7 @@ int main(int argc, char* argv[])
             SDL_RenderGeometry(rend, NULL, geometryVertices.data(), geometryVertices.size(), triangleIndices, 6);
           }
 
-        if (drawMode & DrawMode_Gouraud)
+        if (drawMode & DrawMode_GouraudVectors)
           {
             std::vector<SDL_Vertex> geometryVertices;
 
@@ -363,7 +363,7 @@ int main(int argc, char* argv[])
               }
           }
         
-        if (drawMode & DrawMode_Lines)
+        if (drawMode & DrawMode_LineVectors)
           {
             const unsigned int size = face.size();
             

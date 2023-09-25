@@ -16,4 +16,10 @@ public:
 
 private:
 
+  Vertices CreateVertices(int step, int degX, int degY);
+  void CreateFaceWithVertices(const Vertices& tmpVertices,
+                             Face& oFace,
+                             Vertices& oVertices);
+
+
 };

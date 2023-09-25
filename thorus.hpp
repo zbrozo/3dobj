@@ -10,6 +10,12 @@ class Thorus : public Object3D
   
 public:
 
+  Thorus(int circleSize, int ringSize, const char* name) :
+    Object3D(name),
+    mCircleSize(circleSize), mRingSize(ringSize)
+  {
+  }
+  
   Thorus(int circleSize, int ringSize) :
     Object3D("thorus"),
     mCircleSize(circleSize), mRingSize(ringSize)
