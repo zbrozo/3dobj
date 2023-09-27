@@ -20,7 +20,6 @@ using FaceNumbersInVertices = std::vector<FaceNumbers>;
 
 class Object3D
 {
-  std::string mName;
   
 public:
 
@@ -29,6 +28,7 @@ public:
   {
   }
   
+  std::string mName;
   Vertices mVertices;
   Faces mFaces;
   Vectors mNormalVectorsInFaces;
@@ -36,8 +36,6 @@ public:
 
   void CreateNormalVectors();
   
-  bool SaveToFile();
-
   void LogVertices();
   void LogFaces();
   

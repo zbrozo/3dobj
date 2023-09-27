@@ -3,6 +3,7 @@
 #include "cube.hpp"
 #include "thorus.hpp"
 #include "rotation.hpp"
+#include "amigafile.hpp"
 #include <iostream>
 
 #include <SDL2/SDL.h>
@@ -29,12 +30,14 @@ Vertex CalculatePerspective(const Vertex& v)
 
 int main(int argc, char* argv[])
 {
+  AmigaFile file;
+
   Cube cube;
   cube.Generate();
   cube.LogVertices();
   cube.LogFaces();
   cube.CreateNormalVectors();
-  cube.SaveToFile();
+  file.Save(cube);
 
   std::vector<int> thorusVerticesNr{4,6,8};
   std::vector<Thorus> thorusVector;
@@ -47,7 +50,7 @@ int main(int argc, char* argv[])
       thorus.LogVertices();
       thorus.LogFaces();
       thorus.CreateNormalVectors();
-      thorus.SaveToFile();
+      file.Save(thorus);
       thorusVector.push_back(thorus);
     }
   
