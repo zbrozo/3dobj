@@ -35,8 +35,9 @@ public:
   Vectors mNormalVectorsInVertices;
 
   void CreateNormalVectors();
-  
   void LogVertices();
   void LogFaces();
+  
+  virtual void Generate() = 0;
   
 };

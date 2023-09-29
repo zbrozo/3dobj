@@ -24,6 +24,4 @@ public:
 
   void Generate();
 
-private:
-
 };

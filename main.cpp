@@ -7,8 +7,15 @@
 #include <iostream>
 
 #include <SDL2/SDL.h>
-//#include <SDL3/SDL_image.h>
 #include <SDL2/SDL_timer.h>
+//#include <SDL3/SDL_image.h>
+
+const int maxColorNumber = 64;
+const int maxLightValue = 64;
+SDL_Color colors[maxColorNumber];
+
+const int CenterX = 400;
+const int CenterY = 400;
 
 enum DrawMode
   {
@@ -28,31 +35,265 @@ Vertex CalculatePerspective(const Vertex& v)
   return Vertex(x, y, 0);
 }
 
+void RotateObject(Object3D* object,
+                  int degx, int degy, int degz,
+                  Vertices& vertices,
+                  Vectors& normalVectorsInFaces,
+                  Vectors& normalVectorsInVertices)
+{
+    Rotation rotation;
+    for (auto v : object->mVertices)
+      {
+        const auto v2 = rotation.rotateX(v, degx);
+        const auto v3 = rotation.rotateY(v2, degy);
+        const auto v4 = rotation.rotateZ(v3, degz);
+        vertices.push_back(v4);
+      }
+
+    for (auto v : object->mNormalVectorsInFaces)
+      {
+        const auto v2 = rotation.rotateX(v, degx);
+        const auto v3 = rotation.rotateY(v2, degy);
+        const auto v4 = rotation.rotateZ(v3, degz);
+        normalVectorsInFaces.push_back(Vector3d(v4));
+      }
+
+    for (auto v : object->mNormalVectorsInVertices)
+      {
+        const auto v2 = rotation.rotateX(v, degx);
+        const auto v3 = rotation.rotateY(v2, degy);
+        const auto v4 = rotation.rotateZ(v3, degz);
+        normalVectorsInVertices.push_back(Vector3d(v4));
+      }
+}
+
+void CalculateLight(int light,
+                    const Vectors& normalVectorsInFaces,
+                    const Vectors& normalVectorsInVertices,
+                    std::vector<int>& colorNumbersInFaces,
+                    std::vector<int>& colorNumbersInVertices)
+{
+  for (auto v : normalVectorsInFaces)
+    {
+      Vertex lightVector(0,0,light); // wektor światła
+      const auto z = (v.z * lightVector.z) + (maxLightValue * maxLightValue);
+      const int id = (z * maxColorNumber) / (maxLightValue * 2 * maxLightValue);
+      colorNumbersInFaces.push_back(id);
+    }
+  
+  for (auto v : normalVectorsInVertices)
+    {
+      Vertex lightVector(0,0,light); // wektor światła
+      const auto z = (v.z * lightVector.z) + (maxLightValue * maxLightValue);
+      const int id = (z * maxColorNumber) / (maxLightValue * 2 * maxLightValue);
+      colorNumbersInVertices.push_back(id);
+    }
+}
+
+void DrawFlatShading(SDL_Renderer* rend,
+                     const Vertices& vertices2d,
+                     const Faces& faces,
+                     const std::vector<int>& colorNumbersInFaces
+                     )
+{
+  unsigned int faceNr = 0;
+    
+  for (auto face : faces)
+    {
+      if (!face.IsVisible(vertices2d))
+        {
+          ++faceNr;
+          continue;
+        }
+
+      std::vector<SDL_Vertex> geometryVertices;
+
+      SDL_Vertex vertex;
+      vertex.tex_coord.x = 0;
+      vertex.tex_coord.y = 0;
+      vertex.color = colors[colorNumbersInFaces[faceNr]];
+        
+      for (unsigned int i = 0; i < face.size(); ++i)
+        {
+          const auto x = vertices2d[face[i]].x;
+          const auto y = vertices2d[face[i]].y;
+          vertex.position.x = x + CenterX;
+          vertex.position.y = y + CenterY;
+          geometryVertices.push_back(vertex);
+        }
+      
+      const int triangleIndices[] = {0,1,2,3,2,0};
+      SDL_RenderGeometry(rend, NULL, geometryVertices.data(), geometryVertices.size(), triangleIndices, 6);
+
+      ++faceNr;
+    }
+}
+
+void DrawGouraudShading(SDL_Renderer* rend,
+                        const Vertices& vertices2d,
+                        const Faces& faces,
+                        const std::vector<int>& colorNumbersInVertices
+                        )
+{
+  for (auto face : faces)
+    {
+      if (!face.IsVisible(vertices2d))
+        {
+          continue;
+        }
+
+      std::vector<SDL_Vertex> geometryVertices;
+
+      SDL_Vertex vertex;
+      vertex.tex_coord.x = 0;
+      vertex.tex_coord.y = 0;
+        
+      for (unsigned int i = 0; i < face.size(); ++i)
+        {
+          vertex.color = colors[colorNumbersInVertices[face[i]]];
+                
+          const auto x = vertices2d[face[i]].x;
+          const auto y = vertices2d[face[i]].y;
+          vertex.position.x = x + CenterX;
+          vertex.position.y = y + CenterY;
+          geometryVertices.push_back(vertex);
+        }
+
+      const int triangleIndices[] = {0,1,2,3,2,0};
+      SDL_RenderGeometry(rend, NULL, geometryVertices.data(), geometryVertices.size(), triangleIndices, 6);
+    }
+}
+
+void DrawNormalVectorsInFaces(SDL_Renderer* rend,
+                              const Vertices& vertices,
+                              const Vertices& vertices2d,
+                              const Faces& faces,
+                              const Vectors& normalVectorsInFaces
+                              )
+{
+  unsigned int faceNr = 0;
+    
+  for (auto face : faces)
+    {
+      if (!face.IsVisible(vertices2d))
+        {
+          ++faceNr;
+          continue;
+        }
+
+      const auto v = face.GetCenter(vertices);
+      const auto v1 = CalculatePerspective(v);
+      const auto v2 = CalculatePerspective(v + normalVectorsInFaces[faceNr]);
+      
+      SDL_RenderDrawLine(rend,
+                         v1.x + CenterX, v1.y + CenterY,
+                         v2.x + CenterX, v2.y + CenterY
+                         );
+
+      ++faceNr;
+    }
+}
+
+void DrawNormalVectorsInVertices(SDL_Renderer* rend,
+                                 const Vertices& vertices,
+                                 const Vertices& vertices2d,
+                                 const Faces& faces,
+                                 const Vectors& normalVectorsInVertices
+                                 )
+{
+  unsigned int faceNr = 0;
+    
+  for (auto face : faces)
+    {
+      if (!face.IsVisible(vertices2d))
+        {
+          ++faceNr;
+          continue;
+        }
+
+      const unsigned int size = face.size();
+            
+      for (unsigned int i = 0; i < size; ++i)
+        {
+          const auto v1 = vertices2d[face[i]];
+          const auto v2 = CalculatePerspective(vertices[face[i]] + normalVectorsInVertices[face[i]]);
+                
+          SDL_RenderDrawLine(rend,
+                             v1.x + CenterX, v1.y + CenterY,
+                             v2.x + CenterX, v2.y + CenterY
+                             );
+        }
+
+      ++faceNr;
+    }
+}
+
+void DrawLines(SDL_Renderer* rend,
+               const Vertices& vertices2d,
+               const Faces& faces
+               )
+{
+  for (auto face : faces)
+    {
+      if (!face.IsVisible(vertices2d))
+        {
+          continue;
+        }
+
+      const unsigned int size = face.size();
+            
+      for (unsigned int i = 0; i < size; ++i)
+        {
+          auto x1 = vertices2d[face[i]].x;
+          auto y1 = vertices2d[face[i]].y;
+            
+          int x2 = 0;
+          int y2 = 0;
+            
+          if (i == size-1)
+            {  
+              x2 = vertices2d[face[0]].x;
+              y2 = vertices2d[face[0]].y;
+            }
+          else
+            {
+              x2 = vertices2d[face[i + 1]].x;
+              y2 = vertices2d[face[i + 1]].y;
+            }
+                
+          SDL_RenderDrawLine(rend,
+                             x1 + CenterX, y1 + CenterY,
+                             x2 + CenterX, y2 + CenterY
+                             );
+        }
+    }
+}
+
+
 int main(int argc, char* argv[])
 {
-  AmigaFile file;
-
-  Cube cube;
-  cube.Generate();
-  cube.LogVertices();
-  cube.LogFaces();
-  cube.CreateNormalVectors();
-  file.Save(cube);
-
+  std::vector<Object3D*> objects;
+  
+  objects.push_back(new Cube("cube"));
+  
   std::vector<int> thorusVerticesNr{4,6,8};
-  std::vector<Thorus> thorusVector;
- 
   for (size_t i = 0; i < thorusVerticesNr.size(); ++i)
     {
       auto n = thorusVerticesNr[i];
-      Thorus thorus(n,n, ("thorus" + std::to_string(i)).c_str());
-      thorus.Generate();
-      thorus.LogVertices();
-      thorus.LogFaces();
-      thorus.CreateNormalVectors();
-      file.Save(thorus);
-      thorusVector.push_back(thorus);
+      objects.push_back(new Thorus(n,n, ("thorus" + std::to_string(i)).c_str()));
     }
+
+  for(auto obj : objects)
+    {
+      obj->Generate();
+      obj->LogVertices();
+      obj->LogFaces();
+      obj->CreateNormalVectors();
+
+      AmigaFile file;
+      file.Save(*obj);
+    }
+
   
   if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
     printf("error initializing SDL: %s\n", SDL_GetError());
@@ -115,18 +356,14 @@ int main(int argc, char* argv[])
   int centery = 400;
 
   int light = 0;
-  const int maxLightValue = 64;
   
   unsigned short drawMode = 0;
   auto SwitchDrawMode = [&](DrawMode mode){
     drawMode = (drawMode & mode) ? (drawMode ^ mode) : (drawMode | mode);
   };
+
+  SwitchDrawMode(DrawMode_LineVectors);
   
-  //bool drawLightShadedFaces = false;
-  //bool drawLines = false;
-  
-  const int maxColorNumber = 64;
-  SDL_Color colors[maxColorNumber];
 
   for (int i = 0; i < maxColorNumber; ++i)
     {
@@ -134,6 +371,8 @@ int main(int argc, char* argv[])
       unsigned char col = ((-i + maxColorNumber) * maxValue) /  maxColorNumber;
       colors[i] = SDL_Color{col, col, col, maxValue};
     }
+
+  Object3D* object = objects[0];
   
   // animation loop
   while (!close) {
@@ -222,231 +461,135 @@ int main(int argc, char* argv[])
             }
           break;
 
-
+        case SDL_SCANCODE_F1:
+        case SDL_SCANCODE_F2:
+        case SDL_SCANCODE_F3:
+        case SDL_SCANCODE_F4:
+        case SDL_SCANCODE_F5:
+        case SDL_SCANCODE_F6:
+        case SDL_SCANCODE_F7:
+        case SDL_SCANCODE_F8:
+        case SDL_SCANCODE_F9:
+        case SDL_SCANCODE_F10:
+        case SDL_SCANCODE_F11:
+        case SDL_SCANCODE_F12:
+          {
+            unsigned int nr = event.key.keysym.scancode - SDL_SCANCODE_F1;
+            if (nr < objects.size())
+            {
+              object = objects[nr];
+            }
+            break;
+          }
+          break;
         default:
           break;
-                }
+        }
       }
     }
     
     SDL_SetRenderDrawColor(rend, 0, 0, 0, 0);
     SDL_RenderClear(rend);
 
-    const Object3D& object = cube;
-    
-    Rotation rotation;
-    Vertices vertices;
-    for (auto v : object.mVertices)
-      {
-        const auto v2 = rotation.rotateX(v, degx);
-        const auto v3 = rotation.rotateY(v2, degy);
-        const auto v4 = rotation.rotateZ(v3, degz);
-        vertices.push_back(v4);
-      }
-
-    Vectors normalVectorsInFaces;
-    for (auto v : object.mNormalVectorsInFaces)
-      {
-        const auto v2 = rotation.rotateX(v, degx);
-        const auto v3 = rotation.rotateY(v2, degy);
-        const auto v4 = rotation.rotateZ(v3, degz);
-        normalVectorsInFaces.push_back(Vector3d(v4));
-      }
-
-    Vectors normalVectorsInVertices;
-    for (auto v : object.mNormalVectorsInVertices)
-      {
-        const auto v2 = rotation.rotateX(v, degx);
-        const auto v3 = rotation.rotateY(v2, degy);
-        const auto v4 = rotation.rotateZ(v3, degz);
-        normalVectorsInVertices.push_back(Vector3d(v4));
-      }
-    
-    // światło
-    std::vector<int> colorNumbersInFaces;
-    for (auto v : normalVectorsInFaces)
-      {
-        Vertex lightVector(0,0,light); // wektor światła
-        const auto z = (v.z * lightVector.z) + (maxLightValue * maxLightValue);
-        const int id = (z * maxColorNumber) / (maxLightValue * 2 * maxLightValue);
-        colorNumbersInFaces.push_back(id);
-      }
-
-    std::vector<int> colorNumbersInVertices;
-    for (auto v : normalVectorsInVertices)
-      {
-        Vertex lightVector(0,0,light); // wektor światła
-        const auto z = (v.z * lightVector.z) + (maxLightValue * maxLightValue);
-        const int id = (z * maxColorNumber) / (maxLightValue * 2 * maxLightValue);
-        colorNumbersInVertices.push_back(id);
-      }
-    
-    // perspektywa
-    Vertices vertices2d;
-    for (auto v : vertices)
-      {
-        const auto v2d = CalculatePerspective(v);
-        vertices2d.push_back(v2d);
-      }
-    
     SDL_SetRenderDrawColor(rend, 0xFF, 0, 0, 0xFF);
-
-    unsigned int faceNr = 0;
     
-    for (auto face : object.mFaces)
+    if (object)
       {
-        if (!face.IsVisible(vertices2d))
+        Vertices vertices;
+        Vectors normalVectorsInFaces;
+        Vectors normalVectorsInVertices;
+        RotateObject(object, degx, degy, degz,
+                     vertices,
+                     normalVectorsInFaces,
+                     normalVectorsInVertices);
+
+        std::vector<int> colorNumbersInFaces;
+        std::vector<int> colorNumbersInVertices;
+        CalculateLight(light,
+                       normalVectorsInFaces,
+                       normalVectorsInVertices,
+                       colorNumbersInFaces,
+                       colorNumbersInVertices);
+
+        Vertices vertices2d;
+        for (auto v : vertices)
           {
-            ++faceNr;
-            continue;
+            const auto v2d = CalculatePerspective(v);
+            vertices2d.push_back(v2d);
           }
 
         if (drawMode & DrawMode_FlatVectors)
           {
-            std::vector<SDL_Vertex> geometryVertices;
-
-            SDL_Vertex vertex;
-            vertex.tex_coord.x = 0;
-            vertex.tex_coord.y = 0;
-            vertex.color = colors[colorNumbersInFaces[faceNr]];
-        
-            for (unsigned int i = 0; i < face.size(); ++i)
-              {
-                const auto x = vertices2d[face[i]].x;
-                const auto y = vertices2d[face[i]].y;
-                vertex.position.x = x + centerx;
-                vertex.position.y = y + centery;
-                geometryVertices.push_back(vertex);
-              }
-
-            const int triangleIndices[] = {0,1,2,3,2,0};
-            SDL_RenderGeometry(rend, NULL, geometryVertices.data(), geometryVertices.size(), triangleIndices, 6);
+            DrawFlatShading(rend,
+                            vertices2d,
+                            object->mFaces,
+                            colorNumbersInFaces
+                            );
           }
 
         if (drawMode & DrawMode_GouraudVectors)
           {
-            std::vector<SDL_Vertex> geometryVertices;
-
-            SDL_Vertex vertex;
-            vertex.tex_coord.x = 0;
-            vertex.tex_coord.y = 0;
-        
-            for (unsigned int i = 0; i < face.size(); ++i)
-              {
-                vertex.color = colors[colorNumbersInVertices[face[i]]];
-                
-                const auto x = vertices2d[face[i]].x;
-                const auto y = vertices2d[face[i]].y;
-                vertex.position.x = x + centerx;
-                vertex.position.y = y + centery;
-                geometryVertices.push_back(vertex);
-              }
-
-            const int triangleIndices[] = {0,1,2,3,2,0};
-            SDL_RenderGeometry(rend, NULL, geometryVertices.data(), geometryVertices.size(), triangleIndices, 6);
-          }
-        
-        if (drawMode & DrawMode_NormalVectorsInFaces)
-          {
-            const auto v = face.GetCenter(vertices);
-            const auto v1 = CalculatePerspective(v);
-            const auto v2 = CalculatePerspective(v + normalVectorsInFaces[faceNr]);
-
-            SDL_RenderDrawLine(rend,
-                               v1.x + centerx, v1.y + centery,
-                               v2.x + centerx, v2.y + centery
+            DrawGouraudShading(rend,
+                               vertices2d,
+                               object->mFaces,
+                               colorNumbersInVertices
                                );
           }
-        
+
+        if (drawMode & DrawMode_NormalVectorsInFaces)
+          {
+            DrawNormalVectorsInFaces(rend,
+                                     vertices,
+                                     vertices2d,
+                                     object->mFaces,
+                                     normalVectorsInFaces);
+          }
+
         if (drawMode & DrawMode_NormalVectorsInVertices)
           {
-            const unsigned int size = face.size();
-            
-            for (unsigned int i = 0; i < size; ++i)
-              {
-                const auto v1 = vertices2d[face[i]];
-                const auto v2 = CalculatePerspective(vertices[face[i]] + normalVectorsInVertices[face[i]]);
-                
-                SDL_RenderDrawLine(rend,
-                                   v1.x + centerx, v1.y + centery,
-                                   v2.x + centerx, v2.y + centery
-                                   );
-              }
+            DrawNormalVectorsInVertices(rend,
+                                        vertices,
+                                        vertices2d,
+                                        object->mFaces,
+                                        normalVectorsInVertices);
           }
         
         if (drawMode & DrawMode_LineVectors)
           {
-            const unsigned int size = face.size();
-            
-            for (unsigned int i = 0; i < size; ++i)
-              {
-                auto x1 = vertices2d[face[i]].x;
-                auto y1 = vertices2d[face[i]].y;
-            
-                int x2 = 0;
-                int y2 = 0;
-            
-                if (i == size-1)
-                  {  
-                    x2 = vertices2d[face[0]].x;
-                    y2 = vertices2d[face[0]].y;
-                  }
-                else
-                  {
-                    x2 = vertices2d[face[i + 1]].x;
-                    y2 = vertices2d[face[i + 1]].y;
-                  }
-                
-                SDL_RenderDrawLine(rend,
-                                   x1 + centerx, y1 + centery,
-                                   x2 + centerx, y2 + centery
-                                   );
-              }
+            DrawLines(rend, vertices2d, object->mFaces);
           }
-
-
-        
-        ++faceNr;
       }
 
-        degx += speedx;
-        degy += speedy;
-        degz += speedz;
+    degx += speedx;
+    degy += speedy;
+    degz += speedz;
 
-        if (degx > 360)
-          {
-            degx = 0;
-          }
-        if (degy > 360)
-          {
-            degy = 0;
-          }
-        if (degz > 360)
-          {
-            degz = 0;
-          }
-
+    if (degx > 360)
+      {
+        degx = 0;
+      }
+    if (degy > 360)
+      {
+        degy = 0;
+      }
+    if (degz > 360)
+      {
+        degz = 0;
+      }
         
-        // triggers the double buffers
-        // for multiple rendering
-        SDL_RenderPresent(rend);
+    // triggers the double buffers
+    // for multiple rendering
+    SDL_RenderPresent(rend);
+    
+    // calculates to 60 fps
+    SDL_Delay(1000 / 60);
+  }
  
-        // calculates to 60 fps
-        SDL_Delay(1000 / 60);
-    }
- 
-    // destroy texture
-  //    SDL_DestroyTexture(tex);
- 
-    // destroy renderer
-    SDL_DestroyRenderer(rend);
- 
-    // destroy window
-    SDL_DestroyWindow(win);
-     
-    // close SDL
-    SDL_Quit();
+  SDL_DestroyRenderer(rend);
   
+  SDL_DestroyWindow(win);
+  
+  SDL_Quit();
 
   return 0;
 }

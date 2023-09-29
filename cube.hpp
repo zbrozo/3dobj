@@ -7,8 +7,8 @@ class Cube : public Object3D
 
 public:
 
-  Cube() :
-    Object3D("cube")
+  Cube(const char* name) :
+    Object3D(name)
   {
   }
 

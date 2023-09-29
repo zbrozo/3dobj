@@ -2,10 +2,11 @@
 #include "rotation.hpp"
 #include <algorithm>
 #include <iostream>
+#include <cmath>
 
 void Cube::CreateFaceWithVertices(int step, int degX, int degY, Face& face, Vertices& vertices)
 {
-  const short value = 50;
+  const short value = 500;
 
   Vertices baseVertices= {
     {value, value, value},
@@ -30,12 +31,13 @@ void Cube::CreateFaceWithVertices(int step, int degX, int degY, Face& face, Vert
           tmpVertices.push_back(v);
         }
     }
-  /*
-  std::for_each(resultVertices.begin(), resultVertices.end(),
+  
+  std::for_each(tmpVertices.begin(), tmpVertices.end(),
                 [](auto& v) {
-                  v = v / 10;
+                  v.x = round(v.x / 10);
+                  v.y = round(v.y / 10);
+                  v.z = round(v.z / 10);
                 });
-  */
 
   face = Face{0,1,2,3};
   vertices = tmpVertices;
