@@ -5,27 +5,41 @@
 #include "rotation.hpp"
 #include "amigafile.hpp"
 #include <iostream>
+#include <array>
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_timer.h>
-//#include <SDL3/SDL_image.h>
+#include <SDL2/SDL_image.h>
 
 const int maxColorNumber = 64;
 const int maxLightValue = 64;
 SDL_Color colors[maxColorNumber];
 
-const int CenterX = 400;
-const int CenterY = 400;
+const int WindowW = 800;
+const int WindowH = 800;
+const int CenterX = WindowW / 2;
+const int CenterY = WindowH / 2;
 
 enum DrawMode
   {
     DrawMode_None = 0,
     DrawMode_LineVectors = 1,
-    DrawMode_FlatVectors = 1 << 1,
-    DrawMode_GouraudVectors = 1 << 2,
-    DrawMode_NormalVectorsInFaces = 1 << 10,
-    DrawMode_NormalVectorsInVertices = 1 << 11,
+    DrawMode_NormalVectorsInFaces = 1 << 1,
+    DrawMode_NormalVectorsInVertices = 1 << 2,
+    DrawMode_FlatShading = 1 << 3,
+    DrawMode_GouraudShading = 1 << 4,
+    DrawMode_TextureMapping = 1 << 5,
   };
+
+void PrepareColors()
+{
+  for (int i = 0; i < maxColorNumber; ++i)
+    {
+      const int maxValue = 255;
+      unsigned char col = ((-i + maxColorNumber) * maxValue) /  maxColorNumber;
+      colors[i] = SDL_Color{col, col, col, maxValue};
+    }
+}
 
 Vertex CalculatePerspective(const Vertex& v)
 {
@@ -113,7 +127,7 @@ void DrawFlatShading(SDL_Renderer* rend,
       vertex.tex_coord.y = 0;
       vertex.color = colors[colorNumbersInFaces[faceNr]];
         
-      for (unsigned int i = 0; i < face.size(); ++i)
+      for (size_t i = 0; i < face.size(); ++i)
         {
           const auto x = vertices2d[face[i]].x;
           const auto y = vertices2d[face[i]].y;
@@ -148,7 +162,7 @@ void DrawGouraudShading(SDL_Renderer* rend,
       vertex.tex_coord.x = 0;
       vertex.tex_coord.y = 0;
         
-      for (unsigned int i = 0; i < face.size(); ++i)
+      for (size_t i = 0; i < face.size(); ++i)
         {
           vertex.color = colors[colorNumbersInVertices[face[i]]];
                 
@@ -163,6 +177,45 @@ void DrawGouraudShading(SDL_Renderer* rend,
       SDL_RenderGeometry(rend, NULL, geometryVertices.data(), geometryVertices.size(), triangleIndices, 6);
     }
 }
+
+void DrawTextureMapping(SDL_Renderer* rend,
+                        const Vertices& vertices2d,
+                        const Faces& faces,
+                        SDL_Texture* texture)
+{
+  for (auto face : faces)
+    {
+      if (!face.IsVisible(vertices2d))
+        {
+          continue;
+        }
+
+      std::vector<SDL_Vertex> geometryVertices;
+
+      float textureCoords[][2] = {
+        {0.0f, 0.0f},
+        {0.0f,1.0f},
+        {1.0f, 1.0f},
+        {1.0f, 0.0f}};
+      
+      for (size_t i = 0; i < face.size(); ++i)
+        {
+          SDL_Vertex vertex;
+          const auto x = vertices2d[face[i]].x;
+          const auto y = vertices2d[face[i]].y;
+          vertex.position.x = x + CenterX;
+          vertex.position.y = y + CenterY;
+          vertex.tex_coord.x = textureCoords[i][0];
+          vertex.tex_coord.y = textureCoords[i][1];
+          vertex.color = SDL_Color{255,255,255,255};
+          geometryVertices.push_back(vertex);
+        }
+
+      const int triangleIndices[] = {0,1,2,3,2,0};
+      SDL_RenderGeometry(rend, texture, geometryVertices.data(), geometryVertices.size(), triangleIndices, 6);
+    }
+}
+
 
 void DrawNormalVectorsInFaces(SDL_Renderer* rend,
                               const Vertices& vertices,
@@ -300,10 +353,10 @@ int main(int argc, char* argv[])
     return 1;
   }
   
-  SDL_Window* win = SDL_CreateWindow("GAME", // creates a window
+  SDL_Window* win = SDL_CreateWindow("3D Objects Generator And Demo",
                                      SDL_WINDOWPOS_CENTERED,
                                      SDL_WINDOWPOS_CENTERED,
-                                     800, 800, 0);
+                                     WindowW, WindowH, 0);
   
   // triggers the program that controls
   // your graphics hardware and sets flags
@@ -312,35 +365,16 @@ int main(int argc, char* argv[])
   // creates a renderer to render our images
   SDL_Renderer* rend = SDL_CreateRenderer(win, -1, render_flags);
  
-  // creates a surface to load an image into the main memory
-  //  SDL_Surface* surface;
+  SDL_Surface* surface = IMG_Load("wood.png");
+  if (surface == 0)
+    {
+      std::cout << "No image file" << "\n";
+      return 1;
+    }
  
-  // please provide a path for your image
-  //surface = IMG_Load("path");
+  SDL_Texture* texture = SDL_CreateTextureFromSurface(rend, surface);
+  SDL_FreeSurface(surface);
  
-  // loads image to our graphics hardware memory.
-  //SDL_Texture* tex = SDL_CreateTextureFromSurface(rend, surface);
- 
-  // clears main-memory
-  //SDL_FreeSurface(surface);
- 
-  // let us control our image position
-  // so that we can move it with our keyboard.
-  SDL_Rect dest;
-  
-  // connects our texture with dest to control position
-  //SDL_QueryTexture(tex, NULL, NULL, &dest.w, &dest.h);
-  
-  // adjust height and width of our image box.
-  dest.w /= 6;
-  dest.h /= 6;
-  
-  // sets initial x-position of object
-  dest.x = (1000 - dest.w) / 2;
-  
-  // sets initial y-position of object
-  dest.y = (1000 - dest.h) / 2;
-  
   // controls animation loop
   int close = 0;
   
@@ -352,10 +386,7 @@ int main(int argc, char* argv[])
   int speedy = 0;
   int speedz = 0;
   
-  int centerx = 400;
-  int centery = 400;
-
-  int light = 0;
+  int light = maxLightValue;
   
   unsigned short drawMode = 0;
   auto SwitchDrawMode = [&](DrawMode mode){
@@ -363,21 +394,14 @@ int main(int argc, char* argv[])
   };
 
   SwitchDrawMode(DrawMode_LineVectors);
-  
-
-  for (int i = 0; i < maxColorNumber; ++i)
-    {
-      const int maxValue = 255;
-      unsigned char col = ((-i + maxColorNumber) * maxValue) /  maxColorNumber;
-      colors[i] = SDL_Color{col, col, col, maxValue};
-    }
-
+  PrepareColors();
   Object3D* object = objects[0];
   
   // animation loop
   while (!close) {
     SDL_Event event;
-    
+
+   
     // Events management
     while (SDL_PollEvent(&event)) {
       switch (event.type) {
@@ -400,19 +424,23 @@ int main(int argc, char* argv[])
           break;
 
         case SDL_SCANCODE_2:
-          SwitchDrawMode(DrawMode_FlatVectors);
-          break;
-
-        case SDL_SCANCODE_3:
-          SwitchDrawMode(DrawMode_GouraudVectors);
-          break;
-
-        case SDL_SCANCODE_4:
           SwitchDrawMode(DrawMode_NormalVectorsInFaces);
           break;
 
-        case SDL_SCANCODE_5:
+        case SDL_SCANCODE_3:
           SwitchDrawMode(DrawMode_NormalVectorsInVertices);
+          break;
+
+        case SDL_SCANCODE_4:
+          SwitchDrawMode(DrawMode_FlatShading);
+          break;
+
+        case SDL_SCANCODE_5:
+          SwitchDrawMode(DrawMode_GouraudShading);
+          break;
+
+        case SDL_SCANCODE_6:
+          SwitchDrawMode(DrawMode_TextureMapping);
           break;
           
         case SDL_SCANCODE_W:
@@ -491,6 +519,8 @@ int main(int argc, char* argv[])
     SDL_SetRenderDrawColor(rend, 0, 0, 0, 0);
     SDL_RenderClear(rend);
 
+    //    SDL_RenderCopy(rend, tex, &dest, NULL);
+    
     SDL_SetRenderDrawColor(rend, 0xFF, 0, 0, 0xFF);
     
     if (object)
@@ -518,7 +548,7 @@ int main(int argc, char* argv[])
             vertices2d.push_back(v2d);
           }
 
-        if (drawMode & DrawMode_FlatVectors)
+        if (drawMode & DrawMode_FlatShading)
           {
             DrawFlatShading(rend,
                             vertices2d,
@@ -527,7 +557,7 @@ int main(int argc, char* argv[])
                             );
           }
 
-        if (drawMode & DrawMode_GouraudVectors)
+        if (drawMode & DrawMode_GouraudShading)
           {
             DrawGouraudShading(rend,
                                vertices2d,
@@ -536,6 +566,14 @@ int main(int argc, char* argv[])
                                );
           }
 
+        if (drawMode & DrawMode_TextureMapping)
+          {
+            DrawTextureMapping(rend,
+                               vertices2d,
+                               object->mFaces,
+                               texture);
+          }
+        
         if (drawMode & DrawMode_NormalVectorsInFaces)
           {
             DrawNormalVectorsInFaces(rend,
