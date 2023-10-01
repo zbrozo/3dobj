@@ -333,7 +333,7 @@ int main(int argc, char* argv[])
   for (size_t i = 0; i < thorusVerticesNr.size(); ++i)
     {
       auto n = thorusVerticesNr[i];
-      //    objects.push_back(new Thorus(n,n, ("thorus" + std::to_string(i)).c_str()));
+      objects.push_back(new Thorus(n,n, ("thorus" + std::to_string(i)).c_str()));
     }
 
   for(auto obj : objects)

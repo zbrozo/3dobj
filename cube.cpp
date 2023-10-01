@@ -58,7 +58,7 @@ void Cube::ProcessFaceWithVertices(Face& face, Vertices& vertices)
       int foundNr = 0;
 
       auto found = std::find_if(mVertices.begin(), mVertices.end(), [&](const Vertex& v){
-        const short vertexRange = 2;
+        const short vertexRange = 0;
 
         if ((vertex.mX >= v.mX - vertexRange && vertex.mX <= v.mX + vertexRange)
             && (vertex.mY >= v.mY - vertexRange && vertex.mY <= v.mY + vertexRange)
