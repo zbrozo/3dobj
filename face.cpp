@@ -18,13 +18,13 @@ Vector3d Face::CalculateNormalVector(const std::vector<Vertex>& vertices) const
   auto n2 = this->at(1);
   auto n3 = this->at(2);
 
-  auto v1 = Vector3d(vertices[n2].x - vertices[n1].x,
-                     vertices[n2].y - vertices[n1].y,
-                     vertices[n2].z - vertices[n1].z);
+  auto v1 = Vector3d(vertices[n2].mX - vertices[n1].mX,
+                     vertices[n2].mY - vertices[n1].mY,
+                     vertices[n2].mZ - vertices[n1].mZ);
   
-  auto v2 = Vector3d(vertices[n3].x - vertices[n2].x,
-                     vertices[n3].y - vertices[n2].y,
-                     vertices[n3].z - vertices[n2].z);
+  auto v2 = Vector3d(vertices[n3].mX - vertices[n2].mX,
+                     vertices[n3].mY - vertices[n2].mY,
+                     vertices[n3].mZ - vertices[n2].mZ);
   
   return v1.CrossProduct(v2).Normalize();
 }
@@ -45,9 +45,9 @@ Vertex Face::GetCenter(const std::vector<Vertex>& vertices) const
   for (unsigned int i = 0; i < size; ++i)
     {
       const auto nr = this->at(i);
-      x += vertices[nr].x;
-      y += vertices[nr].y;
-      z += vertices[nr].z;
+      x += vertices[nr].mX;
+      y += vertices[nr].mY;
+      z += vertices[nr].mZ;
     }
 
   x /= size;
@@ -68,16 +68,16 @@ bool Face::IsVisible(const std::vector<Vertex>& vertices) const
   const auto n1 = this->at(1);
   const auto n2 = this->at(2);
 
-  const auto v1 = Vector3d(vertices[n1].x - vertices[n0].x,
-                           vertices[n1].y - vertices[n0].y,
+  const auto v1 = Vector3d(vertices[n1].mX - vertices[n0].mX,
+                           vertices[n1].mY - vertices[n0].mY,
                            0);
   
-  const auto v2 = Vector3d(vertices[n2].x - vertices[n1].x,
-                           vertices[n2].y - vertices[n1].y,
+  const auto v2 = Vector3d(vertices[n2].mX - vertices[n1].mX,
+                           vertices[n2].mY - vertices[n1].mY,
                            0);
 
   // cross product w Z (jest większy niż short bo liczony po perspektywie)
-  int result = v1.x * v2.y - v1.y * v2.x; 
+  int result = v1.mX * v2.mY - v1.mY * v2.mX; 
 
   return (result <= 0);
 }

@@ -66,9 +66,9 @@ bool AmigaFile::Save(const Object3D& object3d)
     {
       auto value = *it;
       std::cout << value.ToString() << "\n";
-      WriteWord(file, value.x);
-      WriteWord(file, value.y);
-      WriteWord(file, value.z);
+      WriteWord(file, value.mX);
+      WriteWord(file, value.mY);
+      WriteWord(file, value.mZ);
     }
 
   std::cout << "normalized vectors in vertices" << "\n";
@@ -76,9 +76,9 @@ bool AmigaFile::Save(const Object3D& object3d)
     {
       auto value = *it;
       std::cout << value.ToString() << "\n";
-      WriteWord(file, value.x);
-      WriteWord(file, value.y);
-      WriteWord(file, value.z);
+      WriteWord(file, value.mX);
+      WriteWord(file, value.mY);
+      WriteWord(file, value.mZ);
     }
   
   std::cout << "faces" << "\n";
@@ -98,9 +98,9 @@ bool AmigaFile::Save(const Object3D& object3d)
     {
       auto face = *it;
       std::cout << face.ToString() << "\n";
-      WriteWord(file, face.x);
-      WriteWord(file, face.y);
-      WriteWord(file, face.z);
+      WriteWord(file, face.mX);
+      WriteWord(file, face.mY);
+      WriteWord(file, face.mZ);
     }
 
   file.close();

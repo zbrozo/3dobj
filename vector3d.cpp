@@ -4,29 +4,29 @@
 // iloczyn wektorowy
 Vector3d Vector3d::CrossProduct(const Vector3d& v) const
 {
-  const auto newX = y * v.z - z * v.y;
-  const auto newY = z * v.x - x * v.z;
-  const auto newZ = x * v.y - y * v.x;
+  const auto newX = mY * v.mZ - mZ * v.mY;
+  const auto newY = mZ * v.mX - mX * v.mZ;
+  const auto newZ = mX * v.mY - mY * v.mX;
 
   return Vector3d(newX, newY, newZ);
 }
 
 Vector3d Vector3d::Normalize() const
 {
-  const double len = sqrt(x * x + y * y + z * z);
+  const double len = sqrt(mX * mX + mY * mY + mZ * mZ);
 
-  short x2 = 0;
-  short y2 = 0;
-  short z2 = 0;
+  short x = 0;
+  short y = 0;
+  short z = 0;
   
   if (len != 0)
     {
       const short normalizedVectorLength = 64;
-      x2 = x * normalizedVectorLength / len;
-      y2 = y * normalizedVectorLength / len;
-      z2 = z * normalizedVectorLength / len;
+      x = mX * normalizedVectorLength / len;
+      y = mY * normalizedVectorLength / len;
+      z = mZ * normalizedVectorLength / len;
     }
 
-  return Vector3d(x2, y2, z2);
+  return Vector3d(x, y, z);
 }
 

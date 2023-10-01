@@ -84,9 +84,9 @@ namespace {
   {
     for (auto& v : vertices)
       {
-        v.x += moveVector.x;
-        v.y += moveVector.y;
-        v.z += moveVector.z;
+        v.mX += moveVector.mX;
+        v.mY += moveVector.mY;
+        v.mZ += moveVector.mZ;
       }
     return vertices;
   }

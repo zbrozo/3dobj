@@ -43,9 +43,9 @@ void PrepareColors()
 
 Vertex CalculatePerspective(const Vertex& v)
 {
-  auto z = v.z + 400;
-  auto x = (v.x << 10) / z;
-  auto y = (v.y << 10) / z;
+  auto z = v.mZ + 400;
+  auto x = (v.mX << 10) / z;
+  auto y = (v.mY << 10) / z;
   return Vertex(x, y, 0);
 }
 
@@ -90,7 +90,7 @@ void CalculateLight(int light,
   for (auto v : normalVectorsInFaces)
     {
       Vertex lightVector(0,0,light); // wektor światła
-      const auto z = (v.z * lightVector.z) + (maxLightValue * maxLightValue);
+      const auto z = (v.mZ * lightVector.mZ) + (maxLightValue * maxLightValue);
       const int id = (z * maxColorNumber) / (maxLightValue * 2 * maxLightValue);
       colorNumbersInFaces.push_back(id);
     }
@@ -98,7 +98,7 @@ void CalculateLight(int light,
   for (auto v : normalVectorsInVertices)
     {
       Vertex lightVector(0,0,light); // wektor światła
-      const auto z = (v.z * lightVector.z) + (maxLightValue * maxLightValue);
+      const auto z = (v.mZ * lightVector.mZ) + (maxLightValue * maxLightValue);
       const int id = (z * maxColorNumber) / (maxLightValue * 2 * maxLightValue);
       colorNumbersInVertices.push_back(id);
     }
@@ -129,8 +129,8 @@ void DrawFlatShading(SDL_Renderer* rend,
         
       for (size_t i = 0; i < face.size(); ++i)
         {
-          const auto x = vertices2d[face[i]].x;
-          const auto y = vertices2d[face[i]].y;
+          const auto x = vertices2d[face[i]].mX;
+          const auto y = vertices2d[face[i]].mY;
           vertex.position.x = x + CenterX;
           vertex.position.y = y + CenterY;
           geometryVertices.push_back(vertex);
@@ -166,8 +166,8 @@ void DrawGouraudShading(SDL_Renderer* rend,
         {
           vertex.color = colors[colorNumbersInVertices[face[i]]];
                 
-          const auto x = vertices2d[face[i]].x;
-          const auto y = vertices2d[face[i]].y;
+          const auto x = vertices2d[face[i]].mX;
+          const auto y = vertices2d[face[i]].mY;
           vertex.position.x = x + CenterX;
           vertex.position.y = y + CenterY;
           geometryVertices.push_back(vertex);
@@ -201,8 +201,8 @@ void DrawTextureMapping(SDL_Renderer* rend,
       for (size_t i = 0; i < face.size(); ++i)
         {
           SDL_Vertex vertex;
-          const auto x = vertices2d[face[i]].x;
-          const auto y = vertices2d[face[i]].y;
+          const auto x = vertices2d[face[i]].mX;
+          const auto y = vertices2d[face[i]].mY;
           vertex.position.x = x + CenterX;
           vertex.position.y = y + CenterY;
           vertex.tex_coord.x = textureCoords[i][0];
@@ -239,8 +239,8 @@ void DrawNormalVectorsInFaces(SDL_Renderer* rend,
       const auto v2 = CalculatePerspective(v + normalVectorsInFaces[faceNr]);
       
       SDL_RenderDrawLine(rend,
-                         v1.x + CenterX, v1.y + CenterY,
-                         v2.x + CenterX, v2.y + CenterY
+                         v1.mX + CenterX, v1.mY + CenterY,
+                         v2.mX + CenterX, v2.mY + CenterY
                          );
 
       ++faceNr;
@@ -272,8 +272,8 @@ void DrawNormalVectorsInVertices(SDL_Renderer* rend,
           const auto v2 = CalculatePerspective(vertices[face[i]] + normalVectorsInVertices[face[i]]);
                 
           SDL_RenderDrawLine(rend,
-                             v1.x + CenterX, v1.y + CenterY,
-                             v2.x + CenterX, v2.y + CenterY
+                             v1.mX + CenterX, v1.mY + CenterY,
+                             v2.mX + CenterX, v2.mY + CenterY
                              );
         }
 
@@ -297,21 +297,21 @@ void DrawLines(SDL_Renderer* rend,
             
       for (unsigned int i = 0; i < size; ++i)
         {
-          auto x1 = vertices2d[face[i]].x;
-          auto y1 = vertices2d[face[i]].y;
+          auto x1 = vertices2d[face[i]].mX;
+          auto y1 = vertices2d[face[i]].mY;
             
           int x2 = 0;
           int y2 = 0;
             
           if (i == size-1)
             {  
-              x2 = vertices2d[face[0]].x;
-              y2 = vertices2d[face[0]].y;
+              x2 = vertices2d[face[0]].mX;
+              y2 = vertices2d[face[0]].mY;
             }
           else
             {
-              x2 = vertices2d[face[i + 1]].x;
-              y2 = vertices2d[face[i + 1]].y;
+              x2 = vertices2d[face[i + 1]].mX;
+              y2 = vertices2d[face[i + 1]].mY;
             }
                 
           SDL_RenderDrawLine(rend,
@@ -333,7 +333,7 @@ int main(int argc, char* argv[])
   for (size_t i = 0; i < thorusVerticesNr.size(); ++i)
     {
       auto n = thorusVerticesNr[i];
-      objects.push_back(new Thorus(n,n, ("thorus" + std::to_string(i)).c_str()));
+      //    objects.push_back(new Thorus(n,n, ("thorus" + std::to_string(i)).c_str()));
     }
 
   for(auto obj : objects)
@@ -347,7 +347,6 @@ int main(int argc, char* argv[])
       file.Save(*obj);
     }
 
-  
   if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
     printf("error initializing SDL: %s\n", SDL_GetError());
     return 1;

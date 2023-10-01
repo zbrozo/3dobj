@@ -7,49 +7,72 @@ class Vertex
 
 public:
 
-  short x;
-  short y;
-  short z;
+  short mX;
+  short mY;
+  short mZ;
 
-  Vertex()
+  Vertex() :
+    mX(0), mY(0), mZ(0)
   {
   }
     
-  Vertex(short _x, short _y, short _z) :
-    x(_x), y(_y), z(_z)
+  Vertex(short x, short y, short z) :
+    mX(x), mY(y), mZ(z)
   {
   }
 
   Vertex operator=(const Vertex& v)
   {
-    x = v.x;
-    y = v.y;
-    z = v.z;
+    mX = v.mX;
+    mY = v.mY;
+    mZ = v.mZ;
     return *this;
   }
   
   Vertex operator+(const Vertex& v) const
   {
-    const Vertex result(x + v.x,
-                        y + v.y,
-                        z + v.z);
+    const Vertex result(mX + v.mX,
+                        mY + v.mY,
+                        mZ + v.mZ);
     return result;
   }
 
   bool operator==(const Vertex& v) const
   {
-    return (x == v.x && y == v.y && z == v.z);
+    return (mX == v.mX && mY == v.mY && mZ == v.mZ);
   }
 
-  Vertex operator/(int value) const
+  Vertex operator*(short value) const
   {
-    const Vertex result(x / value, y / value, z / value);
+    const Vertex result(mX * value, mY * value, mZ * value);
     return result;
+  }
+  
+  Vertex operator/(short value) const
+  {
+    Vertex vertex(mX / value, mY / value, mZ / value);
+
+    if (abs(mX % value) >= (value / 2))
+      {
+        vertex.mX += vertex.mX < 0 ? -1 : 1;
+      }
+
+    if (abs(mY % value) >= (value / 2))
+      {
+        vertex.mY += vertex.mY < 0 ? -1 : 1;
+      }
+
+    if (abs(mZ % value) >= (value / 2))
+      {
+        vertex.mZ += vertex.mZ < 0 ? -1 : 1;
+      }
+    
+    return vertex;
   }
   
   std::string ToString() const
   {
-    const std::string s(std::to_string(x) + ", " + std::to_string(y) + ", " + std::to_string(z));
+    const std::string s(std::to_string(mX) + ", " + std::to_string(mY) + ", " + std::to_string(mZ));
     return s;
   }
   

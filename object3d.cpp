@@ -74,9 +74,9 @@ auto CalculateVectorsInVertices(const FaceNumbersInVertices& vertexInFaceDepende
         {
           std::cout << "face: " <<  faceNr << ", " << x << "\n";
           
-          x += normalFaceVectors[faceNr].x;
-          y += normalFaceVectors[faceNr].y;
-          z += normalFaceVectors[faceNr].z;
+          x += normalFaceVectors[faceNr].mX;
+          y += normalFaceVectors[faceNr].mY;
+          z += normalFaceVectors[faceNr].mZ;
         }
 
       const short count = faces.size();

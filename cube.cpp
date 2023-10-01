@@ -6,8 +6,10 @@
 
 void Cube::CreateFaceWithVertices(int step, int degX, int degY, Face& face, Vertices& vertices)
 {
-  const short value = 500;
-
+  const short value = 50;
+  
+  const short scaleValue = 10;
+  
   Vertices baseVertices= {
     {value, value, value},
     {-value, value, value},
@@ -18,27 +20,26 @@ void Cube::CreateFaceWithVertices(int step, int degX, int degY, Face& face, Vert
   Vertices tmpVertices;
   for (auto vertex : baseVertices)
     {
+      vertex = vertex * scaleValue;
+      
       Rotation rotation;
+
+      Vertex v;
       
       if (degX)
         {
-          auto v = rotation.rotateX(vertex, step * degX);
-          tmpVertices.push_back(v);
+          v = rotation.rotateX(vertex, step * degX);
         }
       else if (degY)
         {
-          auto v = rotation.rotateY(vertex, step * degY);
-          tmpVertices.push_back(v);
+          v = rotation.rotateY(vertex, step * degY);
         }
+
+      v = v / scaleValue;
+
+      tmpVertices.push_back(v);
     }
   
-  std::for_each(tmpVertices.begin(), tmpVertices.end(),
-                [](auto& v) {
-                  v.x = round(v.x / 10);
-                  v.y = round(v.y / 10);
-                  v.z = round(v.z / 10);
-                });
-
   face = Face{0,1,2,3};
   vertices = tmpVertices;
 
@@ -55,14 +56,17 @@ void Cube::ProcessFaceWithVertices(Face& face, Vertices& vertices)
       Vertex vertex = vertices[vertexNr];
 
       int foundNr = 0;
+
       auto found = std::find_if(mVertices.begin(), mVertices.end(), [&](const Vertex& v){
-        if ((vertex.x >= v.x - 2 && vertex.x <= v.x + 2)
-            && (vertex.y >= v.y - 2 && vertex.y <= v.y + 2)
-            && (vertex.z >= v.z - 2 && vertex.z <= v.z + 2))
+        const short vertexRange = 2;
+
+        if ((vertex.mX >= v.mX - vertexRange && vertex.mX <= v.mX + vertexRange)
+            && (vertex.mY >= v.mY - vertexRange && vertex.mY <= v.mY + vertexRange)
+            && (vertex.mZ >= v.mZ - vertexRange && vertex.mZ <= v.mZ + vertexRange))
           {
             return true;
           }
-
+        
         ++foundNr;
         return false;
       });
@@ -113,7 +117,6 @@ void Cube::Generate()
       mVertices.insert(mVertices.end(), vertices.begin(), vertices.end());
       mFaces.push_back(face);
   }
-  
 }
 
 
