@@ -13,10 +13,4 @@ public:
   }
 
   void Generate();
-
-private:
-
-  void CreateFaceWithVertices(int step, int degX, int degY, Face& face, Vertices& vertices);
-  void ProcessFaceWithVertices(Face& face, Vertices& vertices);
-
 };
