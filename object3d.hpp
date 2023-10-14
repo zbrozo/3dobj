@@ -6,12 +6,13 @@
 #include "vector3d.hpp"
 #include "vertex.hpp"
 #include "face.hpp"
+#include "vertices.hpp"
 
 //class Face;
 //class Vector3d;
 //class Vertex;
 
-using Vertices = std::vector<Vertex>;
+//using Vertices = std::vector<Vertex>;
 using Faces = std::vector<Face>;
 using Vectors = std::vector<Vector3d>;
 

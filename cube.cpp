@@ -1,42 +1,7 @@
 #include "cube.hpp"
-#include "rotation.hpp"
 #include <algorithm>
 #include <iostream>
 #include <cmath>
-
-Vertices RotateVertices(int degX, int degY, int degZ, const Vertices& vertices)
-{
-  Rotation rotation;
-  const short scaleValue = 10;
-  
-  Vertices tmpVertices;
-  
-  for (auto vertex : vertices)
-    {
-      Vertex v = vertex * scaleValue;
-      
-      if (degX)
-        {
-          v = rotation.rotateX(v, degX);
-        }
-
-      if (degY)
-        {
-          v = rotation.rotateY(v, degY);
-        }
-
-      if (degZ)
-        {
-          v = rotation.rotateZ(v, degZ);
-        }
-
-      v = v / scaleValue;
-
-      tmpVertices.push_back(v);
-    }
-
-  return tmpVertices;
-}
 
 auto CreateOneFace(Vertices& vertices)
 {
@@ -47,7 +12,7 @@ auto CreateOneFace(Vertices& vertices)
   for (size_t i = 0; i < facesCount; ++i)
     {
 
-      const auto rotatedVertices = RotateVertices(0, 0, i * 90, vertices);
+      const auto rotatedVertices = vertices.Rotate(0, 0, i * 90);
       allVertices.push_back(rotatedVertices);
     }
 
@@ -121,7 +86,7 @@ void RotateCubeFace(int degx, int degy, int degz,
                     Faces& objectFaces,
                     Vertices& objectVertices)
 {
-  const auto rotatedVertices = RotateVertices(degx, degy, degz, vertices);
+  const auto rotatedVertices = vertices.Rotate(degx, degy, degz);
   
   for (const auto& face : faces)
     {

@@ -21,59 +21,17 @@ public:
   {
   }
 
-  Vertex operator=(const Vertex& v)
-  {
-    mX = v.mX;
-    mY = v.mY;
-    mZ = v.mZ;
-    return *this;
-  }
+  Vertex operator=(const Vertex& v);
   
-  Vertex operator+(const Vertex& v) const
-  {
-    const Vertex result(mX + v.mX,
-                        mY + v.mY,
-                        mZ + v.mZ);
-    return result;
-  }
+  Vertex operator+(const Vertex& v) const;
 
-  bool operator==(const Vertex& v) const
-  {
-    return (mX == v.mX && mY == v.mY && mZ == v.mZ);
-  }
+  bool operator==(const Vertex& v) const;
 
-  Vertex operator*(short value) const
-  {
-    const Vertex result(mX * value, mY * value, mZ * value);
-    return result;
-  }
+  Vertex operator*(short value) const;
   
-  Vertex operator/(short value) const
-  {
-    Vertex vertex(mX / value, mY / value, mZ / value);
-
-    if (abs(mX % value) >= (value / 2))
-      {
-        vertex.mX += vertex.mX < 0 ? -1 : 1;
-      }
-
-    if (abs(mY % value) >= (value / 2))
-      {
-        vertex.mY += vertex.mY < 0 ? -1 : 1;
-      }
-
-    if (abs(mZ % value) >= (value / 2))
-      {
-        vertex.mZ += vertex.mZ < 0 ? -1 : 1;
-      }
-    
-    return vertex;
-  }
+  Vertex operator/(short value) const;
   
-  std::string ToString() const
-  {
-    const std::string s(std::to_string(mX) + ", " + std::to_string(mY) + ", " + std::to_string(mZ));
-    return s;
-  }
-  
+  std::string ToString() const;
+
+  Vertex Rotate(int degX, int degY, int degZ) const;
 };

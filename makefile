@@ -27,7 +27,10 @@ SOURCES = \
 	object3d.cpp \
 	rotation.cpp \
 	thorus.cpp \
-	vector3d.cpp
+	vector3d.cpp \
+	vertex.cpp \
+	vertices.cpp
+
 
 CPPFLAGS = -g3 -Wall -std=c++1z -I $(SRCPATH)
 
