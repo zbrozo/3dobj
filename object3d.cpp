@@ -1,6 +1,7 @@
 #include <iostream>
 #include <algorithm>
 #include <cmath>
+
 #include "object3d.hpp"
 #include "vector3d.hpp"
 
@@ -142,3 +143,46 @@ void Object3D::LogFaces()
     }
 }
 
+std::pair<Face, Vertices> Object3D::Merge(const Vertices& objectVertices,
+                                          const Face& face,
+                                          const Vertices& vertices)
+{
+  Face resultFace;
+  Vertices resultVertices = objectVertices;
+  
+  for (size_t i = 0; i < face.size(); ++i)
+    {
+      auto vertexNr = face[i];
+      Vertex vertex = vertices[vertexNr];
+
+      int foundNr = 0;
+
+      auto found = std::find_if(resultVertices.begin(), resultVertices.end(), [&](const Vertex& v){
+        const short vertexRange = 0;
+
+        if ((vertex.mX >= v.mX - vertexRange && vertex.mX <= v.mX + vertexRange)
+            && (vertex.mY >= v.mY - vertexRange && vertex.mY <= v.mY + vertexRange)
+            && (vertex.mZ >= v.mZ - vertexRange && vertex.mZ <= v.mZ + vertexRange))
+          {
+            return true;
+          }
+        
+        ++foundNr;
+        return false;
+      });
+
+      if (found != resultVertices.end())
+        {
+          resultFace.push_back(foundNr);
+        }
+      else
+        {
+          const short nr = resultVertices.size();
+          
+          resultFace.push_back(nr);
+          resultVertices.push_back(vertex);
+        }
+    }
+  
+  return std::make_pair(resultFace, resultVertices);
+}

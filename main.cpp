@@ -1,6 +1,7 @@
 #include "face.hpp"
 #include "vector3d.hpp"
 #include "cube.hpp"
+#include "cube2.hpp"
 #include "thorus.hpp"
 #include "rotation.hpp"
 #include "amigafile.hpp"
@@ -328,12 +329,13 @@ int main(int argc, char* argv[])
   std::vector<Object3D*> objects;
   
   objects.push_back(new Cube("cube"));
+  objects.push_back(new Cube2("cube2"));
   
   std::vector<int> thorusVerticesNr{4,6,8};
   for (size_t i = 0; i < thorusVerticesNr.size(); ++i)
     {
       auto n = thorusVerticesNr[i];
-      //objects.push_back(new Thorus(n,n, ("thorus" + std::to_string(i)).c_str()));
+      objects.push_back(new Thorus(n,n, ("thorus" + std::to_string(i)).c_str()));
     }
 
   for(auto obj : objects)

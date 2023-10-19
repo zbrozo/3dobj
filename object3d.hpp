@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <string>
+#include <utility>
 
 #include "vector3d.hpp"
 #include "vertex.hpp"
@@ -40,5 +41,8 @@ public:
   void LogFaces();
   
   virtual void Generate() = 0;
-  
+
+  static std::pair<Face, Vertices> Merge(const Vertices& objectVertices,
+                                         const Face& face,
+                                         const Vertices& vertices);
 };

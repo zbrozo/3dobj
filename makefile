@@ -23,6 +23,7 @@ SOURCES = \
 	main.cpp \
 	amigafile.cpp \
 	cube.cpp \
+	cube2.cpp \
 	face.cpp \
 	object3d.cpp \
 	rotation.cpp \
