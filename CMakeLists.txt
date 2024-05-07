@@ -1,3 +1,5 @@
+# For SLD2 image: https://github.com/trenki2/SDL2Test
+
 cmake_minimum_required(VERSION 3.2)
 
 project(obj3d)
