@@ -27,11 +27,8 @@ set(generator_SRC
         src/vertices.cpp)
 
 set(viewer_SRC
-        src/main.cpp
+        src/viewer.cpp
         src/amigafile.cpp
-        src/cube.cpp
-        src/cube2.cpp
-        src/thorus.cpp
         src/face.cpp
         src/object3d.cpp
         src/rotation.cpp

@@ -47,13 +47,13 @@ int main(int argc, char* argv[])
     {
     case ObjectId::Cube:
       {
-        object = new Cube("cube");
+        object = new Cube(name);
         break;
       }
 
     case ObjectId::Cube2:
       {
-        object = new Cube("cube2");
+        object = new Cube2(name);
         break;
       }
 

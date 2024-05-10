@@ -40,7 +40,9 @@ public:
   void LogVertices();
   void LogFaces();
   
-  virtual void Generate() = 0;
+  virtual void Generate()
+  {
+  }
 
   static std::pair<Face, Vertices> Merge(const Vertices& objectVertices,
                                          const Face& face,

@@ -1,5 +1,7 @@
 #include <iostream>
 #include <fstream>
+#include <string>
+#include <algorithm>
 #include "amigafile.hpp"
 #include "object3d.hpp"
 
@@ -15,21 +17,21 @@ unsigned short swapByteOrder(const unsigned short value)
   return result;
 }
 
-unsigned int swapByteOrder(const unsigned int value)
-{
-  const char* bytes = reinterpret_cast<const char*>(&value);
-  const unsigned char byte0 = bytes[0];
-  const unsigned char byte1 = bytes[1];
-  const unsigned char byte2 = bytes[2];
-  const unsigned char byte3 = bytes[3];
-  const unsigned int result = static_cast<unsigned int> ( (byte0 << 24) | (byte1 << 16) | (byte2 << 8) | byte3 );
-  return result;
-}
-
-void WriteByte(std::ofstream& file, unsigned char value)
-{
-  file.write(reinterpret_cast<const char*>(&value), sizeof(char));
-}
+// unsigned int swapByteOrder(const unsigned int value)
+// {
+//   const char* bytes = reinterpret_cast<const char*>(&value);
+//   const unsigned char byte0 = bytes[0];
+//   const unsigned char byte1 = bytes[1];
+//   const unsigned char byte2 = bytes[2];
+//   const unsigned char byte3 = bytes[3];
+//   const unsigned int result = static_cast<unsigned int> ( (byte0 << 24) | (byte1 << 16) | (byte2 << 8) | byte3 );
+//   return result;
+// }
+  
+// void WriteByte(std::ofstream& file, unsigned char value)
+// {
+//   file.write(reinterpret_cast<const char*>(&value), sizeof(char));
+// }
 
 void WriteWord(std::ofstream& file, unsigned short value)
 {
@@ -37,11 +39,18 @@ void WriteWord(std::ofstream& file, unsigned short value)
   file.write(reinterpret_cast<const char*>(&swappedShort), sizeof(short));
 }
 
-void WriteLong(std::ofstream& file, unsigned int value)
+unsigned short ReadWord(std::ifstream& file)
 {
-  unsigned int swappedValue = swapByteOrder(value);
-  file.write(reinterpret_cast<const char*>(&swappedValue), sizeof(unsigned int));
+  unsigned short swappedShort;
+  file.read(reinterpret_cast<char*>(&swappedShort), sizeof(short));
+  return swapByteOrder(swappedShort);
 }
+  
+// void WriteLong(std::ofstream& file, unsigned int value)
+// {
+//   unsigned int swappedValue = swapByteOrder(value);
+//   file.write(reinterpret_cast<const char*>(&swappedValue), sizeof(unsigned int));
+// }
   
 }
 
@@ -102,6 +111,81 @@ bool AmigaFile::Save(const Object3D& object3d)
       WriteWord(file, face.mY);
       WriteWord(file, face.mZ);
     }
+
+  file.close();
+
+  return true;
+}
+
+bool AmigaFile::Load(const std::string& name, Object3D& object3d)
+{
+  // UWAGA - współrzędne są zapisywane w odwrotnej kolejności
+  // ponieważ funkcja obrotu (na amidze) zapisuje dane w odwrotnej kolejności (jak na stosie)
+
+  std::ifstream file(name, std::ios::in | std::ios::binary);
+  
+  if (!file)
+    {
+      std::cout << "ERROR: File is not opened" << "\n";
+      return false;
+    }
+
+  unsigned short verticesCount = ReadWord(file);
+  unsigned short facesCount = ReadWord(file);
+
+  std::cout << "vertices = " + std::to_string(verticesCount) << "\n";
+
+  for (int i = 0; i < verticesCount; i++)
+    {
+      const auto x = ReadWord(file);
+      const auto y = ReadWord(file);
+      const auto z = ReadWord(file);
+      const Vertex vertex(x,y,z);
+      std::cout << vertex.ToString() << "\n";
+      object3d.mVertices.push_back(vertex);
+    }
+  std::reverse(object3d.mVertices.begin(), object3d.mVertices.end());
+  
+  std::cout << "normalized vectors in vertices" << "\n";
+
+  for (int i = 0; i < verticesCount; i++)
+    {
+      const auto x = ReadWord(file);
+      const auto y = ReadWord(file);
+      const auto z = ReadWord(file);
+      const Vector3d vector3d(x,y,z);
+      std::cout << vector3d.ToString() << "\n";
+      object3d.mNormalVectorsInVertices.push_back(vector3d);
+    }
+  std::reverse(object3d.mNormalVectorsInVertices.begin(), object3d.mNormalVectorsInVertices.end());
+
+  std::cout << "faces = " + std::to_string(facesCount) << "\n";
+
+  for (int i = 0; i < facesCount; i++)
+    {
+      ReadWord(file); // not used
+      const auto faceSize = ReadWord(file);
+      
+      Face face;
+      for (int faceNr = 0; faceNr < faceSize; faceNr++)
+        {
+          const auto vertexNr = ReadWord(file) / 8;
+          face.push_back(vertexNr);
+        }
+      object3d.mFaces.push_back(face);
+    }
+  
+  std::cout << "normalized face vectors" << "\n";
+
+  for (int i = 0; i < facesCount; i++)
+    {
+      const auto x = ReadWord(file);
+      const auto y = ReadWord(file);
+      const auto z = ReadWord(file);
+      const Vector3d vector3d(x,y,z);
+      object3d.mNormalVectorsInFaces.push_back(vector3d);
+    }
+  std::reverse(object3d.mNormalVectorsInFaces.begin(), object3d.mNormalVectorsInFaces.end());
 
   file.close();
 
