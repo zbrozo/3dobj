@@ -9,6 +9,7 @@
 #include <iostream>
 #include <array>
 #include <map>
+#include <memory>
 
 enum class ObjectId {
   None = 0,
@@ -41,19 +42,19 @@ int main(int argc, char* argv[])
       return 0;
     }
   
-  Object3D* object = nullptr;
+  std::unique_ptr<Object3D> object = nullptr;
   
   switch(it->second)
     {
     case ObjectId::Cube:
       {
-        object = new Cube(name);
+        object = std::make_unique<Cube>(name);
         break;
       }
 
     case ObjectId::Cube2:
       {
-        object = new Cube2(name);
+        object = std::make_unique<Cube2>(name);
         break;
       }
 
@@ -68,9 +69,9 @@ int main(int argc, char* argv[])
         const auto circleSize = argv[2];
         const auto ringSize = argv[3];
         
-        object = new Thorus(std::stoi(circleSize),
-                            std::stoi(ringSize),
-                            (std::string(name) + "_" + circleSize + "_" + ringSize).c_str());
+        object = std::make_unique<Thorus>(std::stoi(circleSize),
+                                          std::stoi(ringSize),
+                                          (std::string(name) + "_" + circleSize + "_" + ringSize).c_str());
         break;
       }
     default:

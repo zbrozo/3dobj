@@ -1,13 +1,14 @@
+#include <iostream>
+#include <array>
+#include <memory>
+
 #include "vertices.hpp"
 #include "object3d.hpp"
-
 #include "face.hpp"
 #include "vector3d.hpp"
 #include "rotation.hpp"
 #include "amigafile.hpp"
 
-#include <iostream>
-#include <array>
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_timer.h>
@@ -327,41 +328,18 @@ void DrawLines(SDL_Renderer* rend,
 
 int main(int argc, char* argv[])
 {
-  std::vector<Object3D*> objects;
+  std::vector<std::unique_ptr<Object3D>> objects;
 
   AmigaFile file;
 
   for (int i = 1; i < argc; i++)
     {
-      Object3D* object = new Object3D("aaaa");
+      std::unique_ptr<Object3D> object = std::make_unique<Object3D>("aaaa");
       const char* name = argv[i];
-      file.Load(name, *object);
-      objects.push_back(object);
+      file.Load(name, *object.get());
+      objects.push_back(std::move(object));
     }
 
-  /*
-  objects.push_back(new Cube("cube"));
-  objects.push_back(new Cube2("cube2"));
-  
-  std::vector<int> thorusVerticesNr{4,6,8};
-  for (size_t i = 0; i < thorusVerticesNr.size(); ++i)
-    {
-      auto n = thorusVerticesNr[i];
-      objects.push_back(new Thorus(n,n, ("thorus" + std::to_string(i)).c_str()));
-    }
-
-  for(auto obj : objects)
-    {
-      obj->Generate();
-      obj->LogVertices();
-      obj->LogFaces();
-      obj->CreateNormalVectors();
-
-      AmigaFile file;
-      file.Save(*obj);
-    }
-  */
-  
   if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
     printf("error initializing SDL: %s\n", SDL_GetError());
     return 1;
@@ -409,7 +387,7 @@ int main(int argc, char* argv[])
 
   SwitchDrawMode(DrawMode_LineVectors);
   PrepareColors();
-  Object3D* object = objects[0];
+  Object3D* object = objects[0].get();
   
   // animation loop
   while (!close) {
@@ -519,7 +497,7 @@ int main(int argc, char* argv[])
             unsigned int nr = event.key.keysym.scancode - SDL_SCANCODE_F1;
             if (nr < objects.size())
             {
-              object = objects[nr];
+              object = objects[nr].get();
             }
             break;
           }
