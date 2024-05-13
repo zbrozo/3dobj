@@ -1,6 +1,9 @@
 #include <iostream>
 #include <array>
+#include <map>
 #include <memory>
+#include <algorithm>
+#include <any>
 
 #include "vertices.hpp"
 #include "object3d.hpp"
@@ -325,11 +328,8 @@ void DrawLines(SDL_Renderer* rend,
     }
 }
 
-
-int main(int argc, char* argv[])
+void LoadObjects(int argc, char* argv[], std::vector<std::unique_ptr<Object3D>>& objects)
 {
-  std::vector<std::unique_ptr<Object3D>> objects;
-
   AmigaFile file;
 
   for (int i = 1; i < argc; i++)
@@ -339,6 +339,12 @@ int main(int argc, char* argv[])
       file.Load(name, *object.get());
       objects.push_back(std::move(object));
     }
+}
+
+int main(int argc, char* argv[])
+{
+  std::vector<std::unique_ptr<Object3D>> objects;
+  LoadObjects(argc, argv, objects);
 
   if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
     printf("error initializing SDL: %s\n", SDL_GetError());
@@ -387,8 +393,69 @@ int main(int argc, char* argv[])
 
   SwitchDrawMode(DrawMode_LineVectors);
   PrepareColors();
-  Object3D* object = objects[0].get();
   
+  Object3D* object = objects[0].get();
+
+  auto SelectObject = [&](unsigned int nr) {
+    //    unsigned int nr = event.key.keysym.scancode - SDL_SCANCODE_F1;
+    if (nr < objects.size())
+      {
+        object = objects[nr].get();
+      }
+  };
+
+  std::map<int, std::function<void()>> keyActions{
+    {SDL_SCANCODE_ESCAPE, [&](){ close = 1; }},
+    {SDL_SCANCODE_1, [&](){ SwitchDrawMode(DrawMode_LineVectors); }},
+    {SDL_SCANCODE_2, [&](){ SwitchDrawMode(DrawMode_NormalVectorsInFaces); }},
+    {SDL_SCANCODE_3, [&](){ SwitchDrawMode(DrawMode_NormalVectorsInVertices); }},
+    {SDL_SCANCODE_4, [&](){ SwitchDrawMode(DrawMode_FlatShading); }},
+    {SDL_SCANCODE_5, [&](){ SwitchDrawMode(DrawMode_GouraudShading); }},
+    {SDL_SCANCODE_6, [&](){ SwitchDrawMode(DrawMode_TextureMapping); }},
+    {SDL_SCANCODE_UP, [&](){ degx += 1; }},
+    {SDL_SCANCODE_DOWN, [&](){ degx -= 1; }},
+    {SDL_SCANCODE_LEFT, [&](){ degy += 1; }},
+    {SDL_SCANCODE_RIGHT, [&](){ degy -= 1; }},
+    {SDL_SCANCODE_M, [&](){
+      if (light < maxLightValue)
+        {
+          light += 1;
+        }
+    }},
+    {SDL_SCANCODE_N, [&]() {
+      if (light > -maxLightValue)
+        {
+          light -= 1;
+        }      
+    }},
+    {SDL_SCANCODE_SPACE, [&]() {
+      if (speedx == 0)
+        {
+          speedx = 1;
+          speedy = 1;
+          speedz = 1;
+        }
+      else
+        {
+          speedx = 0;
+          speedy = 0;
+          speedz = 0;
+        }
+    }},
+    {SDL_SCANCODE_F1, [&](){ SelectObject(0); }},
+    {SDL_SCANCODE_F2, [&](){ SelectObject(1); }},
+    {SDL_SCANCODE_F3, [&](){ SelectObject(2); }},
+    {SDL_SCANCODE_F4, [&](){ SelectObject(3); }},
+    {SDL_SCANCODE_F5, [&](){ SelectObject(4); }},
+    {SDL_SCANCODE_F6, [&](){ SelectObject(5); }},
+    {SDL_SCANCODE_F7, [&](){ SelectObject(6); }},
+    {SDL_SCANCODE_F8, [&](){ SelectObject(7); }},
+    {SDL_SCANCODE_F9, [&](){ SelectObject(8); }},
+    {SDL_SCANCODE_F10, [&](){ SelectObject(9); }},
+    {SDL_SCANCODE_F11, [&](){ SelectObject(10); }},
+    {SDL_SCANCODE_F12, [&](){ SelectObject(11); }},
+  };
+
   // animation loop
   while (!close) {
     SDL_Event event;
@@ -399,112 +466,25 @@ int main(int argc, char* argv[])
       switch (event.type) {
         
       case SDL_QUIT:
-        // handling of close button
-        close = 1;
-        break;
-        
-      case SDL_KEYDOWN:
-        // keyboard API for key pressed
-        switch (event.key.keysym.scancode) {
-
-        case SDL_SCANCODE_ESCAPE:
+        {
+          // handling of close button
           close = 1;
           break;
-
-        case SDL_SCANCODE_1:
-          SwitchDrawMode(DrawMode_LineVectors);
-          break;
-
-        case SDL_SCANCODE_2:
-          SwitchDrawMode(DrawMode_NormalVectorsInFaces);
-          break;
-
-        case SDL_SCANCODE_3:
-          SwitchDrawMode(DrawMode_NormalVectorsInVertices);
-          break;
-
-        case SDL_SCANCODE_4:
-          SwitchDrawMode(DrawMode_FlatShading);
-          break;
-
-        case SDL_SCANCODE_5:
-          SwitchDrawMode(DrawMode_GouraudShading);
-          break;
-
-        case SDL_SCANCODE_6:
-          SwitchDrawMode(DrawMode_TextureMapping);
-          break;
-          
-        case SDL_SCANCODE_W:
-        case SDL_SCANCODE_UP:
-          degx += 1;
-          break;
-        case SDL_SCANCODE_A:
-        case SDL_SCANCODE_LEFT:
-          degy += 1;
-          break;
-        case SDL_SCANCODE_S:
-        case SDL_SCANCODE_DOWN:
-          degx -= 1;
-          break;
-        case SDL_SCANCODE_D:
-        case SDL_SCANCODE_RIGHT:
-          degy -= 1;
-          break;
-
-        case SDL_SCANCODE_M:
-          if (light < maxLightValue)
+        }
+        
+      case SDL_KEYDOWN:
+        {
+          auto action = keyActions.find(event.key.keysym.scancode);
+          if (action != keyActions.end())
             {
-              light += 1;
+              action->second();
             }
-          break;
-
-        case SDL_SCANCODE_N:
-          if (light > -maxLightValue)
-            {
-              light -= 1;
-            }
-          break;
-          
-        case SDL_SCANCODE_SPACE:
-          if (speedx == 0)
-            {
-              speedx = 1;
-              speedy = 1;
-              speedz = 1;
-            }
-          else
-            {
-              speedx = 0;
-              speedy = 0;
-              speedz = 0;
-            }
-          break;
-
-        case SDL_SCANCODE_F1:
-        case SDL_SCANCODE_F2:
-        case SDL_SCANCODE_F3:
-        case SDL_SCANCODE_F4:
-        case SDL_SCANCODE_F5:
-        case SDL_SCANCODE_F6:
-        case SDL_SCANCODE_F7:
-        case SDL_SCANCODE_F8:
-        case SDL_SCANCODE_F9:
-        case SDL_SCANCODE_F10:
-        case SDL_SCANCODE_F11:
-        case SDL_SCANCODE_F12:
-          {
-            unsigned int nr = event.key.keysym.scancode - SDL_SCANCODE_F1;
-            if (nr < objects.size())
-            {
-              object = objects[nr].get();
-            }
-            break;
-          }
-          break;
-        default:
           break;
         }
+        
+      default:
+        break;
+        
       }
     }
     
