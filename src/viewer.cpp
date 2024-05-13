@@ -343,6 +343,14 @@ void LoadObjects(int argc, char* argv[], std::vector<std::unique_ptr<Object3D>>&
 
 int main(int argc, char* argv[])
 {
+  if (argc == 1)
+    {
+      std::cout << "No object files provided\n"
+                << "Command line:\n"
+                << "  viewer file...\n";
+      return 0;
+    }
+  
   std::vector<std::unique_ptr<Object3D>> objects;
   LoadObjects(argc, argv, objects);
 
@@ -514,7 +522,7 @@ int main(int argc, char* argv[])
                        colorNumbersInVertices);
 
         Vertices vertices2d;
-        for (auto v : vertices)
+        for (const auto& v : vertices)
           {
             const auto v2d = CalculatePerspective(v);
             vertices2d.push_back(v2d);
