@@ -5,6 +5,7 @@
 #include "cube2.hpp"
 #include "thorus.hpp"
 #include "amigafile.hpp"
+#include <algorithm>
 #include <cstddef>
 #include <iostream>
 #include <array>
@@ -24,13 +25,34 @@ std::map<std::string, ObjectId> Objects {
   {"thorus", ObjectId::Thorus}
 };
 
+std::map<ObjectId, std::string> ParamsHelp {
+  {ObjectId::Cube, ""},
+  {ObjectId::Cube2, ""},
+  {ObjectId::Thorus, "thorusCircleSize thorusRingSize"}
+};
+
+const std::string TooLessParamsMessage = "Too less parameters for ";
+
+void PrintHelp()
+{
+  std::cout << "generator name [params]\n";
+  std::cout << "  possible object names and params to use:\n";
+
+  std::for_each(Objects.begin(), Objects.end(),
+    [](std::pair<std::string, ObjectId> item)
+      {
+        std::cout << "    " << item.first << ", params: " << ParamsHelp[item.second];
+        std::cout << "\n";
+      });
+}
+
 int main(int argc, char* argv[])
 {
   if (argc == 1)
-    {
-      std::cout << "No parameters\n";
-      return 0;
-    }
+  {
+    PrintHelp();
+    return 0;
+  }
 
   const auto name = argv[1];
 
@@ -61,17 +83,20 @@ int main(int argc, char* argv[])
     case ObjectId::Thorus:
       {
         if (argc < 4)
-          {
-            std::cout << "Too less parameters for thorus\n";
+        {
+            std::cout << TooLessParamsMessage << name << "\n";
+            PrintHelp();
             return 0;
           }
         
         const auto circleSize = argv[2];
         const auto ringSize = argv[3];
         
-        object = std::make_unique<Thorus>(std::stoi(circleSize),
-                                          std::stoi(ringSize),
-                                          (std::string(name) + "_" + circleSize + "_" + ringSize).c_str());
+        object = std::make_unique<Thorus>(
+          std::stoi(circleSize),
+          std::stoi(ringSize),
+          (std::string(name) + "_" + circleSize + "_" + ringSize).c_str());
+        
         break;
       }
     default:
