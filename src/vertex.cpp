@@ -1,14 +1,6 @@
 #include "vertex.hpp"
 #include "rotation.hpp"
 
-Vertex Vertex::operator=(const Vertex& v)
-{
-  mX = v.mX;
-  mY = v.mY;
-  mZ = v.mZ;
-  return *this;
-}
-
 Vertex Vertex::operator+(const Vertex& v) const
 {
   const Vertex result(mX + v.mX,

@@ -16,6 +16,13 @@ public:
   {
   }
 
+  virtual ~Vector3d() = default;
+
+  Vector3d(Vector3d const &) = default;
+  Vector3d(Vector3d &&) = default;
+  Vector3d& operator=(const Vector3d& v) = default;
+  Vector3d& operator=(Vector3d &&) = default;
+
   Vector3d CrossProduct(const Vector3d& v) const;
   Vector3d Normalize() const;
 };

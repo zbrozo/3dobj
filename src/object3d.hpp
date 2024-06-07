@@ -9,14 +9,8 @@
 #include "face.hpp"
 #include "vertices.hpp"
 
-//class Face;
-//class Vector3d;
-//class Vertex;
-
-//using Vertices = std::vector<Vertex>;
 using Faces = std::vector<Face>;
 using Vectors = std::vector<Vector3d>;
-
 using FaceNumbers = std::vector<unsigned short>;
 using FaceNumbersInVertices = std::vector<FaceNumbers>;
 
@@ -29,6 +23,13 @@ public:
     mName(name)
   {
   }
+
+  virtual ~Object3D() = default;
+
+  Object3D(Object3D const &) = delete;
+  Object3D(Object3D &&) = delete;
+  Object3D& operator=(Object3D const &) = delete;
+  Object3D& operator=(Object3D &&) = delete;
   
   std::string mName;
   Vertices mVertices;

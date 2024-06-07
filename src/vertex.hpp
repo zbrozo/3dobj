@@ -21,17 +21,18 @@ public:
   {
   }
 
-  Vertex operator=(const Vertex& v);
+  virtual ~Vertex() = default;
+
+  Vertex(Vertex const &) = default;
+  Vertex(Vertex &&) = default;
+  Vertex& operator=(const Vertex& v) = default;
+  Vertex& operator=(Vertex &&) = default;
   
   Vertex operator+(const Vertex& v) const;
-
   bool operator==(const Vertex& v) const;
-
   Vertex operator*(short value) const;
-  
   Vertex operator/(short value) const;
   
   std::string ToString() const;
-
   Vertex Rotate(int degX, int degY, int degZ) const;
 };

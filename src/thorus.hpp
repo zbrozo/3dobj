@@ -22,6 +22,12 @@ public:
   {
   }
 
+  virtual ~Thorus() = default;
+  
+  Thorus(Thorus const &) = delete;
+  Thorus(Thorus &&) = delete;
+  Thorus& operator=(const Thorus& v) = delete;
+  Thorus& operator=(Thorus &&) = delete;
+  
   void Generate();
-
 };

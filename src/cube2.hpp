@@ -11,6 +11,13 @@ public:
     Cube(name)
   {
   }
+
+  virtual ~Cube2() = default;
+  
+  Cube2(Cube2 const &) = delete;
+  Cube2(Cube2 &&) = delete;
+  Cube2& operator=(const Cube2& v) = delete;
+  Cube2& operator=(Cube2 &&) = delete;
   
   void Generate();
 
