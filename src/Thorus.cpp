@@ -1,6 +1,6 @@
-#include "vertex.hpp"
-#include "rotation.hpp"
-#include "thorus.hpp"
+#include "Vertex.hpp"
+#include "Rotation.hpp"
+#include "Thorus.hpp"
 
 namespace {
 

@@ -2,8 +2,8 @@
 #include <fstream>
 #include <string>
 #include <algorithm>
-#include "amigafile.hpp"
-#include "object3d.hpp"
+#include "AmigaFile.hpp"
+#include "Object3d.hpp"
 
 namespace
 {

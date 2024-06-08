@@ -1,5 +1,5 @@
-#include "vertices.hpp"
-#include "vertex.hpp"
+#include "Vertices.hpp"
+#include "Vertex.hpp"
 
 Vertices Vertices::Rotate(int degX, int degY, int degZ) const
 {

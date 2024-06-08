@@ -1,5 +1,5 @@
-#include "vertex.hpp"
-#include "rotation.hpp"
+#include "Vertex.hpp"
+#include "Rotation.hpp"
 
 Vertex Vertex::operator+(const Vertex& v) const
 {

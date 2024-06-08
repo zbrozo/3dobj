@@ -14,27 +14,27 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${obj3d_SOURCE_DIR}")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE INTERNAL "")
 
 set(generator_SRC
-        src/generator.cpp
-        src/amigafile.cpp
-        src/cube.cpp
-        src/cube2.cpp
-        src/thorus.cpp
-        src/face.cpp
-        src/object3d.cpp
-        src/rotation.cpp
-        src/vector3d.cpp
-        src/vertex.cpp
-        src/vertices.cpp)
+        src/GeneratorMain.cpp
+        src/AmigaFile.cpp
+        src/Cube.cpp
+        src/Cube2.cpp
+        src/Thorus.cpp
+        src/Face.cpp
+        src/Object3d.cpp
+        src/Rotation.cpp
+        src/Vector3d.cpp
+        src/Vertex.cpp
+        src/Vertices.cpp)
 
 set(viewer_SRC
-        src/viewer.cpp
-        src/amigafile.cpp
-        src/face.cpp
-        src/object3d.cpp
-        src/rotation.cpp
-        src/vector3d.cpp
-        src/vertex.cpp
-        src/vertices.cpp)
+        src/ViewerMain.cpp
+        src/AmigaFile.cpp
+        src/Face.cpp
+        src/Object3d.cpp
+        src/Rotation.cpp
+        src/Vector3d.cpp
+        src/Vertex.cpp
+        src/Vertices.cpp)
 
 add_executable(generator ${generator_SRC})
 add_executable(viewer ${viewer_SRC})

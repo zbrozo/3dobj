@@ -1,4 +1,4 @@
-#include "cube2.hpp"
+#include "Cube2.hpp"
 
 auto CreateSideVertices(Vertices& vertices)
 {

@@ -1,8 +1,9 @@
 #pragma once
 
-#include "object3d.hpp"
+#include "Object3d.hpp"
+#include "IGenerator.hpp"
 
-class Thorus : public Object3D
+class Thorus : public Object3D, public IGenerator
 {
 
   int mCircleSize;
@@ -29,5 +30,5 @@ public:
   Thorus& operator=(const Thorus& v) = delete;
   Thorus& operator=(Thorus &&) = delete;
   
-  void Generate();
+  virtual void Generate() override;
 };

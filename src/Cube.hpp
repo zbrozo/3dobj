@@ -1,8 +1,9 @@
 #pragma once
 
-#include "object3d.hpp"
+#include "Object3d.hpp"
+#include "IGenerator.hpp"
 
-class Cube : public Object3D
+class Cube : public Object3D, public IGenerator
 {
 
 public:
@@ -19,7 +20,7 @@ public:
   Cube& operator=(const Cube& v) = delete;
   Cube& operator=(Cube &&) = delete;
   
-  void Generate();
+  virtual void Generate() override;
 
 protected:
   

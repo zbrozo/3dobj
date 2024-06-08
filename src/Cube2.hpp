@@ -1,6 +1,7 @@
 #pragma once
 
-#include "cube.hpp"
+#include "Cube.hpp"
+#include "IGenerator.hpp"
 
 class Cube2 : public Cube
 {
@@ -19,9 +20,9 @@ public:
   Cube2& operator=(const Cube2& v) = delete;
   Cube2& operator=(Cube2 &&) = delete;
   
-  void Generate();
+  virtual void Generate() override;
 
-protected:
+private:
 
   auto CreateCubePart1();
   auto CreateCubePart2();

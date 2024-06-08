@@ -1,5 +1,5 @@
 #pragma once
-#include "vertex.hpp"
+#include "Vertex.hpp"
 
 class Vector3d : public Vertex
 {

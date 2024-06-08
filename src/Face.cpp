@@ -1,6 +1,6 @@
-#include "face.hpp"
-#include "vertex.hpp"
-#include "vector3d.hpp"
+#include "Face.hpp"
+#include "Vertex.hpp"
+#include "Vector3d.hpp"
 #include <cmath>
 #include <stdexcept>
 #include <iostream>

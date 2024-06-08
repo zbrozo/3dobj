@@ -1,10 +1,11 @@
 
-#include "face.hpp"
-#include "vector3d.hpp"
-#include "cube.hpp"
-#include "cube2.hpp"
-#include "thorus.hpp"
-#include "amigafile.hpp"
+#include "IGenerator.hpp"
+#include "Face.hpp"
+#include "Vector3d.hpp"
+#include "Cube.hpp"
+#include "Cube2.hpp"
+#include "Thorus.hpp"
+#include "AmigaFile.hpp"
 #include <algorithm>
 #include <cstddef>
 #include <iostream>
@@ -108,8 +109,10 @@ int main(int argc, char* argv[])
       std::cout << "No object created\n";
       return 0;
     }
- 
-  object->Generate();
+
+  auto generator = dynamic_cast<IGenerator*>(object.get());
+  generator->Generate();
+  
   object->LogVertices();
   object->LogFaces();
   object->CreateNormalVectors();

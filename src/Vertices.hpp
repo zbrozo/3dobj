@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "vertex.hpp"
+#include "Vertex.hpp"
 
 class Vertices : public std::vector<Vertex>
 {

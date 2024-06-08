@@ -1,4 +1,4 @@
-#include "vector3d.hpp"
+#include "Vector3d.hpp"
 #include <cmath>
 
 // iloczyn wektorowy

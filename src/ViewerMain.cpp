@@ -5,12 +5,12 @@
 #include <algorithm>
 #include <any>
 
-#include "vertices.hpp"
-#include "object3d.hpp"
-#include "face.hpp"
-#include "vector3d.hpp"
-#include "rotation.hpp"
-#include "amigafile.hpp"
+#include "Vertices.hpp"
+#include "Object3d.hpp"
+#include "Face.hpp"
+#include "Vector3d.hpp"
+#include "Rotation.hpp"
+#include "AmigaFile.hpp"
 
 
 #include <SDL2/SDL.h>

@@ -4,10 +4,10 @@
 #include <string>
 #include <utility>
 
-#include "vector3d.hpp"
-#include "vertex.hpp"
-#include "face.hpp"
-#include "vertices.hpp"
+#include "Vector3d.hpp"
+#include "Vertex.hpp"
+#include "Face.hpp"
+#include "Vertices.hpp"
 
 using Faces = std::vector<Face>;
 using Vectors = std::vector<Vector3d>;
@@ -41,10 +41,6 @@ public:
   void LogVertices();
   void LogFaces();
   
-  virtual void Generate()
-  {
-  }
-
   static std::pair<Face, Vertices> Merge(const Vertices& objectVertices,
                                          const Face& face,
                                          const Vertices& vertices);

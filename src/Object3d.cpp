@@ -2,8 +2,8 @@
 #include <algorithm>
 #include <cmath>
 
-#include "object3d.hpp"
-#include "vector3d.hpp"
+#include "Object3d.hpp"
+#include "Vector3d.hpp"
 
 namespace
 {
