@@ -111,6 +111,12 @@ int main(int argc, char* argv[])
     }
 
   auto generator = dynamic_cast<IGenerator*>(object.get());
+
+  if (generator == nullptr)
+  {
+    std::cout << "No object generator found\n";
+  }
+  
   generator->Generate();
   
   object->LogVertices();
