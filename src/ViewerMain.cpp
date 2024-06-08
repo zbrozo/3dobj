@@ -12,10 +12,10 @@
 #include "Rotation.hpp"
 #include "AmigaFile.hpp"
 
-
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_timer.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
 
 const int maxColorNumber = 64;
 const int maxLightValue = 64;
@@ -54,6 +54,17 @@ Vertex CalculatePerspective(const Vertex& v)
   auto y = (v.mY << 10) / z;
   return Vertex(x, y, 0);
 }
+const char *help =
+  "ESC - quit viewer\n"
+  "F1-F12 - objects\n"
+  "1 - line vectors\n"
+  "2 - normals in faces\n"
+  "3 - normals in vertices\n"
+  "4 - flat shaded\n"
+  "5 - gouraud shaded\n"
+  "6 - textured\n"
+  "space - rotate\n"
+  "cursors - modify rotation\n";
 
 void RotateObject(Object3D* object,
                   int degx, int degy, int degz,
@@ -341,6 +352,27 @@ void LoadObjects(int argc, char* argv[], std::vector<std::unique_ptr<Object3D>>&
     }
 }
 
+SDL_Texture*  getMessage(
+  SDL_Renderer *renderer,
+  int x, int y,
+  const char *text,
+  TTF_Font* font,
+  SDL_Rect* rect)
+{
+    SDL_Color textColor = {255, 255, 255, 0};
+    SDL_Surface* surface = TTF_RenderText_Solid_Wrapped(font, text, textColor, 1000);
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+    auto text_width = surface->w;
+    auto text_height = surface->h;
+    SDL_FreeSurface(surface);
+    rect->x = x;
+    rect->y = y;
+    rect->w = text_width;
+    rect->h = text_height;
+    return texture;
+}
+
+
 int main(int argc, char* argv[])
 {
   if (argc == 1)
@@ -359,6 +391,13 @@ int main(int argc, char* argv[])
     return 1;
   }
   
+  TTF_Init();
+  TTF_Font *font = TTF_OpenFont("Kode-Regular.ttf", 20);
+  if (font == NULL) {
+    fprintf(stderr, "error: font not found\n");
+    exit(EXIT_FAILURE);
+  }
+  
   SDL_Window* win = SDL_CreateWindow("3D Objects Generator And Demo",
                                      SDL_WINDOWPOS_CENTERED,
                                      SDL_WINDOWPOS_CENTERED,
@@ -370,7 +409,10 @@ int main(int argc, char* argv[])
   
   // creates a renderer to render our images
   SDL_Renderer* rend = SDL_CreateRenderer(win, -1, render_flags);
- 
+
+  SDL_Rect messageRect;
+  SDL_Texture *messageTexture = getMessage(rend, 0, 0, help, font, &messageRect);
+  
   SDL_Surface* surface = IMG_Load("wood.png");
   if (surface == 0)
     {
@@ -498,9 +540,6 @@ int main(int argc, char* argv[])
     
     SDL_SetRenderDrawColor(rend, 0, 0, 0, 0);
     SDL_RenderClear(rend);
-
-    //    SDL_RenderCopy(rend, tex, &dest, NULL);
-    
     SDL_SetRenderDrawColor(rend, 0xFF, 0, 0, 0xFF);
     
     if (object)
@@ -597,16 +636,18 @@ int main(int argc, char* argv[])
         
     // triggers the double buffers
     // for multiple rendering
+    SDL_RenderCopy(rend, messageTexture, NULL, &messageRect);
     SDL_RenderPresent(rend);
-    
+
     // calculates to 60 fps
     SDL_Delay(1000 / 60);
   }
- 
+
+  SDL_DestroyTexture(messageTexture);
+  TTF_Quit();
+    
   SDL_DestroyRenderer(rend);
-  
   SDL_DestroyWindow(win);
-  
   SDL_Quit();
 
   return 0;
