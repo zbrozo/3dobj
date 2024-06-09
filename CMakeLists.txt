@@ -40,9 +40,9 @@ set(viewer_SRC
 add_executable(generator ${generator_SRC})
 add_executable(viewer ${viewer_SRC})
 
-include_directories(viewer PRIVATE ${SDL2_INCLUDE_DIRS})
-include_directories(viewer PRIVATE ${SDL2_IMAGE_INCLUDE_DIRS})
-include_directories(viewer PRIVATE ${SDL2_TTF_INCLUDE_DIRS})
+target_include_directories(viewer PRIVATE ${SDL2_INCLUDE_DIRS})
+target_include_directories(viewer PRIVATE ${SDL2_IMAGE_INCLUDE_DIRS})
+target_include_directories(viewer PRIVATE ${SDL2_TTF_INCLUDE_DIRS})
 
 target_link_libraries(viewer ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES} ${SDL2_TTF_LIBRARIES})
 
