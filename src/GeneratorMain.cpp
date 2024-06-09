@@ -18,77 +18,74 @@
 
 const std::string TooLessParamsMessage = "Too less parameters for ";
 
-class IObjectCreator
+class IObjectFactory
 {
 public:
   virtual const Object3D& Create(int argc, char* argv[]) = 0;
 };
 
-class CubeCreator : public IObjectCreator
+
+class ObjectFactory : public IObjectFactory
 {
-  std::unique_ptr<Cube> object = nullptr;
+public:
+
+  // factory method
+  void Generate(Object3D& object)
+  {
+    auto& generator = dynamic_cast<IGenerator&>(object);
+    generator.Generate();
+
+    object.CreateNormalVectors();
+  }
   
+};
+
+class CubeFactory : public ObjectFactory
+{
 public:
 
   const Object3D& Create(int /*argc*/, char* argv[]) override
-    {
-      const auto name = argv[1];
-      object = std::make_unique<Cube>(name);
-
-      object->Generate();
-      object->LogVertices();
-      object->LogFaces();
-      object->CreateNormalVectors();
-
-      return *object.get();
-    }
+  {
+    const auto name = argv[1];
+    auto object = std::make_unique<Cube>(name);
+    Generate(*object);
+    return *object.get();
+  }
 };
 
-class Cube2Creator : public IObjectCreator
+class Cube2Factory : public ObjectFactory
 {
-    std::unique_ptr<Cube2> object = nullptr;
-  
 public:
 
   const Object3D& Create(int /*argc*/, char* argv[]) override
-    {
-      const auto name = argv[1];
-      object = std::make_unique<Cube2>(name);
-
-      object->Generate();
-      object->LogVertices();
-      object->LogFaces();
-      object->CreateNormalVectors();
-      return *object.get();
-    }
+  {
+    const auto name = argv[1];
+    auto object = std::make_unique<Cube2>(name);
+    Generate(*object);    
+    return *object.get();
+  }
 };
 
-class ThorusCreator : public IObjectCreator
+class ThorusFactory : public ObjectFactory
 {
-    std::unique_ptr<Thorus> object = nullptr;
-  
 public:
 
   const Object3D& Create(int argc, char* argv[]) override
+  {
+    const auto name = argv[1];
+    if (argc < 4)
     {
-      const auto name = argv[1];
-      if (argc < 4)
-      {
-          throw std::out_of_range(TooLessParamsMessage + name);
-      }
-      
-      const auto circleSize = argv[2];
-      const auto ringSize = argv[3];
-      object = std::make_unique<Thorus>(
-        std::stoi(circleSize), std::stoi(ringSize),
-        (std::string(name) + "_" + circleSize + "_" + ringSize).c_str());
-      
-      object->Generate();
-      object->LogVertices();
-      object->LogFaces();
-      object->CreateNormalVectors();
-      return *object.get();
+      throw std::out_of_range(TooLessParamsMessage + name);
     }
+    
+    const auto circleSize = argv[2];
+    const auto ringSize = argv[3];
+    auto object = std::make_unique<Thorus>(
+      std::stoi(circleSize), std::stoi(ringSize),
+      (std::string(name) + "_" + circleSize + "_" + ringSize).c_str());
+    Generate(*object);    
+    return *object.get();
+  }
 };
 
 enum class ObjectId {
@@ -110,14 +107,14 @@ std::map<ObjectId, std::string> ParamsHelp {
   {ObjectId::Thorus, "thorusCircleSize thorusRingSize"}
 };
 
-using ObjectCreatorPair = std::pair<ObjectId, std::unique_ptr<IObjectCreator>>;
-std::map<ObjectId, std::unique_ptr<IObjectCreator>> ObjectCreatorMap;
+using ObjectCreatorPair = std::pair<ObjectId, std::unique_ptr<IObjectFactory>>;
+std::map<ObjectId, std::unique_ptr<IObjectFactory>> ObjectCreatorMap;
 
 void InitObjectCreatorMap()
 {
-  ObjectCreatorMap.insert(ObjectCreatorPair(ObjectId::Cube, std::make_unique<CubeCreator>()));
-  ObjectCreatorMap.insert(ObjectCreatorPair(ObjectId::Cube2, std::make_unique<Cube2Creator>()));
-  ObjectCreatorMap.insert(ObjectCreatorPair(ObjectId::Thorus, std::make_unique<ThorusCreator>()));
+  ObjectCreatorMap.insert(ObjectCreatorPair(ObjectId::Cube, std::make_unique<CubeFactory>()));
+  ObjectCreatorMap.insert(ObjectCreatorPair(ObjectId::Cube2, std::make_unique<Cube2Factory>()));
+  ObjectCreatorMap.insert(ObjectCreatorPair(ObjectId::Thorus, std::make_unique<ThorusFactory>()));
 }
 
 void PrintHelp()
@@ -165,12 +162,18 @@ int main(int argc, char* argv[])
 
     AmigaFile file;
     file.Save(object3d);
+
+    object3d.LogVertices();
+    object3d.LogFaces();
     
   } catch (const std::out_of_range& ex) {
     std::cout << ex.what() << "\n";
     PrintHelp();
+  } catch (const std::bad_cast& ex) {
+    std::cout << ex.what() << "\n";
+    PrintHelp();
   }
-
+  
   return 0;
   
 }

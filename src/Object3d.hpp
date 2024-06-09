@@ -38,8 +38,9 @@ public:
   Vectors mNormalVectorsInVertices;
 
   void CreateNormalVectors();
-  void LogVertices();
-  void LogFaces();
+  
+  void LogVertices() const;
+  void LogFaces() const;
   
   static std::pair<Face, Vertices> Merge(const Vertices& objectVertices,
                                          const Face& face,

@@ -125,7 +125,7 @@ void Object3D::CreateNormalVectors()
   mNormalVectorsInVertices = NormalizeVectorsInVertices(vectorsInVertices);
 }
     
-void Object3D::LogVertices()
+void Object3D::LogVertices() const
 {
   std::cout << __FUNCTION__ << "\n";
   for (auto v : mVertices)
@@ -134,7 +134,7 @@ void Object3D::LogVertices()
     }
 }
 
-void Object3D::LogFaces()
+void Object3D::LogFaces() const
 {
   std::cout << __FUNCTION__ << "\n";
   for (auto face : mFaces)
