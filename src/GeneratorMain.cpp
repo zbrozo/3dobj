@@ -35,14 +35,14 @@ std::map<ObjectId, std::string> ParamsHelp {
   {ObjectId::Thorus, "thorusCircleSize thorusRingSize"}
 };
 
-using ObjectCreatorPair = std::pair<ObjectId, std::unique_ptr<IObjectFactory>>;
-std::map<ObjectId, std::unique_ptr<IObjectFactory>> ObjectCreatorMap;
+using ObjectFactoryPair = std::pair<ObjectId, std::unique_ptr<IObjectFactory>>;
+std::map<ObjectId, std::unique_ptr<IObjectFactory>> ObjectFactoryMap;
 
-void InitObjectCreatorMap()
+void InitObjectFactoryMap()
 {
-  ObjectCreatorMap.insert(ObjectCreatorPair(ObjectId::Cube, std::make_unique<CubeFactory>()));
-  ObjectCreatorMap.insert(ObjectCreatorPair(ObjectId::Cube2, std::make_unique<Cube2Factory>()));
-  ObjectCreatorMap.insert(ObjectCreatorPair(ObjectId::Thorus, std::make_unique<ThorusFactory>()));
+  ObjectFactoryMap.insert(ObjectFactoryPair(ObjectId::Cube, std::make_unique<CubeFactory>()));
+  ObjectFactoryMap.insert(ObjectFactoryPair(ObjectId::Cube2, std::make_unique<Cube2Factory>()));
+  ObjectFactoryMap.insert(ObjectFactoryPair(ObjectId::Thorus, std::make_unique<ThorusFactory>()));
 }
 
 void PrintHelp()
@@ -66,7 +66,7 @@ int main(int argc, char* argv[])
     return 0;
   }
   
-  InitObjectCreatorMap();
+  InitObjectFactoryMap();
   
   const auto name = argv[1];
   const auto it = ObjectIdMap.find(name);
@@ -77,9 +77,9 @@ int main(int argc, char* argv[])
       return 0;
     }
   
-  const auto creatorIt = ObjectCreatorMap.find(it->second);
+  const auto creatorIt = ObjectFactoryMap.find(it->second);
   
-  if (creatorIt == ObjectCreatorMap.end())
+  if (creatorIt == ObjectFactoryMap.end())
   {
       std::cout << "Object creator not found\n";
       return 0;
