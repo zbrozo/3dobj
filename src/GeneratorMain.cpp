@@ -17,11 +17,13 @@
 #include <exception>
 
 const std::string TooLessParamsMessage = "Too less parameters for ";
+using Params = std::vector<std::string>;
+
 
 class IObjectFactory
 {
 public:
-  virtual const Object3D& Create(int argc, char* argv[]) = 0;
+  virtual const Object3D& Create(const std::string& name, const Params& params) = 0;
 };
 
 
@@ -44,10 +46,9 @@ class CubeFactory : public ObjectFactory
 {
 public:
 
-  const Object3D& Create(int /*argc*/, char* argv[]) override
+  const Object3D& Create(const std::string& name, const Params& params) override
   {
-    const auto name = argv[1];
-    auto object = std::make_unique<Cube>(name);
+    auto object = std::make_unique<Cube>(name.c_str());
     Generate(*object);
     return *object.get();
   }
@@ -57,10 +58,9 @@ class Cube2Factory : public ObjectFactory
 {
 public:
 
-  const Object3D& Create(int /*argc*/, char* argv[]) override
+  const Object3D& Create(const std::string& name, const Params& params) override
   {
-    const auto name = argv[1];
-    auto object = std::make_unique<Cube2>(name);
+    auto object = std::make_unique<Cube2>(name.c_str());
     Generate(*object);    
     return *object.get();
   }
@@ -70,16 +70,15 @@ class ThorusFactory : public ObjectFactory
 {
 public:
 
-  const Object3D& Create(int argc, char* argv[]) override
+  const Object3D& Create(const std::string& name, const Params& params) override
   {
-    const auto name = argv[1];
-    if (argc < 4)
+    if (params.size() < 4)
     {
       throw std::out_of_range(TooLessParamsMessage + name);
     }
     
-    const auto circleSize = argv[2];
-    const auto ringSize = argv[3];
+    const auto circleSize = params[0];
+    const auto ringSize = params[1];
     auto object = std::make_unique<Thorus>(
       std::stoi(circleSize), std::stoi(ringSize),
       (std::string(name) + "_" + circleSize + "_" + ringSize).c_str());
@@ -158,7 +157,14 @@ int main(int argc, char* argv[])
   }
   
   try {
-    const auto& object3d = creatorIt->second->Create(argc, argv);
+
+    Params params;
+    for(int i = 2; i < argc; i++)
+    {
+      params.push_back(argv[i]);
+    }
+    
+    const auto& object3d = creatorIt->second->Create(name, params);
 
     AmigaFile file;
     file.Save(object3d);
