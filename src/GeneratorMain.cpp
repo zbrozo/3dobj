@@ -1,17 +1,95 @@
-
 #include "IGenerator.hpp"
 #include "Face.hpp"
+#include "Object3d.hpp"
 #include "Vector3d.hpp"
 #include "Cube.hpp"
 #include "Cube2.hpp"
 #include "Thorus.hpp"
 #include "AmigaFile.hpp"
+
 #include <algorithm>
 #include <cstddef>
 #include <iostream>
 #include <array>
 #include <map>
 #include <memory>
+#include <utility>
+#include <exception>
+
+const std::string TooLessParamsMessage = "Too less parameters for ";
+
+class IObjectCreator
+{
+public:
+  virtual const Object3D& Create(int argc, char* argv[]) = 0;
+};
+
+class CubeCreator : public IObjectCreator
+{
+  std::unique_ptr<Cube> object = nullptr;
+  
+public:
+
+  const Object3D& Create(int /*argc*/, char* argv[]) override
+    {
+      const auto name = argv[1];
+      object = std::make_unique<Cube>(name);
+
+      object->Generate();
+      object->LogVertices();
+      object->LogFaces();
+      object->CreateNormalVectors();
+
+      return *object.get();
+    }
+};
+
+class Cube2Creator : public IObjectCreator
+{
+    std::unique_ptr<Cube2> object = nullptr;
+  
+public:
+
+  const Object3D& Create(int /*argc*/, char* argv[]) override
+    {
+      const auto name = argv[1];
+      object = std::make_unique<Cube2>(name);
+
+      object->Generate();
+      object->LogVertices();
+      object->LogFaces();
+      object->CreateNormalVectors();
+      return *object.get();
+    }
+};
+
+class ThorusCreator : public IObjectCreator
+{
+    std::unique_ptr<Thorus> object = nullptr;
+  
+public:
+
+  const Object3D& Create(int argc, char* argv[]) override
+    {
+      const auto name = argv[1];
+      if (argc < 4)
+      {
+          throw std::out_of_range(TooLessParamsMessage + name);
+      }
+      
+      const auto circleSize = argv[2];
+      const auto ringSize = argv[3];
+      object = std::make_unique<Thorus>(
+        std::stoi(circleSize), std::stoi(ringSize),
+        (std::string(name) + "_" + circleSize + "_" + ringSize).c_str());
+      
+      object->Generate();
+      object->LogVertices();
+      object->LogFaces();
+      object->CreateNormalVectors();
+      return *object.get();
+    }
+};
 
 enum class ObjectId {
   None = 0,
@@ -20,7 +98,7 @@ enum class ObjectId {
   Thorus = 3
 };
 
-std::map<std::string, ObjectId> Objects {
+std::map<std::string, ObjectId> ObjectIdMap {
   {"cube", ObjectId::Cube},
   {"cube2", ObjectId::Cube2},
   {"thorus", ObjectId::Thorus}
@@ -32,14 +110,22 @@ std::map<ObjectId, std::string> ParamsHelp {
   {ObjectId::Thorus, "thorusCircleSize thorusRingSize"}
 };
 
-const std::string TooLessParamsMessage = "Too less parameters for ";
+using ObjectCreatorPair = std::pair<ObjectId, std::unique_ptr<IObjectCreator>>;
+std::map<ObjectId, std::unique_ptr<IObjectCreator>> ObjectCreatorMap;
+
+void InitObjectCreatorMap()
+{
+  ObjectCreatorMap.insert(ObjectCreatorPair(ObjectId::Cube, std::make_unique<CubeCreator>()));
+  ObjectCreatorMap.insert(ObjectCreatorPair(ObjectId::Cube2, std::make_unique<Cube2Creator>()));
+  ObjectCreatorMap.insert(ObjectCreatorPair(ObjectId::Thorus, std::make_unique<ThorusCreator>()));
+}
 
 void PrintHelp()
 {
   std::cout << "generator name [params]\n";
   std::cout << "  possible object names and params to use:\n";
 
-  std::for_each(Objects.begin(), Objects.end(),
+  std::for_each(ObjectIdMap.begin(), ObjectIdMap.end(),
     [](std::pair<std::string, ObjectId> item)
       {
         std::cout << "    " << item.first << ", params: " << ParamsHelp[item.second];
@@ -54,77 +140,35 @@ int main(int argc, char* argv[])
     PrintHelp();
     return 0;
   }
-
-  const auto name = argv[1];
-
-  const auto it = Objects.find(name);
   
-  if (it == Objects.end())
+  InitObjectCreatorMap();
+  
+  const auto name = argv[1];
+  const auto it = ObjectIdMap.find(name);
+  
+  if (it == ObjectIdMap.end())
     {
       std::cout << "Object not recognized\n";
       return 0;
     }
   
-  std::unique_ptr<Object3D> object = nullptr;
+  const auto creatorIt = ObjectCreatorMap.find(it->second);
   
-  switch(it->second)
-    {
-    case ObjectId::Cube:
-      {
-        object = std::make_unique<Cube>(name);
-        break;
-      }
-
-    case ObjectId::Cube2:
-      {
-        object = std::make_unique<Cube2>(name);
-        break;
-      }
-
-    case ObjectId::Thorus:
-      {
-        if (argc < 4)
-        {
-            std::cout << TooLessParamsMessage << name << "\n";
-            PrintHelp();
-            return 0;
-          }
-        
-        const auto circleSize = argv[2];
-        const auto ringSize = argv[3];
-        
-        object = std::make_unique<Thorus>(
-          std::stoi(circleSize),
-          std::stoi(ringSize),
-          (std::string(name) + "_" + circleSize + "_" + ringSize).c_str());
-        
-        break;
-      }
-    default:
-      break;
-    }
-
-  if (object == nullptr)
-    {
-      std::cout << "No object created\n";
-      return 0;
-    }
-
-  auto generator = dynamic_cast<IGenerator*>(object.get());
-
-  if (generator == nullptr)
+  if (creatorIt == ObjectCreatorMap.end())
   {
-    std::cout << "No object generator found\n";
+      std::cout << "Object creator not found\n";
+      return 0;
   }
   
-  generator->Generate();
-  
-  object->LogVertices();
-  object->LogFaces();
-  object->CreateNormalVectors();
-  
-  AmigaFile file;
-  file.Save(*object);
+  try {
+    const auto& object3d = creatorIt->second->Create(argc, argv);
+
+    AmigaFile file;
+    file.Save(object3d);
+    
+  } catch (const std::out_of_range& ex) {
+    std::cout << ex.what();
+  }
 
   return 0;
   
