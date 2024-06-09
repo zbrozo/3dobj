@@ -6,6 +6,7 @@
 #include "Cube2.hpp"
 #include "Thorus.hpp"
 #include "AmigaFile.hpp"
+#include "Object3dFactory.hpp"
 
 #include <algorithm>
 #include <cstddef>
@@ -14,78 +15,6 @@
 #include <map>
 #include <memory>
 #include <utility>
-#include <exception>
-
-const std::string TooLessParamsMessage = "Too less parameters for ";
-using Params = std::vector<std::string>;
-
-
-class IObjectFactory
-{
-public:
-  virtual const Object3D& Create(const std::string& name, const Params& params) = 0;
-};
-
-
-class ObjectFactory : public IObjectFactory
-{
-public:
-
-  // factory method
-  void Generate(Object3D& object)
-  {
-    auto& generator = dynamic_cast<IGenerator&>(object);
-    generator.Generate();
-
-    object.CreateNormalVectors();
-  }
-  
-};
-
-class CubeFactory : public ObjectFactory
-{
-public:
-
-  const Object3D& Create(const std::string& name, const Params& params) override
-  {
-    auto object = std::make_unique<Cube>(name.c_str());
-    Generate(*object);
-    return *object.get();
-  }
-};
-
-class Cube2Factory : public ObjectFactory
-{
-public:
-
-  const Object3D& Create(const std::string& name, const Params& params) override
-  {
-    auto object = std::make_unique<Cube2>(name.c_str());
-    Generate(*object);    
-    return *object.get();
-  }
-};
-
-class ThorusFactory : public ObjectFactory
-{
-public:
-
-  const Object3D& Create(const std::string& name, const Params& params) override
-  {
-    if (params.size() < 4)
-    {
-      throw std::out_of_range(TooLessParamsMessage + name);
-    }
-    
-    const auto circleSize = params[0];
-    const auto ringSize = params[1];
-    auto object = std::make_unique<Thorus>(
-      std::stoi(circleSize), std::stoi(ringSize),
-      (std::string(name) + "_" + circleSize + "_" + ringSize).c_str());
-    Generate(*object);    
-    return *object.get();
-  }
-};
 
 enum class ObjectId {
   None = 0,
@@ -164,13 +93,13 @@ int main(int argc, char* argv[])
       params.push_back(argv[i]);
     }
     
-    const auto& object3d = creatorIt->second->Create(name, params);
+    const auto object3d = creatorIt->second->Create(name, params);
 
     AmigaFile file;
-    file.Save(object3d);
+    file.Save(*object3d);
 
-    object3d.LogVertices();
-    object3d.LogFaces();
+    object3d->LogVertices();
+    object3d->LogFaces();
     
   } catch (const std::out_of_range& ex) {
     std::cout << ex.what() << "\n";
