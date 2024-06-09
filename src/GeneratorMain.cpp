@@ -167,7 +167,8 @@ int main(int argc, char* argv[])
     file.Save(object3d);
     
   } catch (const std::out_of_range& ex) {
-    std::cout << ex.what();
+    std::cout << ex.what() << "\n";
+    PrintHelp();
   }
 
   return 0;
