@@ -10,7 +10,9 @@ const std::string TooLessParamsMessage = "Too less parameters for ";
 
 std::unique_ptr<Object3D> ObjectFactory::Create(const std::string& name, const Params& params)
 {
-  return FactoryMethod(name, params);
+  auto object = FactoryMethod(name, params);
+  Generate(*object);
+  return object;
 }
 
 void ObjectFactory::Generate(Object3D& object)
@@ -24,14 +26,12 @@ void ObjectFactory::Generate(Object3D& object)
 std::unique_ptr<Object3D> CubeFactory::FactoryMethod(const std::string& name, const Params& /*params*/)
 {
   auto object = std::make_unique<Cube>(name.c_str());
-  Generate(*object);
   return object;
 }
 
 std::unique_ptr<Object3D> Cube2Factory::FactoryMethod(const std::string& name, const Params& /*params*/)
 {
   auto object = std::make_unique<Cube2>(name.c_str());
-  Generate(*object);    
   return object;
 }
 
@@ -51,6 +51,5 @@ std::unique_ptr<Object3D> ThorusFactory::FactoryMethod(const std::string& name, 
     std::stoi(ringSize),
     nameExt.c_str());
 
-  Generate(*object);    
   return object;
 }
