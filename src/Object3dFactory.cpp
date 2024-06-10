@@ -15,7 +15,7 @@ std::unique_ptr<Object3D> ObjectFactory::Create(const std::string& name, const P
   return object;
 }
 
-void ObjectFactory::Generate(Object3D& object)
+void ObjectFactory::Generate(Object3D& object) const
 {
   auto& generator = dynamic_cast<IGenerator&>(object);
   generator.Generate();
@@ -23,19 +23,19 @@ void ObjectFactory::Generate(Object3D& object)
   object.CreateNormalVectors();
 }
 
-std::unique_ptr<Object3D> CubeFactory::FactoryMethod(const std::string& name, const Params& /*params*/)
+std::unique_ptr<Object3D> CubeFactory::FactoryMethod(const std::string& name, const Params& /*params*/) const
 {
   auto object = std::make_unique<Cube>(name.c_str());
   return object;
 }
 
-std::unique_ptr<Object3D> Cube2Factory::FactoryMethod(const std::string& name, const Params& /*params*/)
+std::unique_ptr<Object3D> Cube2Factory::FactoryMethod(const std::string& name, const Params& /*params*/) const 
 {
   auto object = std::make_unique<Cube2>(name.c_str());
   return object;
 }
 
-std::unique_ptr<Object3D> ThorusFactory::FactoryMethod(const std::string& name, const Params& params)
+std::unique_ptr<Object3D> ThorusFactory::FactoryMethod(const std::string& name, const Params& params) const
 {
   if (params.size() < 2)
   {
