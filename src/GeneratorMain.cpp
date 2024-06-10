@@ -35,8 +35,8 @@ std::map<ObjectId, std::string> ParamsHelp {
   {ObjectId::Thorus, "thorusCircleSize thorusRingSize"}
 };
 
-using ObjectFactoryPair = std::pair<ObjectId, std::unique_ptr<IObjectFactory>>;
-std::map<ObjectId, std::unique_ptr<IObjectFactory>> ObjectFactoryMap;
+using ObjectFactoryPair = std::pair<ObjectId, std::unique_ptr<ObjectFactory>>;
+std::map<ObjectId, std::unique_ptr<ObjectFactory>> ObjectFactoryMap;
 
 void InitObjectFactoryMap()
 {
@@ -92,7 +92,7 @@ int main(int argc, char* argv[])
     {
       params.push_back(argv[i]);
     }
-    
+
     const auto object3d = creatorIt->second->Create(name, params);
 
     AmigaFile file;
