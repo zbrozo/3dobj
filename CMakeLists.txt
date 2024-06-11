@@ -64,3 +64,9 @@ include_directories(${Boost_INCLUDE_DIRS})
 add_executable(tests ${tests_SRC})
 target_link_libraries(viewer ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES} ${SDL2_TTF_LIBRARIES})
 target_link_libraries(tests ${Boost_LIBRARIES})
+
+enable_testing()
+add_test(
+  NAME boost_test1
+  COMMAND $<TARGET_FILE:tests>
+)
