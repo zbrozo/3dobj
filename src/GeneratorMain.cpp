@@ -7,6 +7,7 @@
 #include "Thorus.hpp"
 #include "AmigaFile.hpp"
 #include "Object3dFactory.hpp"
+#include "Params.hpp"
 
 #include <algorithm>
 #include <cstddef>
@@ -83,7 +84,7 @@ auto ReadGeneratorParams(int argc, char *argv[], const po::options_description& 
 {
   po::variables_map vm;
   po::positional_options_description p;
-  p.add("object3d-params", -1);
+  p.add("additional-params", -1);
 
   po::store(po::command_line_parser(argc, argv).
           options(desc).positional(p).run(), vm);
@@ -99,7 +100,8 @@ int main(int argc, char* argv[])
     ("help,h", "produce help message")
     ("verbose,v", "produce verbose logs")
     ("name,n", po::value<std::string>(), "object3d name")
-    ("object3d-params", po::value<std::vector<std::string>>(), "object3d-params");
+    ("component-names,l", po::value<ParamsVector>(), "components names")
+    ("additional-params", po::value<ParamsVector>(), "additional params");
   
   const po::variables_map& options = ReadGeneratorParams(argc, argv, optionsDesc);
 
@@ -123,16 +125,27 @@ int main(int argc, char* argv[])
     PrintParamsHelp();
     return 1;
   }
-  
-  Object3dParams object3dParams;
-  if (options.count("object3d-params"))
-  {
-    object3dParams = options["object3d-params"].as<std::vector<std::string>>();
-  }
 
+  std::map<ParamsId, std::vector<std::string>> paramsMap {
+    {ParamsId::ComponentNames, std::vector<std::string>()},
+    {ParamsId::AdditionalParams, std::vector<std::string>()}
+  };
+  
+  if (options.count("component-names"))
+  {
+    const auto& params = options["component-names"].as<std::vector<std::string>>();
+    paramsMap[ParamsId::ComponentNames] = params;
+  }
+  
+  if (options.count("additional-params"))
+  {
+    const auto& params = options["additional-params"].as<std::vector<std::string>>();
+    paramsMap[ParamsId::AdditionalParams] = params;
+  }
+  
   try {
     const auto& factory = GetFactory(name);
-    const auto object3d = factory->Create(name, object3dParams);
+    const auto object3d = factory->Create(name, paramsMap);
 
     AmigaFile file;
     file.Save(*object3d);
