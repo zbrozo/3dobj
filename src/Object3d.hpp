@@ -37,6 +37,16 @@ public:
   Vectors mNormalVectorsInFaces;
   Vectors mNormalVectorsInVertices;
 
+  int GetFacesQuantity() const
+  {
+    return mFaces.size();
+  }
+
+  int GetVerticesQuantity() const
+  {
+    return mVertices.size();
+  }
+  
   void CreateNormalVectors();
   
   void LogVertices() const;

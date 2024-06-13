@@ -1,7 +1,6 @@
 
 #include "Object3dFactory.hpp"
 #include "Cube.hpp"
-#include "Cube2.hpp"
 #include "CubeExt.hpp"
 #include "ObjectComponents.hpp"
 #include "Thorus.hpp"

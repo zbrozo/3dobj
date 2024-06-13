@@ -5,7 +5,6 @@
 #include "Object3d.hpp"
 
 #include "Cube.hpp"
-#include "Cube2.hpp"
 #include "Thorus.hpp"
 
 BOOST_AUTO_TEST_SUITE(ObjectFactory_Suite)
@@ -14,9 +13,12 @@ BOOST_AUTO_TEST_CASE(cube_factory_test)
 {
   CubeFactory factory;
   Object3dParams params;
-  auto object = factory.Create("cube", params);
+
+  const auto object = factory.Create("cube", params);
   
   BOOST_CHECK_EQUAL("cube", object->mName);
+  BOOST_CHECK_EQUAL(6, object->GetFacesQuantity());
+  BOOST_CHECK_EQUAL(8, object->GetVerticesQuantity());
 }
 
 BOOST_AUTO_TEST_CASE(thorus_factory_test)
