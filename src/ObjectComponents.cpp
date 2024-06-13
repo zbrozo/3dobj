@@ -1,4 +1,4 @@
-#include "Cube2.hpp"
+#include "ObjectComponents.hpp"
 
 auto CreateSideVertices(Vertices& vertices)
 {
@@ -31,7 +31,25 @@ auto CreateSideFaces(const std::vector<Vertices>& allVertices)
   return std::make_pair(faces, vertices);
 }
 
-auto Cube2::CreateCubePart1()
+void Component1::Generate()
+{
+  const short value = 50;
+  
+  Vertices basicVertices = {
+    {value-20, value-20, value},
+    {-(value-20), value-20, value},
+    {-(value-20), value-20, value-20},
+    {value-20, value-20, value-20},
+  };
+  
+  const auto allVertices = CreateSideVertices(basicVertices);
+  const auto facesWithVertices = CreateSideFaces(allVertices);
+  
+  mFaces = facesWithVertices.first;
+  mVertices = facesWithVertices.second;
+}
+
+void Component2::Generate()
 {
   const short value = 50;
 
@@ -44,44 +62,7 @@ auto Cube2::CreateCubePart1()
 
   const auto allVertices = CreateSideVertices(basicVertices);
   const auto facesWithVertices = CreateSideFaces(allVertices);
-  const auto result = CreateCube(facesWithVertices.first, facesWithVertices.second);
-
-  return result;
-}
-
-auto Cube2::CreateCubePart2()
-{
-  const short value = 50;
-
-  Vertices basicVertices = {
-    {value-20, value-20, value},
-    {-(value-20), value-20, value},
-    {-(value-20), value-20, value-20},
-    {value-20, value-20, value-20},
-  };
-
-  const auto allVertices = CreateSideVertices(basicVertices);
-  const auto facesWithVertices = CreateSideFaces(allVertices);
-  const auto result = CreateCube(facesWithVertices.first, facesWithVertices.second);
-
-  return result;
-}
-
-void Cube2::Generate()
-{
-  auto part1 = CreateCubePart2();
-  auto part2 = CreateCubePart1();
-
-  mFaces = part1.first;
-  mVertices = part1.second;
-
-  for (const auto& face : part2.first)
-    {
-      auto r = Object3D::Merge(mVertices,
-                               face,
-                               part2.second);
-
-      mFaces.push_back(r.first);
-      mVertices = r.second;
-    }
+  
+  mFaces = facesWithVertices.first;
+  mVertices = facesWithVertices.second;
 }

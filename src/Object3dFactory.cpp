@@ -2,8 +2,11 @@
 #include "Object3dFactory.hpp"
 #include "Cube.hpp"
 #include "Cube2.hpp"
+#include "CubeExt.hpp"
+#include "ObjectComponents.hpp"
 #include "Thorus.hpp"
 
+#include <memory>
 #include <stdexcept>
 
 const std::string TooLessParamsMessage = "Too less parameters for ";
@@ -31,11 +34,15 @@ std::unique_ptr<Object3D> CubeFactory::FactoryMethod(
   return object;
 }
 
-std::unique_ptr<Object3D> Cube2Factory::FactoryMethod(
+std::unique_ptr<Object3D> CubeExtFactory::FactoryMethod(
   const std::string& name,
   const Object3dParams& /*params*/) const 
 {
-  auto object = std::make_unique<Cube2>(name.c_str());
+  auto primitives = std::make_unique<PrimitiveObjectsVector>();
+  (*primitives).push_back(std::make_unique<Component1>());
+  (*primitives).push_back(std::make_unique<Component2>());
+
+  auto object = std::make_unique<CubeExt>(name.c_str(), std::move(primitives));
   return object;
 }
 

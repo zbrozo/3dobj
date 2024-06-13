@@ -17,9 +17,10 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE INTERNAL "")
 set(generator_SRC
   src/GeneratorMain.cpp
   src/Object3dFactory.cpp
+  src/ObjectComponents.cpp
   src/AmigaFile.cpp
   src/Cube.cpp
-  src/Cube2.cpp
+  src/CubeExt.cpp
   src/Thorus.cpp
   src/Face.cpp
   src/Object3d.cpp
@@ -40,8 +41,9 @@ set(viewer_SRC
 
 set(tests_SRC
   src/Cube.cpp
-  src/Cube2.cpp
+  src/CubeExt.cpp
   src/Thorus.cpp
+  src/ObjectComponents.cpp
   src/Face.cpp
   src/Vertices.cpp
   src/Vertex.cpp

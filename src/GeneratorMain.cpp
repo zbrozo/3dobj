@@ -3,7 +3,7 @@
 #include "Object3d.hpp"
 #include "Vector3d.hpp"
 #include "Cube.hpp"
-#include "Cube2.hpp"
+#include "CubeExt.hpp"
 #include "Thorus.hpp"
 #include "AmigaFile.hpp"
 #include "Object3dFactory.hpp"
@@ -23,19 +23,19 @@ namespace po = boost::program_options;
 enum class ObjectId {
   None = 0,
   Cube = 1,
-  Cube2 = 2,
-  Thorus = 3
+  CubeExt = 2,
+  Thorus = 3,
 };
 
 std::map<std::string, ObjectId> ObjectIdMap {
   {"cube", ObjectId::Cube},
-  {"cube2", ObjectId::Cube2},
+  {"cube-ext", ObjectId::CubeExt},
   {"thorus", ObjectId::Thorus}
 };
 
 std::map<ObjectId, std::string> ParamsHelp {
   {ObjectId::Cube, ""},
-  {ObjectId::Cube2, ""},
+  {ObjectId::CubeExt, ""},
   {ObjectId::Thorus, "thorusCircleSize thorusRingSize"}
 };
 
@@ -45,7 +45,7 @@ std::map<ObjectId, std::unique_ptr<ObjectFactory>> ObjectFactoryMap;
 void InitObjectFactoryMap()
 {
   ObjectFactoryMap.insert(ObjectFactoryPair(ObjectId::Cube, std::make_unique<CubeFactory>()));
-  ObjectFactoryMap.insert(ObjectFactoryPair(ObjectId::Cube2, std::make_unique<Cube2Factory>()));
+  ObjectFactoryMap.insert(ObjectFactoryPair(ObjectId::CubeExt, std::make_unique<CubeExtFactory>()));
   ObjectFactoryMap.insert(ObjectFactoryPair(ObjectId::Thorus, std::make_unique<ThorusFactory>()));
 }
 
