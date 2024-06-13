@@ -19,4 +19,15 @@ BOOST_AUTO_TEST_CASE(cube_factory_test)
   BOOST_CHECK_EQUAL("cube", object->mName);
 }
 
+BOOST_AUTO_TEST_CASE(thorus_factory_test)
+{
+  ThorusFactory factory;
+  Object3dParams params;
+  params.push_back("4");
+  params.push_back("10");
+  auto object = factory.Create("thorus", params);
+  
+  BOOST_CHECK_EQUAL("thorus_4_10", object->mName);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
