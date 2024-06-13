@@ -20,8 +20,6 @@
 
 namespace po = boost::program_options;
 
-using Object3dParams = std::vector<std::string>;
-
 enum class ObjectId {
   None = 0,
   Cube = 1,
@@ -51,6 +49,25 @@ void InitObjectFactoryMap()
   ObjectFactoryMap.insert(ObjectFactoryPair(ObjectId::Thorus, std::make_unique<ThorusFactory>()));
 }
 
+const auto& GetFactory(const std::string& name)
+{
+  InitObjectFactoryMap();
+
+  const auto it = ObjectIdMap.find(name);
+  if (it == ObjectIdMap.end())
+  {
+      throw std::out_of_range("3d object id not found");
+  }
+  
+  const auto creatorIt = ObjectFactoryMap.find(it->second);
+  if (creatorIt == ObjectFactoryMap.end())
+  {
+    throw std::out_of_range("3d object factory not found");
+  }
+
+  return creatorIt->second;
+}
+
 void PrintParamsHelp()
 {
   std::cout << "Possible 3d objects to use:\n";
@@ -71,15 +88,6 @@ auto ReadGeneratorParams(int argc, char *argv[], const po::options_description& 
   po::store(po::command_line_parser(argc, argv).
           options(desc).positional(p).run(), vm);
   po::notify(vm);
-
-  if (vm.count("object3d-params"))
-  {
-    const std::vector<std::string>& a = vm["object3d-params"].as<std::vector<std::string>>();
-    for (auto it = a.begin(); it != a.end(); ++it)
-    {
-      std::cout << "Params: " << *it << "\n";
-    }
-  }
 
   return vm;
 }
@@ -102,8 +110,6 @@ int main(int argc, char* argv[])
     return 1;
   }
   
-  InitObjectFactoryMap();
-  
   const auto verbose = options.count("verbose");
 
   std::string name;
@@ -123,24 +129,10 @@ int main(int argc, char* argv[])
   {
     object3dParams = options["object3d-params"].as<std::vector<std::string>>();
   }
-  
-  const auto it = ObjectIdMap.find(name);
-  if (it == ObjectIdMap.end())
-    {
-      std::cout << "Object not recognized\n";
-      return 1;
-    }
-  
-  const auto creatorIt = ObjectFactoryMap.find(it->second);
-  
-  if (creatorIt == ObjectFactoryMap.end())
-  {
-      std::cout << "Object creator not found\n";
-      return 1;
-  }
-  
+
   try {
-    const auto object3d = creatorIt->second->Create(name, object3dParams);
+    const auto& factory = GetFactory(name);
+    const auto object3d = factory->Create(name, object3dParams);
 
     AmigaFile file;
     file.Save(*object3d);
