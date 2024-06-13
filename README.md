@@ -13,7 +13,7 @@ run.sh is example script which generates several objects and show them in the vi
 Needed to build this app:
 
 - SDL2 (with image and ttf)
-- boost (for unit tests)
+- boost 
 - cmake
 - g++ 
 

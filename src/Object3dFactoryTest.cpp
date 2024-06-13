@@ -13,7 +13,7 @@ BOOST_AUTO_TEST_SUITE(ObjectFactory_Suite)
 BOOST_AUTO_TEST_CASE(cube_factory_test)
 {
   CubeFactory factory;
-  Params params;
+  Object3dParams params;
   auto object = factory.Create("cube", params);
   
   BOOST_CHECK_EQUAL("cube", object->mName);

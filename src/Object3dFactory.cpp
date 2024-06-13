@@ -8,7 +8,7 @@
 
 const std::string TooLessParamsMessage = "Too less parameters for ";
 
-std::unique_ptr<Object3D> ObjectFactory::Create(const std::string& name, const Params& params)
+std::unique_ptr<Object3D> ObjectFactory::Create(const std::string& name, const Object3dParams& params) const
 {
   auto object = FactoryMethod(name, params);
   Generate(*object);
@@ -23,19 +23,25 @@ void ObjectFactory::Generate(Object3D& object) const
   object.CreateNormalVectors();
 }
 
-std::unique_ptr<Object3D> CubeFactory::FactoryMethod(const std::string& name, const Params& /*params*/) const
+std::unique_ptr<Object3D> CubeFactory::FactoryMethod(
+  const std::string& name,
+  const Object3dParams& /*params*/) const
 {
   auto object = std::make_unique<Cube>(name.c_str());
   return object;
 }
 
-std::unique_ptr<Object3D> Cube2Factory::FactoryMethod(const std::string& name, const Params& /*params*/) const 
+std::unique_ptr<Object3D> Cube2Factory::FactoryMethod(
+  const std::string& name,
+  const Object3dParams& /*params*/) const 
 {
   auto object = std::make_unique<Cube2>(name.c_str());
   return object;
 }
 
-std::unique_ptr<Object3D> ThorusFactory::FactoryMethod(const std::string& name, const Params& params) const
+std::unique_ptr<Object3D> ThorusFactory::FactoryMethod(
+  const std::string& name,
+  const Object3dParams& params) const
 {
   if (params.size() < 2)
   {
