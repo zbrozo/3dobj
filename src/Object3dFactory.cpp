@@ -8,6 +8,9 @@
 #include <memory>
 #include <stdexcept>
 #include <iostream>
+#include <algorithm>
+
+using namespace std::placeholders;
 
 namespace
 {
@@ -38,19 +41,33 @@ std::string ObjectFactory::CreateName(const std::string& name, const ParamsMap &
 {
   std::string result = name;
 
-  for (int value : params.at(ParamsId::ComponentsList))
+  auto appendParams = [&](const ParamsMap::const_iterator& it) {
+    for (int value : it->second)
+    {
+      result += "_" + std::to_string(value);
+    }
+  };
+
+  auto findParamVector = [](const std::pair<ParamsId, ParamsVector>& x, ParamsId id) {
+    return x.first == id;
+  };
+  
+  if (auto it = std::find_if(params.begin(), params.end(),
+      std::bind(findParamVector, _1,  ParamsId::ComponentsList)); it != params.end())
   {
-    result += "_" + std::to_string(value);
+    appendParams(it);
   }
 
-  for (int value : params.at(ParamsId::ComponentsParams))
+  if (auto it = std::find_if(params.begin(), params.end(),
+      std::bind(findParamVector, _1,  ParamsId::ComponentsParams)); it != params.end())
   {
-    result += "_" + std::to_string(value);
+    appendParams(it);
   }
 
-  for (int value : params.at(ParamsId::AdditionalParams))
+  if (auto it = std::find_if(params.begin(), params.end(),
+      std::bind(findParamVector, _1,  ParamsId::AdditionalParams)); it != params.end())
   {
-    result += "_" + std::to_string(value);
+    appendParams(it);
   }
   
   return result;
