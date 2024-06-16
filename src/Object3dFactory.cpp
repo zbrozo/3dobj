@@ -34,6 +34,28 @@ std::unique_ptr<Object3D> ObjectFactory::Create(
   return object;
 }
 
+std::string ObjectFactory::CreateName(const std::string& name, const ParamsMap &params) const
+{
+  std::string result = name;
+
+  for (int value : params.at(ParamsId::ComponentsList))
+  {
+    result += "_" + std::to_string(value);
+  }
+
+  for (int value : params.at(ParamsId::ComponentsParams))
+  {
+    result += "_" + std::to_string(value);
+  }
+
+  for (int value : params.at(ParamsId::AdditionalParams))
+  {
+    result += "_" + std::to_string(value);
+  }
+  
+  return result;
+}
+
 void ObjectFactory::Generate(Object3D& object) const
 {
   auto& generator = dynamic_cast<IGenerator&>(object);
@@ -46,8 +68,7 @@ std::unique_ptr<Object3D> CubeFactory::FactoryMethod(
   const std::string& name,
   const ParamsMap& /*params*/) const
 {
-  auto object = std::make_unique<Cube>(name.c_str());
-  return object;
+  return std::make_unique<Cube>(name.c_str());
 }
 
 std::unique_ptr<Object3D> CubeExtFactory::FactoryMethod(
@@ -60,9 +81,10 @@ std::unique_ptr<Object3D> CubeExtFactory::FactoryMethod(
   {
     components->push_back(std::move(allComponentsVector[i]));
   }
+
+  const auto nameExt = CreateName(name, params);
   
-  auto object = std::make_unique<CubeExt>(name.c_str(), std::move(components));
-  return object;
+  return std::make_unique<CubeExt>(nameExt.c_str(), std::move(components));
 }
 
 std::unique_ptr<Object3D> ThorusFactory::FactoryMethod(
@@ -78,12 +100,10 @@ std::unique_ptr<Object3D> ThorusFactory::FactoryMethod(
   
   const auto circleSize = additionalParams[0];
   const auto ringSize = additionalParams[1];
-  const auto nameExt = std::string(name) + "_" + std::to_string(circleSize) + "_" + std::to_string(ringSize);
+  const auto nameExt = CreateName(name, params);
   
-  auto object = std::make_unique<Thorus>(
+  return std::make_unique<Thorus>(
     circleSize,
     ringSize,
     nameExt.c_str());
-
-  return object;
 }

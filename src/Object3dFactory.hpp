@@ -25,6 +25,10 @@ protected:
     const ParamsMap& params) const = 0;
 
   void Generate(Object3D& object) const;
+
+  std::string CreateName(
+    const std::string& name,
+    const ParamsMap& params) const;
 };
 
 class CubeFactory : public ObjectFactory
