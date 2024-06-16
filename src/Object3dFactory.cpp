@@ -9,28 +9,79 @@
 #include <stdexcept>
 #include <iostream>
 #include <algorithm>
+#include <optional>
 
 using namespace std::placeholders;
 
+using ComponentFactories = std::vector<std::function<std::unique_ptr<Object3D>(const ParamsMap&)>>;
+  
 namespace
 {
   const std::string TooLessParamsMessage = "Too less parameters for ";
 
-  ComponentsVector allComponentsVector;
+  ComponentFactories allComponentFactories;
 
-  void InitAllComponentsVector()
+  auto findParamsVector = [](const std::pair<ParamsId, ParamsVector>& params, ParamsId id) {
+    return params.first == id;
+  };
+  
+  void InitAllComponentFactoriesVector()
   {
-    allComponentsVector.push_back(std::make_unique<Component0>());
-    allComponentsVector.push_back(std::make_unique<Component1>());
-    allComponentsVector.push_back(std::make_unique<Component2>());
+    allComponentFactories.push_back([](const ParamsMap& params){
+      std::optional<int> param;
+      
+      if (auto it = std::find_if(params.begin(), params.end(),
+          std::bind(findParamsVector, _1,  ParamsId::ComponentsParams)); it != params.end())
+      {
+        param = it->second[0];
+      }
+      
+      return std::make_unique<Component0>(param);
+    });
+
+    allComponentFactories.push_back([](const ParamsMap& params){
+      std::optional<int> param1;
+      std::optional<int> param2;
+      std::optional<int> param3;
+      
+      if (auto it = std::find_if(params.begin(), params.end(),
+          std::bind(findParamsVector, _1,  ParamsId::ComponentsParams)); it != params.end())
+      {
+        
+        param1 = it->second[0];
+        param2 = it->second[1];
+        param3 = it->second[2];
+
+
+        std::cout << "aaaaaa" << param1.value();
+
+      }
+      
+      return std::make_unique<Component1>(param1, param2, param3);
+    });
+
+    allComponentFactories.push_back([](const ParamsMap& params){
+      std::optional<int> param1;
+      std::optional<int> param2;
+      
+      if (auto it = std::find_if(params.begin(), params.end(),
+          std::bind(findParamsVector, _1,  ParamsId::ComponentsParams)); it != params.end())
+      {
+        param1 = it->second[0];
+        param2 = it->second[1];
+      }
+      
+      return std::make_unique<Component2>(param1, param2);
+    });
   }
+
 }
 
 std::unique_ptr<Object3D> ObjectFactory::Create(
   const std::string& name,
   const ParamsMap& params) const
 {
-  InitAllComponentsVector();
+  InitAllComponentFactoriesVector();
   
   auto object = FactoryMethod(name, params);
   Generate(*object);
@@ -47,25 +98,21 @@ std::string ObjectFactory::CreateName(const std::string& name, const ParamsMap &
       result += "_" + std::to_string(value);
     }
   };
-
-  auto findParamVector = [](const std::pair<ParamsId, ParamsVector>& x, ParamsId id) {
-    return x.first == id;
-  };
   
   if (auto it = std::find_if(params.begin(), params.end(),
-      std::bind(findParamVector, _1,  ParamsId::ComponentsList)); it != params.end())
+      std::bind(findParamsVector, _1,  ParamsId::ComponentsList)); it != params.end())
   {
     appendParams(it);
   }
 
   if (auto it = std::find_if(params.begin(), params.end(),
-      std::bind(findParamVector, _1,  ParamsId::ComponentsParams)); it != params.end())
+      std::bind(findParamsVector, _1,  ParamsId::ComponentsParams)); it != params.end())
   {
     appendParams(it);
   }
 
   if (auto it = std::find_if(params.begin(), params.end(),
-      std::bind(findParamVector, _1,  ParamsId::AdditionalParams)); it != params.end())
+      std::bind(findParamsVector, _1,  ParamsId::AdditionalParams)); it != params.end())
   {
     appendParams(it);
   }
@@ -83,8 +130,14 @@ void ObjectFactory::Generate(Object3D& object) const
 
 std::unique_ptr<Object3D> CubeFactory::FactoryMethod(
   const std::string& name,
-  const ParamsMap& /*params*/) const
+  const ParamsMap& params) const
 {
+  if (auto it = std::find_if(params.begin(), params.end(),
+      std::bind(findParamsVector, _1,  ParamsId::AdditionalParams)); it != params.end())
+  {
+    return std::make_unique<Cube>(name.c_str(), it->second[0]);
+  }
+  
   return std::make_unique<Cube>(name.c_str());
 }
 
@@ -93,10 +146,10 @@ std::unique_ptr<Object3D> CubeExtFactory::FactoryMethod(
   const ParamsMap& params) const 
 {
   auto components = std::make_unique<ComponentsVector>();
-  
+
   for (int i : params.at(ParamsId::ComponentsList))
   {
-    components->push_back(std::move(allComponentsVector[i]));
+    components->push_back(std::move(allComponentFactories[i](params)));
   }
 
   const auto nameExt = CreateName(name, params);

@@ -1,5 +1,6 @@
 #include "Cube.hpp"
 #include "Object3d.hpp"
+#include <algorithm>
 
 void Cube::RotateSide(int degx, int degy, int degz,
                       const Faces& faces,
@@ -37,15 +38,17 @@ std::pair<Faces, Vertices> Cube::CreateCube(const Faces& faces, const Vertices& 
 
 void Cube::Generate()
 {
-  const short value = 50;
-
   Vertices vertices= {
-    {value, value, value},
-    {-value, value, value},
-    {-value, -value, value},
-    {value, -value, value},
+    {1, 1, 1},
+    {-1, 1, 1},
+    {-1, -1, 1},
+    {1, -1, 1},
   };
 
+  std::transform(vertices.cbegin(), vertices.cend(), vertices.begin(), [&](const Vertex& vertex){
+    return vertex * mSize;
+  });
+  
   Face face{0,1,2,3};
   
   Faces faces;

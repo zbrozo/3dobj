@@ -6,10 +6,12 @@
 class Cube : public Object3D, public IGenerator
 {
 
+  int mSize;
+  
 public:
 
-  Cube(const char* name) :
-    Object3D(name)
+  Cube(const char* name, int size = 50) :
+    Object3D(name), mSize(size)
   {
   }
 

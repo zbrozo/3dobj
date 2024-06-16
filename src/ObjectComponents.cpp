@@ -1,5 +1,7 @@
 #include "ObjectComponents.hpp"
 
+#include <algorithm>
+
 auto CreateSideVertices(Vertices& vertices)
 {
   std::vector<Vertices> allVertices;
@@ -33,15 +35,17 @@ auto CreateSideFaces(const std::vector<Vertices>& allVertices)
 
 void Component0::Generate()
 {
-  const short value = 50;
-
   Vertices vertices= {
-    {value, value, value},
-    {-value, value, value},
-    {-value, -value, value},
-    {value, -value, value},
+    {1, 1, 1},
+    {-1, 1, 1},
+    {-1, -1, 1},
+    {1, -1, 1},
   };
 
+  std::transform(vertices.cbegin(), vertices.cend(), vertices.begin(), [&](const Vertex& vertex){
+    return vertex * mSize;
+  });
+   
   Face face{0,1,2,3};
   mFaces.push_back(face);
   mVertices = vertices;
@@ -49,16 +53,36 @@ void Component0::Generate()
 
 void Component1::Generate()
 {
-  const short value = 50;
-  
-  Vertices basicVertices = {
-    {value-20, value-20, value},
-    {-(value-20), value-20, value},
-    {-(value-20), value-20, value-20},
-    {value-20, value-20, value-20},
+  Vertices vertices = {
+    {1, 1, 1},
+    {-1, 1, 1},
+    {-1, 1, 1},
+    {1, 1, 1},
   };
   
-  const auto allVertices = CreateSideVertices(basicVertices);
+  Vertices verticesModify = {
+    {-1, -1, 0},
+    {1, -1, 0},
+    {1, -1, -1},
+    {-1, -1, -1},
+  };
+
+  std::transform(vertices.cbegin(), vertices.cend(), vertices.begin(), [&](const Vertex& vertex){
+    return vertex * mSize;
+  });
+
+  std::transform(verticesModify.cbegin(), verticesModify.cend(), verticesModify.begin(), [&](const Vertex& vertex){
+    return Vertex(vertex.mX * mSizeXY, vertex.mY * mSizeXY, vertex.mZ * mSizeZ);
+  });
+
+  for (unsigned int i = 0; i < vertices.size(); i++)
+  {
+    auto& v1 = vertices.at(i);
+    const auto& v2 = verticesModify.at(i);
+    v1 = v1 + v2;
+  }
+  
+  const auto allVertices = CreateSideVertices(vertices);
   const auto facesWithVertices = CreateSideFaces(allVertices);
   
   mFaces = facesWithVertices.first;
@@ -67,16 +91,36 @@ void Component1::Generate()
 
 void Component2::Generate()
 {
-  const short value = 50;
-
-  Vertices basicVertices = {
-    {value, value, value},
-    {-value, value, value},
-    {-(value-20), value-20, value},
-    {value-20, value-20, value},
+  Vertices vertices = {
+    {1, 1, 1},
+    {-1, 1, 1},
+    {-1, 1, 1},
+    {1, 1, 1},
   };
 
-  const auto allVertices = CreateSideVertices(basicVertices);
+  Vertices verticesModify = {
+    {0, 0, 0},
+    {0, 0, 0},
+    {1, -1, 0},
+    {-1, -1, 0},
+  };
+
+  std::transform(vertices.cbegin(), vertices.cend(), vertices.begin(), [&](const Vertex& vertex){
+    return vertex * mSize;
+  });
+
+  std::transform(verticesModify.cbegin(), verticesModify.cend(), verticesModify.begin(), [&](const Vertex& vertex){
+    return Vertex(vertex.mX * mSizeXY, vertex.mY * mSizeXY, vertex.mZ);
+  });
+
+  for (unsigned int i = 0; i < vertices.size(); i++)
+  {
+    auto& v1 = vertices.at(i);
+    const auto& v2 = verticesModify.at(i);
+    v1 = v1 + v2;
+  }
+  
+  const auto allVertices = CreateSideVertices(vertices);
   const auto facesWithVertices = CreateSideFaces(allVertices);
   
   mFaces = facesWithVertices.first;
