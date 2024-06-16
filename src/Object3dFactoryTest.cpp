@@ -28,8 +28,8 @@ BOOST_AUTO_TEST_CASE(thorus_factory_test)
   ParamsMap paramsMap;
   ParamsVector params;
 
-  params.push_back("6");
-  params.push_back("8");
+  params.push_back(6);
+  params.push_back(8);
   paramsMap.insert({ParamsId::AdditionalParams, params});
 
   auto object = factory.Create("thorus", paramsMap);

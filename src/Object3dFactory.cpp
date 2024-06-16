@@ -9,12 +9,26 @@
 #include <stdexcept>
 #include <iostream>
 
-const std::string TooLessParamsMessage = "Too less parameters for ";
+namespace
+{
+  const std::string TooLessParamsMessage = "Too less parameters for ";
+
+  ComponentsVector allComponentsVector;
+
+  void InitAllComponentsVector()
+  {
+    allComponentsVector.push_back(std::make_unique<Component0>());
+    allComponentsVector.push_back(std::make_unique<Component1>());
+    allComponentsVector.push_back(std::make_unique<Component2>());
+  }
+}
 
 std::unique_ptr<Object3D> ObjectFactory::Create(
   const std::string& name,
   const ParamsMap& params) const
 {
+  InitAllComponentsVector();
+  
   auto object = FactoryMethod(name, params);
   Generate(*object);
   return object;
@@ -38,13 +52,16 @@ std::unique_ptr<Object3D> CubeFactory::FactoryMethod(
 
 std::unique_ptr<Object3D> CubeExtFactory::FactoryMethod(
   const std::string& name,
-  const ParamsMap& /*params*/) const 
+  const ParamsMap& params) const 
 {
-  auto primitives = std::make_unique<PrimitiveObjectsVector>();
-  (*primitives).push_back(std::make_unique<Component1>());
-  (*primitives).push_back(std::make_unique<Component2>());
-
-  auto object = std::make_unique<CubeExt>(name.c_str(), std::move(primitives));
+  auto components = std::make_unique<ComponentsVector>();
+  
+  for (int i : params.at(ParamsId::ComponentsList))
+  {
+    components->push_back(std::move(allComponentsVector[i]));
+  }
+  
+  auto object = std::make_unique<CubeExt>(name.c_str(), std::move(components));
   return object;
 }
 
@@ -52,7 +69,6 @@ std::unique_ptr<Object3D> ThorusFactory::FactoryMethod(
   const std::string& name,
   const ParamsMap& params) const
 {
-  
   const auto& additionalParams = params.at(ParamsId::AdditionalParams);
   
   if (additionalParams.size() < 2)
@@ -62,11 +78,11 @@ std::unique_ptr<Object3D> ThorusFactory::FactoryMethod(
   
   const auto circleSize = additionalParams[0];
   const auto ringSize = additionalParams[1];
-  const auto nameExt = std::string(name) + "_" + circleSize + "_" + ringSize;
+  const auto nameExt = std::string(name) + "_" + std::to_string(circleSize) + "_" + std::to_string(ringSize);
   
   auto object = std::make_unique<Thorus>(
-    std::stoi(circleSize),
-    std::stoi(ringSize),
+    circleSize,
+    ringSize,
     nameExt.c_str());
 
   return object;

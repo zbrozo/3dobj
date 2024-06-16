@@ -31,6 +31,22 @@ auto CreateSideFaces(const std::vector<Vertices>& allVertices)
   return std::make_pair(faces, vertices);
 }
 
+void Component0::Generate()
+{
+  const short value = 50;
+
+  Vertices vertices= {
+    {value, value, value},
+    {-value, value, value},
+    {-value, -value, value},
+    {value, -value, value},
+  };
+
+  Face face{0,1,2,3};
+  mFaces.push_back(face);
+  mVertices = vertices;
+}
+
 void Component1::Generate()
 {
   const short value = 50;

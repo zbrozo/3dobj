@@ -5,10 +5,11 @@
 #include <map>
 
 enum class ParamsId {
-  ComponentNames,
+  ComponentsList,
+  ComponentsParams,
   AdditionalParams
 };
 
-using ParamsVector = std::vector<std::string>;
-using ParamsMap = std::map<ParamsId, std::vector<std::string>>;
+using ParamsVector = std::vector<int>;
+using ParamsMap = std::map<ParamsId, ParamsVector>;
 

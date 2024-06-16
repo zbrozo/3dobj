@@ -99,8 +99,9 @@ int main(int argc, char* argv[])
   optionsDesc.add_options()
     ("help,h", "produce help message")
     ("verbose,v", "produce verbose logs")
-    ("name,n", po::value<std::string>(), "object3d name")
-    ("component-names,l", po::value<ParamsVector>(), "components names")
+    ("type,t", po::value<std::string>(), "object3d type")
+    ("component-list,c", po::value<ParamsVector>()->multitoken(), "component id list")
+    ("component-params,p", po::value<ParamsVector>()->multitoken(), "component params")
     ("additional-params", po::value<ParamsVector>(), "additional params");
   
   const po::variables_map& options = ReadGeneratorParams(argc, argv, optionsDesc);
@@ -115,9 +116,9 @@ int main(int argc, char* argv[])
   const auto verbose = options.count("verbose");
 
   std::string name;
-  if (options.count("name"))
+  if (options.count("type"))
   {
-    name = options["name"].as<std::string>();
+    name = options["type"].as<std::string>();
   }
   else
   {
@@ -126,20 +127,27 @@ int main(int argc, char* argv[])
     return 1;
   }
 
-  std::map<ParamsId, std::vector<std::string>> paramsMap {
-    {ParamsId::ComponentNames, std::vector<std::string>()},
-    {ParamsId::AdditionalParams, std::vector<std::string>()}
+  std::map<ParamsId, ParamsVector> paramsMap {
+    {ParamsId::ComponentsList, ParamsVector()},
+    {ParamsId::ComponentsParams, ParamsVector()},
+    {ParamsId::AdditionalParams, ParamsVector()}
   };
   
-  if (options.count("component-names"))
+  if (options.count("component-list"))
   {
-    const auto& params = options["component-names"].as<std::vector<std::string>>();
-    paramsMap[ParamsId::ComponentNames] = params;
+    const auto& list = options["component-list"].as<ParamsVector>();
+    paramsMap[ParamsId::ComponentsList] = list;
+  }
+
+  if (options.count("component-params"))
+  {
+    const auto& list = options["component-params"].as<ParamsVector>();
+    paramsMap[ParamsId::ComponentsParams] = list;
   }
   
   if (options.count("additional-params"))
   {
-    const auto& params = options["additional-params"].as<std::vector<std::string>>();
+    const auto& params = options["additional-params"].as<ParamsVector>();
     paramsMap[ParamsId::AdditionalParams] = params;
   }
   

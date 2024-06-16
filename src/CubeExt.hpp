@@ -6,16 +6,16 @@
 #include <memory>
 #include <vector>
 
-using PrimitiveObjectsVector = std::vector<std::unique_ptr<Object3D>>;
+using ComponentsVector = std::vector<std::unique_ptr<Object3D>>;
 
 class CubeExt : public Cube
 {
 
-  std::unique_ptr<PrimitiveObjectsVector> mObjects = nullptr;
+  std::unique_ptr<ComponentsVector> mObjects = nullptr;
   
 public:
 
-  CubeExt(const char* name, std::unique_ptr<PrimitiveObjectsVector> objects) :
+  CubeExt(const char* name, std::unique_ptr<ComponentsVector> objects) :
     Cube(name),
     mObjects(std::move(objects))
   {
