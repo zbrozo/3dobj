@@ -1,28 +1,29 @@
 #include "ObjectComponents.hpp"
-
 #include <algorithm>
 
-auto CreateSideVertices(Vertices& vertices)
+namespace
 {
-  std::vector<Vertices> allVertices;
+  auto CreateSideVertices(Vertices& vertices)
+  {
+    std::vector<Vertices> allVertices;
 
-  const size_t facesCount = 4;
+    const size_t facesCount = 4;
 
-  for (size_t i = 0; i < facesCount; ++i)
+    for (size_t i = 0; i < facesCount; ++i)
     {
       const auto rotatedVertices = vertices.Rotate(0, 0, i * 90);
       allVertices.push_back(rotatedVertices);
     }
 
-  return allVertices;
-}
+    return allVertices;
+  }
 
-auto CreateSideFaces(const std::vector<Vertices>& allVertices)
-{
-  Faces faces;
-  Vertices vertices;
+  auto CreateSideFaces(const std::vector<Vertices>& allVertices)
+  {
+    Faces faces;
+    Vertices vertices;
 
-  for(const auto& tmpVertices : allVertices)
+    for(const auto& tmpVertices : allVertices)
     {
       Face face{0,1,2,3};
       const auto [resultFace, resultVertices] = Object3D::Merge(vertices, face, tmpVertices);
@@ -30,8 +31,9 @@ auto CreateSideFaces(const std::vector<Vertices>& allVertices)
       faces.push_back(resultFace);
     }
   
-  return std::make_pair(faces, vertices);
-}
+    return std::make_pair(faces, vertices);
+  }
+} // namespace
 
 void Component0::Generate()
 {
@@ -68,14 +70,14 @@ void Component1::Generate()
   };
 
   std::transform(vertices.cbegin(), vertices.cend(), vertices.begin(), [&](const Vertex& vertex){
-    return vertex * mSize;
+    return vertex * mSize1;
   });
 
   std::transform(verticesModify.cbegin(), verticesModify.cend(), verticesModify.begin(), [&](const Vertex& vertex){
-    return Vertex(vertex.mX * mSizeXY, vertex.mY * mSizeXY, vertex.mZ * mSizeZ);
+    return Vertex(vertex.mX * mSize2, vertex.mY * mSize2, vertex.mZ * mSize3);
   });
 
-  for (unsigned int i = 0; i < vertices.size(); i++)
+  for (size_t i = 0; i < vertices.size(); i++)
   {
     auto& v1 = vertices.at(i);
     const auto& v2 = verticesModify.at(i);
@@ -106,14 +108,14 @@ void Component2::Generate()
   };
 
   std::transform(vertices.cbegin(), vertices.cend(), vertices.begin(), [&](const Vertex& vertex){
-    return vertex * mSize;
+    return vertex * mSize1;
   });
 
   std::transform(verticesModify.cbegin(), verticesModify.cend(), verticesModify.begin(), [&](const Vertex& vertex){
-    return Vertex(vertex.mX * mSizeXY, vertex.mY * mSizeXY, vertex.mZ);
+    return Vertex(vertex.mX * mSize2, vertex.mY * mSize2, vertex.mZ);
   });
 
-  for (unsigned int i = 0; i < vertices.size(); i++)
+  for (size_t i = 0; i < vertices.size(); i++)
   {
     auto& v1 = vertices.at(i);
     const auto& v2 = verticesModify.at(i);

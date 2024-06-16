@@ -80,14 +80,16 @@ void PrintParamsHelp()
       });
 }
 
-auto ReadGeneratorParams(int argc, char *argv[], const po::options_description& desc)
+auto ReadGeneratorParams(int argc, char *argv[], po::options_description& desc)
 {
   po::variables_map vm;
+
   po::positional_options_description p;
   p.add("additional-params", -1);
 
   po::store(po::command_line_parser(argc, argv).
           options(desc).positional(p).run(), vm);
+  
   po::notify(vm);
 
   return vm;
@@ -103,7 +105,7 @@ int main(int argc, char* argv[])
     ("component-list,c", po::value<ParamsVector>()->multitoken(), "component id list")
     ("component-params,p", po::value<ParamsVector>()->multitoken(), "component params")
     ("additional-params", po::value<ParamsVector>(), "additional params");
-  
+
   const po::variables_map& options = ReadGeneratorParams(argc, argv, optionsDesc);
 
   if (options.count("help"))
@@ -112,7 +114,7 @@ int main(int argc, char* argv[])
     PrintParamsHelp();
     return 1;
   }
-  
+
   const auto verbose = options.count("verbose");
 
   std::string name;
@@ -127,19 +129,15 @@ int main(int argc, char* argv[])
     return 1;
   }
 
-  std::map<ParamsId, ParamsVector> paramsMap {
-    {ParamsId::ComponentsList, ParamsVector()},
-    {ParamsId::ComponentsParams, ParamsVector()},
-    {ParamsId::AdditionalParams, ParamsVector()}
-  };
-  
-  if (options.count("component-list"))
+  std::map<ParamsId, ParamsVector> paramsMap;
+
+  if (!options["component-list"].empty())
   {
     const auto& list = options["component-list"].as<ParamsVector>();
     paramsMap[ParamsId::ComponentsList] = list;
   }
 
-  if (options.count("component-params"))
+  if (!options["component-params"].empty())
   {
     const auto& list = options["component-params"].as<ParamsVector>();
     paramsMap[ParamsId::ComponentsParams] = list;
@@ -165,11 +163,11 @@ int main(int argc, char* argv[])
     }
     
   } catch (const std::out_of_range& ex) {
-    std::cout << ex.what() << "\n";
+    std::cout << ex.what() << std::endl;
     PrintParamsHelp();
     return 1;
   } catch (const std::bad_cast& ex) {
-    std::cout << ex.what() << "\n";
+    std::cout << ex.what() << std::endl;
     PrintParamsHelp();
     return 1;
   }

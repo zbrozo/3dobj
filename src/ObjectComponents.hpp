@@ -34,28 +34,32 @@ public:
 
 class Component1 : public Object3D, public IGenerator
 {
-  int mSize = 50;
-  int mSizeXY = 20;
-  int mSizeZ = 20;
+  int mSize1 = 50;
+  int mSize2 = 20;
+  int mSize3 = 20;
   
 public:
 
-  Component1(std::optional<int> size, std::optional<int> sizeXY, std::optional<int> sizeZ) :
+  Component1(
+    const std::optional<int>& size1,
+    const std::optional<int>& size2,
+    const std::optional<int>& size3
+    ) :
     Object3D("")
   {
-    if (size.has_value())
+    if (size1.has_value())
     {
-      mSize = size.value();
+      mSize1 = size1.value();
     }
     
-    if (sizeXY.has_value())
+    if (size2.has_value())
     {
-      mSizeXY = sizeXY.value();
+      mSize2 = size2.value();
     }
 
-    if (sizeZ.has_value())
+    if (size3.has_value())
     {
-      mSizeZ = sizeZ.value();
+      mSize3 = size3.value();
     }
   }
 
@@ -72,22 +76,25 @@ public:
 
 class Component2 : public Object3D, public IGenerator
 {
-  int mSize;
-  int mSizeXY;
+  int mSize1 = 50;
+  int mSize2 = 20;
   
 public:
 
-  Component2(std::optional<int> size, std::optional<int> sizeXY) :
+  Component2(
+    const std::optional<int>& size1,
+    const std::optional<int>& size2
+    ) :
     Object3D("")
   {
-    if (size.has_value())
+    if (size1.has_value())
     {
-      mSize = size.value();
+      mSize1 = size1.value();
     }
     
-    if (sizeXY.has_value())
+    if (size2.has_value())
     {
-      mSizeXY = sizeXY.value();
+      mSize2 = size2.value();
     }
   }
 

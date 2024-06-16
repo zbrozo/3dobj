@@ -43,20 +43,15 @@ namespace
       std::optional<int> param1;
       std::optional<int> param2;
       std::optional<int> param3;
-      
+
       if (auto it = std::find_if(params.begin(), params.end(),
-          std::bind(findParamsVector, _1,  ParamsId::ComponentsParams)); it != params.end())
+          std::bind(findParamsVector, _1, ParamsId::ComponentsParams)); it != params.end())
       {
-        
         param1 = it->second[0];
         param2 = it->second[1];
         param3 = it->second[2];
-
-
-        std::cout << "aaaaaa" << param1.value();
-
       }
-      
+
       return std::make_unique<Component1>(param1, param2, param3);
     });
 
