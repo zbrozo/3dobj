@@ -1,14 +1,16 @@
 #pragma once
 
-#include "Params.hpp"
-
 #include <vector>
 #include <string>
 #include <memory>
 #include <functional>
 
+#include "ComponentFactoryBase.hpp"
+#include "Params.hpp"
+
 class Object3D;
-using ComponentFactories = std::vector<std::function<std::unique_ptr<Object3D>(const ParamsMap&)>>;
+
+using ComponentFactories = std::vector<std::unique_ptr<ComponentFactoryBase>>;
 
 class ObjectFactoryBase
 {

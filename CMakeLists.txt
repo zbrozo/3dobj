@@ -18,6 +18,8 @@ set(generator_SRC
   src/GeneratorMain.cpp
   src/ObjectFactoryBase.cpp
   src/ObjectFactories.cpp
+  src/ComponentFactoryBase.cpp
+  src/ComponentFactories.cpp
   src/ObjectComponents.cpp
   src/AmigaFile.cpp
   src/Cube.cpp
@@ -53,6 +55,8 @@ set(tests_SRC
   src/Object3d.cpp
   src/ObjectFactoryBase.cpp
   src/ObjectFactories.cpp
+  src/ComponentFactoryBase.cpp
+  src/ComponentFactories.cpp
   src/UnitTests.cpp
 )
 

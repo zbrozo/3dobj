@@ -1,6 +1,7 @@
 #include "ObjectFactoryBase.hpp"
 #include "IGenerator.hpp"
 #include "ObjectComponents.hpp"
+#include "ComponentFactories.hpp"
 
 #include <algorithm>
 #include <optional>
@@ -13,61 +14,12 @@ namespace
     return params.first == id;
   };
 
-  auto getParam(std::vector<int> values, unsigned int  index)
-  {
-    if (values.size() > index)
-    {
-      return std::optional<int>{values[index]};
-    }
-
-    return std::optional<int>();
-  }
-  
   void InitAllComponentFactoriesVector(ComponentFactories& allComponentFactories)
   {
-    allComponentFactories.push_back([](const ParamsMap& params){
-      std::optional<int> param;
-      
-      if (auto it = std::find_if(params.begin(), params.end(),
-          std::bind(findParamsVector, _1,  ParamsId::ComponentsParams)); it != params.end())
-      {
-        param = getParam(it->second, 0);
-      }
-      
-      return std::make_unique<Component0>(param);
-    });
-
-    allComponentFactories.push_back([](const ParamsMap& params){
-      std::optional<int> param1;
-      std::optional<int> param2;
-      std::optional<int> param3;
-
-      if (auto it = std::find_if(params.begin(), params.end(),
-          std::bind(findParamsVector, _1, ParamsId::ComponentsParams)); it != params.end())
-      {
-        param1 = getParam(it->second, 0);
-        param2 = getParam(it->second, 1);
-        param3 = getParam(it->second, 2);
-      }
-
-      return std::make_unique<Component1>(param1, param2, param3);
-    });
-
-    allComponentFactories.push_back([](const ParamsMap& params){
-      std::optional<int> param1;
-      std::optional<int> param2;
-      
-      if (auto it = std::find_if(params.begin(), params.end(),
-          std::bind(findParamsVector, _1,  ParamsId::ComponentsParams)); it != params.end())
-      {
-        param1 = getParam(it->second, 0);
-        param2 = getParam(it->second, 1);
-      }
-      
-      return std::make_unique<Component2>(param1, param2);
-    });
+    allComponentFactories.push_back(std::make_unique<Component0Factory>());
+    allComponentFactories.push_back(std::make_unique<Component1Factory>());
+    allComponentFactories.push_back(std::make_unique<Component2Factory>());
   }
-
 }
 
 ObjectFactoryBase::ObjectFactoryBase()

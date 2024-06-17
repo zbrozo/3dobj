@@ -1,10 +1,8 @@
-#pragma once
-
-#include "ObjectFactoryBase.hpp"
+#include "ComponentFactoryBase.hpp"
 
 class Object3D;
 
-class CubeFactory : public ObjectFactoryBase
+class Component0Factory : public ComponentFactoryBase
 {
 public:
   std::unique_ptr<Object3D> FactoryMethod(
@@ -12,7 +10,7 @@ public:
     const ParamsMap& params) const override;
 };
 
-class CubeExtFactory : public ObjectFactoryBase
+class Component1Factory : public ComponentFactoryBase
 {
 public:
   std::unique_ptr<Object3D> FactoryMethod(
@@ -20,7 +18,7 @@ public:
     const ParamsMap& params) const override;
 };
 
-class ThorusFactory : public ObjectFactoryBase
+class Component2Factory : public ComponentFactoryBase
 {
 public:
   std::unique_ptr<Object3D> FactoryMethod(

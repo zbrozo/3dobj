@@ -35,9 +35,9 @@ std::map<std::string, ObjectId> ObjectIdMap {
 };
 
 std::map<ObjectId, std::string> ParamsHelp {
-  {ObjectId::Cube, ""},
-  {ObjectId::CubeExt, ""},
-  {ObjectId::Thorus, "thorusCircleSize thorusRingSize"}
+  {ObjectId::Cube, "additional-params: size"},
+  {ObjectId::CubeExt, "component-params depends on components"},
+  {ObjectId::Thorus, "additional-params: thorusCircleSize thorusRingSize"}
 };
 
 using ObjectFactoryPair = std::pair<ObjectId, std::unique_ptr<ObjectFactoryBase>>;

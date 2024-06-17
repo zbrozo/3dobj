@@ -41,7 +41,7 @@ std::unique_ptr<Object3D> CubeExtFactory::FactoryMethod(
 
   for (int i : params.at(ParamsId::ComponentsList))
   {
-    components->push_back(std::move(GetAllComponentFactories()[i](params)));
+    components->push_back(std::move(GetAllComponentFactories()[i]->Create(name, params)));
   }
 
   const auto nameExt = CreateFullName(name, params);
