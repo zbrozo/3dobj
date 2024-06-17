@@ -5,8 +5,8 @@
 #include "Cube.hpp"
 #include "CubeExt.hpp"
 #include "Thorus.hpp"
+#include "ObjectFactories.hpp"
 #include "AmigaFile.hpp"
-#include "Object3dFactory.hpp"
 #include "Params.hpp"
 
 #include <algorithm>
@@ -40,8 +40,8 @@ std::map<ObjectId, std::string> ParamsHelp {
   {ObjectId::Thorus, "thorusCircleSize thorusRingSize"}
 };
 
-using ObjectFactoryPair = std::pair<ObjectId, std::unique_ptr<ObjectFactory>>;
-std::map<ObjectId, std::unique_ptr<ObjectFactory>> ObjectFactoryMap;
+using ObjectFactoryPair = std::pair<ObjectId, std::unique_ptr<ObjectFactoryBase>>;
+std::map<ObjectId, std::unique_ptr<ObjectFactoryBase>> ObjectFactoryMap;
 
 void InitObjectFactoryMap()
 {

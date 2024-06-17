@@ -16,7 +16,8 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE INTERNAL "")
 
 set(generator_SRC
   src/GeneratorMain.cpp
-  src/Object3dFactory.cpp
+  src/ObjectFactoryBase.cpp
+  src/ObjectFactories.cpp
   src/ObjectComponents.cpp
   src/AmigaFile.cpp
   src/Cube.cpp
@@ -50,8 +51,9 @@ set(tests_SRC
   src/Rotation.cpp
   src/Vector3d.cpp
   src/Object3d.cpp
-  src/Object3dFactory.cpp
-  src/Object3dFactoryTest.cpp
+  src/ObjectFactoryBase.cpp
+  src/ObjectFactories.cpp
+  src/UnitTests.cpp
 )
 
 add_executable(generator ${generator_SRC})

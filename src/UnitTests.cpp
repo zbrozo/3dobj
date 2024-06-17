@@ -2,7 +2,7 @@
 #include <boost/test/unit_test.hpp>
 
 #include "IGenerator.hpp"
-#include "Object3dFactory.hpp"
+#include "ObjectFactories.hpp"
 #include "Object3d.hpp"
 #include "Cube.hpp"
 #include "Thorus.hpp"
