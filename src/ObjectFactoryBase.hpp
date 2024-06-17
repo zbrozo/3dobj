@@ -35,7 +35,7 @@ protected:
 
   void Generate(Object3D& object) const;
 
-  std::string CreateName(
+  std::string CreateFullName(
     const std::string& name,
     const ParamsMap& params) const;
 };

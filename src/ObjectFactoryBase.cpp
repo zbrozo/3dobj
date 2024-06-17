@@ -12,6 +12,16 @@ namespace
   auto findParamsVector = [](const std::pair<ParamsId, ParamsVector>& params, ParamsId id) {
     return params.first == id;
   };
+
+  auto getParam(std::vector<int> values, unsigned int  index)
+  {
+    if (values.size() > index)
+    {
+      return std::optional<int>{values[index]};
+    }
+
+    return std::optional<int>();
+  }
   
   void InitAllComponentFactoriesVector(ComponentFactories& allComponentFactories)
   {
@@ -21,7 +31,7 @@ namespace
       if (auto it = std::find_if(params.begin(), params.end(),
           std::bind(findParamsVector, _1,  ParamsId::ComponentsParams)); it != params.end())
       {
-        param = it->second[0];
+        param = getParam(it->second, 0);
       }
       
       return std::make_unique<Component0>(param);
@@ -35,9 +45,9 @@ namespace
       if (auto it = std::find_if(params.begin(), params.end(),
           std::bind(findParamsVector, _1, ParamsId::ComponentsParams)); it != params.end())
       {
-        param1 = it->second[0];
-        param2 = it->second[1];
-        param3 = it->second[2];
+        param1 = getParam(it->second, 0);
+        param2 = getParam(it->second, 1);
+        param3 = getParam(it->second, 2);
       }
 
       return std::make_unique<Component1>(param1, param2, param3);
@@ -50,8 +60,8 @@ namespace
       if (auto it = std::find_if(params.begin(), params.end(),
           std::bind(findParamsVector, _1,  ParamsId::ComponentsParams)); it != params.end())
       {
-        param1 = it->second[0];
-        param2 = it->second[1];
+        param1 = getParam(it->second, 0);
+        param2 = getParam(it->second, 1);
       }
       
       return std::make_unique<Component2>(param1, param2);
@@ -74,7 +84,7 @@ std::unique_ptr<Object3D> ObjectFactoryBase::Create(
   return object;
 }
 
-std::string ObjectFactoryBase::CreateName(const std::string& name, const ParamsMap &params) const
+std::string ObjectFactoryBase::CreateFullName(const std::string& name, const ParamsMap &params) const
 {
   std::string result = name;
 

@@ -44,7 +44,7 @@ std::unique_ptr<Object3D> CubeExtFactory::FactoryMethod(
     components->push_back(std::move(GetAllComponentFactories()[i](params)));
   }
 
-  const auto nameExt = CreateName(name, params);
+  const auto nameExt = CreateFullName(name, params);
   
   return std::make_unique<CubeExt>(nameExt.c_str(), std::move(components));
 }
@@ -62,7 +62,7 @@ std::unique_ptr<Object3D> ThorusFactory::FactoryMethod(
   
   const auto circleSize = additionalParams[0];
   const auto ringSize = additionalParams[1];
-  const auto nameExt = CreateName(name, params);
+  const auto nameExt = CreateFullName(name, params);
   
   return std::make_unique<Thorus>(
     circleSize,
