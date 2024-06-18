@@ -74,30 +74,28 @@ void RotateObject(Object3D* object,
                   Vectors& normalVectorsInFaces,
                   Vectors& normalVectorsInVertices)
 {
+  auto rotate = [degx, degy, degz](const Vector3d& v){
     Rotation rotation;
-    for (auto v : object->mVertices)
-      {
-        const auto v2 = rotation.rotateX(v, degx);
-        const auto v3 = rotation.rotateY(v2, degy);
-        const auto v4 = rotation.rotateZ(v3, degz);
-        vertices.push_back(v4);
-      }
+    const auto v2 = rotation.rotateX(v, degx);
+    const auto v3 = rotation.rotateY(v2, degy);
+    const auto v4 = rotation.rotateZ(v3, degz);
+    return v4;
+  };
+  
+  for (auto v : object->mVertices)
+  {
+    vertices.push_back(rotate(v));
+  }
 
-    for (auto v : object->mNormalVectorsInFaces)
-      {
-        const auto v2 = rotation.rotateX(v, degx);
-        const auto v3 = rotation.rotateY(v2, degy);
-        const auto v4 = rotation.rotateZ(v3, degz);
-        normalVectorsInFaces.push_back(Vector3d(v4));
-      }
+  for (auto v : object->mNormalVectorsInFaces)
+  {
+    normalVectorsInFaces.push_back(rotate(v));
+  }
 
-    for (auto v : object->mNormalVectorsInVertices)
-      {
-        const auto v2 = rotation.rotateX(v, degx);
-        const auto v3 = rotation.rotateY(v2, degy);
-        const auto v4 = rotation.rotateZ(v3, degz);
-        normalVectorsInVertices.push_back(Vector3d(v4));
-      }
+  for (auto v : object->mNormalVectorsInVertices)
+  {
+    normalVectorsInVertices.push_back(rotate(v));
+  }
 }
 
 void CalculateLight(int light,
@@ -106,20 +104,21 @@ void CalculateLight(int light,
                     std::vector<int>& colorNumbersInFaces,
                     std::vector<int>& colorNumbersInVertices)
 {
+  auto calcColorNumber = [light](const Vector3d& v){
+    Vertex lightVector(0,0,light);
+    const auto z = (v.mZ * lightVector.mZ) + (maxLightValue * maxLightValue);
+    const int id = (z * maxColorNumber) / (maxLightValue * 2 * maxLightValue);
+    return id;
+  };
+  
   for (auto v : normalVectorsInFaces)
     {
-      Vertex lightVector(0,0,light); // wektor światła
-      const auto z = (v.mZ * lightVector.mZ) + (maxLightValue * maxLightValue);
-      const int id = (z * maxColorNumber) / (maxLightValue * 2 * maxLightValue);
-      colorNumbersInFaces.push_back(id);
+      colorNumbersInFaces.push_back(calcColorNumber(v));
     }
   
   for (auto v : normalVectorsInVertices)
     {
-      Vertex lightVector(0,0,light); // wektor światła
-      const auto z = (v.mZ * lightVector.mZ) + (maxLightValue * maxLightValue);
-      const int id = (z * maxColorNumber) / (maxLightValue * 2 * maxLightValue);
-      colorNumbersInVertices.push_back(id);
+      colorNumbersInVertices.push_back(calcColorNumber(v));
     }
 }
 
