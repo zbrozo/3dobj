@@ -128,3 +128,27 @@ void Component2::Generate()
   mFaces = facesWithVertices.first;
   mVertices = facesWithVertices.second;
 }
+
+void Component3::Generate()
+{
+  Vertices vertices= {
+    {1, 1, 1},
+    {-1, 1, 1},
+    {-1, -1, 1},
+    {1, -1, 1},
+    {0, 0, 1}
+  };
+
+  std::transform(vertices.cbegin(), vertices.cend(), vertices.begin(), [&](const Vertex& vertex){
+    return vertex * mSize1;
+  });
+
+  vertices[4].mZ += mSize2;
+  
+  mVertices = vertices;
+
+  mFaces.push_back({0,1,4});
+  mFaces.push_back({1,2,4});
+  mFaces.push_back({2,3,4});
+  mFaces.push_back({3,0,4});
+}

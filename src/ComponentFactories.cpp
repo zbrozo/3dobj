@@ -78,3 +78,20 @@ std::unique_ptr<Object3D> Component2Factory::FactoryMethod(
   
   return std::make_unique<Component2>(param1, param2);
 }
+
+std::unique_ptr<Object3D> Component3Factory::FactoryMethod(
+  const std::string& /*name*/,
+  const ParamsMap& params) const
+{
+  std::optional<int> param1;
+  std::optional<int> param2;
+      
+  if (auto it = std::find_if(params.begin(), params.end(),
+      std::bind(findParamsVector, _1,  ParamsId::ComponentsParams)); it != params.end())
+  {
+    param1 = getParam(it->second, 0);
+    param2 = getParam(it->second, 1);
+  }
+  
+  return std::make_unique<Component3>(param1, param2);
+}

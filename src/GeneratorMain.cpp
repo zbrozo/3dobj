@@ -18,6 +18,9 @@
 #include <utility>
 
 #include <boost/program_options.hpp>
+#include <boost/log/core.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/expressions.hpp>
 
 namespace po = boost::program_options;
 
@@ -71,12 +74,12 @@ const auto& GetFactory(const std::string& name)
 
 void PrintParamsHelp()
 {
-  std::cout << "Possible 3d objects to use:\n";
+  std::cout << "Possible 3d objects to use:" << std::endl;
   std::for_each(ObjectIdMap.begin(), ObjectIdMap.end(),
     [](std::pair<std::string, ObjectId> item)
       {
         std::cout << "  name: " << item.first << ", params: " << ParamsHelp[item.second];
-        std::cout << "\n";
+        std::cout << std::endl;
       });
 }
 
@@ -95,6 +98,15 @@ auto ReadGeneratorParams(int argc, char *argv[], po::options_description& desc)
   return vm;
 }
 
+void SetLogging(bool verbose)
+{
+  boost::log::trivial::severity_level logLevel = (verbose ?
+    boost::log::trivial::debug : boost::log::trivial::error);
+  
+  auto logFilter = boost::log::filter(boost::log::trivial::severity >= logLevel);
+  boost::log::core::get()->set_filter(logFilter);
+}
+
 int main(int argc, char* argv[])
 {
   po::options_description optionsDesc("generator [options] <type> [params]\n");
@@ -110,13 +122,13 @@ int main(int argc, char* argv[])
 
   if (options.count("help"))
   {
-    std::cout << optionsDesc << "\n";
+    std::cout << optionsDesc << std::endl;
     PrintParamsHelp();
     return 1;
   }
 
   const auto verbose = options.count("verbose");
-
+  
   std::string name;
   if (options.count("type"))
   {
@@ -124,7 +136,7 @@ int main(int argc, char* argv[])
   }
   else
   {
-    std::cout << optionsDesc << "\n";
+    std::cout << optionsDesc << std::endl;
     PrintParamsHelp();
     return 1;
   }
@@ -148,26 +160,26 @@ int main(int argc, char* argv[])
     const auto& params = options["additional-params"].as<ParamsVector>();
     paramsMap[ParamsId::AdditionalParams] = params;
   }
+
+  SetLogging(verbose);
   
   try {
+    BOOST_LOG_TRIVIAL(debug) << "Creating: " << name;
     const auto& factory = GetFactory(name);
     const auto object3d = factory->Create(name, paramsMap);
 
     AmigaFile file;
     file.Save(*object3d);
 
-    if (verbose)
-    {
-      object3d->LogVertices();
-      object3d->LogFaces();
-    }
+    object3d->LogVertices();
+    object3d->LogFaces();
     
   } catch (const std::out_of_range& ex) {
-    std::cout << ex.what() << std::endl;
+    BOOST_LOG_TRIVIAL(error) << ex.what();
     PrintParamsHelp();
     return 1;
   } catch (const std::bad_cast& ex) {
-    std::cout << ex.what() << std::endl;
+    BOOST_LOG_TRIVIAL(error) << ex.what();
     PrintParamsHelp();
     return 1;
   }

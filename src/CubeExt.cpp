@@ -5,10 +5,9 @@ void CubeExt::Generate()
 {
   for (auto& object : *mObjects)
   {
-    auto& objectGenerator = dynamic_cast<IGenerator&>(*object);
-    objectGenerator.Generate();
-    
-    const auto result = CreateCube((*object).mFaces, (*object).mVertices);
+    const auto result = CreateCube(
+      object->mFaces,
+      object->mVertices);
     
     for (auto face : result.first)
     {

@@ -108,3 +108,38 @@ public:
   Component2& operator=(Component2 &&) = delete;
 
 };
+
+class Component3 : public Object3D, public IGenerator
+{
+  int mSize1 = 50;
+  int mSize2 = 20;
+  
+public:
+
+  Component3(
+    const std::optional<int>& size1,
+    const std::optional<int>& size2
+    ) :
+    Object3D("")
+  {
+    if (size1.has_value())
+    {
+      mSize1 = size1.value();
+    }
+    
+    if (size2.has_value())
+    {
+      mSize2 = size2.value();
+    }
+  }
+
+  void Generate() override;
+  
+  virtual ~Component3() = default;
+  
+  Component3(Component3 const &) = delete;
+  Component3(Component3 &&) = delete;
+  Component3& operator=(const Component3&) = delete;
+  Component3& operator=(Component3 &&) = delete;
+
+};

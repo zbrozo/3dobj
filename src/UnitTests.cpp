@@ -22,15 +22,12 @@ BOOST_AUTO_TEST_CASE(cube_factory_test)
   BOOST_CHECK_EQUAL(6, object->GetFacesQuantity());
 }
 
-BOOST_AUTO_TEST_CASE(cube_ext_factory_test)
+BOOST_AUTO_TEST_CASE(cube_ext_factory_test1)
 {
   CubeExtFactory factory;
   ParamsMap paramsMap;
 
-  ParamsVector params;
-  params.push_back(1);
-  params.push_back(2);
-  paramsMap[ParamsId::ComponentsList] =  params;
+  paramsMap[ParamsId::ComponentsList] = {1, 2};
 
   const auto object = factory.Create("cube-ext", paramsMap);
   
@@ -39,22 +36,13 @@ BOOST_AUTO_TEST_CASE(cube_ext_factory_test)
   BOOST_CHECK_EQUAL(48, object->GetFacesQuantity());
 }
 
-BOOST_AUTO_TEST_CASE(cube_ext2_factory_test)
+BOOST_AUTO_TEST_CASE(cube_ext_factory_test2)
 {
   CubeExtFactory factory;
   ParamsMap paramsMap;
 
-  ParamsVector params;
-  params.push_back(1);
-  params.push_back(2);
-  paramsMap[ParamsId::ComponentsList] =  params;
-
-  params.clear();
-  
-  params.push_back(50);
-  params.push_back(20);
-  params.push_back(20);
-  paramsMap[ParamsId::ComponentsParams] =  params;
+  paramsMap[ParamsId::ComponentsList] = {1, 2};
+  paramsMap[ParamsId::ComponentsParams] = {50, 20, 20};
   
   const auto object = factory.Create("cube-ext", paramsMap);
   
@@ -68,10 +56,7 @@ BOOST_AUTO_TEST_CASE(thorus_factory_test)
   ThorusFactory factory;
   ParamsMap paramsMap;
 
-  ParamsVector params;
-  params.push_back(6);
-  params.push_back(8);
-  paramsMap[ParamsId::AdditionalParams] = params;
+  paramsMap[ParamsId::AdditionalParams] = {6, 8};
 
   auto object = factory.Create("thorus", paramsMap);
 

@@ -25,3 +25,11 @@ public:
     const std::string& name,
     const ParamsMap& params) const override;
 };
+
+class Component3Factory : public ComponentFactoryBase
+{
+public:
+  std::unique_ptr<Object3D> FactoryMethod(
+    const std::string& name,
+    const ParamsMap& params) const override;
+};

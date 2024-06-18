@@ -2,112 +2,106 @@
 #include <algorithm>
 #include <cmath>
 
+#include <boost/log/trivial.hpp>
+
 #include "Object3d.hpp"
 #include "Vector3d.hpp"
 
 namespace
 {
   
-auto PrepareFacesAssignedToVertices(const Vertices& vertices,
-                                    const Faces& faces)
+auto PrepareFacesAssignedToVertices(
+  const Vertices& vertices,
+  const Faces& faces)
 {
-  std::cout << __FUNCTION__ << "\n";
+  BOOST_LOG_TRIVIAL(debug) << __FUNCTION__;
 
   FaceNumbersInVertices result;
   
   for(unsigned int i = 0; i < vertices.size(); i++)
+  {
+    FaceNumbers foundFaceNumbers;
+
+    unsigned short faceNr = 0;
+      
+    for (auto face : faces)
     {
-      FaceNumbers foundFaceNumbers;
-
-      unsigned short faceNr = 0;
-      
-      for (auto face : faces)
-        {
-          if (std::find(face.begin(), face.end(), i) != face.end())
-          {
-            foundFaceNumbers.push_back(faceNr);
-          }
+      if (std::find(face.begin(), face.end(), i) != face.end())
+      {
+        foundFaceNumbers.push_back(faceNr);
+      }
           
-          ++faceNr;
-        }
-
-      result.push_back(foundFaceNumbers);
-
-      for(auto v : foundFaceNumbers)
-        {
-          std::cout << v << ", ";
-        }
-      std::cout << "\n";
-      
+      ++faceNr;
     }
+
+    result.push_back(foundFaceNumbers);
+  }
 
   return result;
 }
 
 auto CalculateNormalVectorToFaces(const Vertices& vertices,
-                                  const Faces& faces
-                                  )
+  const Faces& faces
+  )
 {
-  Vectors normalVectors;
-  for(auto face : faces)
-    {
-      const auto vector = face.CalculateNormalVector(vertices);
-      normalVectors.push_back(vector);
-    }
+  BOOST_LOG_TRIVIAL(debug) << __FUNCTION__;
 
+  Vectors normalVectors;
+  
+  for(auto face : faces)
+  {
+    const auto vector = face.CalculateNormalVector(vertices);
+    normalVectors.push_back(vector);
+  }
+  
   return normalVectors;
 }
 
 auto CalculateVectorsInVertices(const FaceNumbersInVertices& vertexInFaceDependency,
-                                const Vectors& normalFaceVectors)
+  const Vectors& normalFaceVectors)
 {
-  std::cout << __FUNCTION__ << "\n";
+  BOOST_LOG_TRIVIAL(debug) << __FUNCTION__;  
 
   Vectors vectorsInVertices;
   
   for(auto faces : vertexInFaceDependency)
+  {
+    short x = 0;
+    short y = 0;
+    short z = 0;
+      
+    for(auto faceNr : faces)
     {
-      short x = 0;
-      short y = 0;
-      short z = 0;
-      
-      for(auto faceNr : faces)
-        {
-          std::cout << "face: " <<  faceNr << ", " << x << "\n";
-          
-          x += normalFaceVectors[faceNr].mX;
-          y += normalFaceVectors[faceNr].mY;
-          z += normalFaceVectors[faceNr].mZ;
-        }
-
-      const short count = faces.size();
-      
-      if (faces.size() != 0)
-        {
-          x = x / count;
-          y = y / count;
-          z = z / count;
-        }
-
-      Vertex vertex(x, y, z);
-      std::cout << x << ", " << y << ", " << z << "\n";
-      
-      vectorsInVertices.push_back(Vector3d(vertex));      
+      x += normalFaceVectors[faceNr].mX;
+      y += normalFaceVectors[faceNr].mY;
+      z += normalFaceVectors[faceNr].mZ;
     }
+
+    const short count = faces.size();
+      
+    if (faces.size() != 0)
+    {
+      x = x / count;
+      y = y / count;
+      z = z / count;
+    }
+
+    vectorsInVertices.push_back(Vector3d(x,y,z));      
+  }
 
   return vectorsInVertices;
 }
 
 auto NormalizeVectorsInVertices(const Vectors& vectorsInVertices)
 {
-  std::cout << __FUNCTION__ << "\n";
+  BOOST_LOG_TRIVIAL(debug) << __FUNCTION__;  
 
   Vectors normalizedVectorsInVertices;
 
   for (auto vector : vectorsInVertices)
-    {
-      normalizedVectorsInVertices.push_back(vector.Normalize());
-    }
+  {
+    normalizedVectorsInVertices.push_back(vector.Normalize());
+  }
 
   return normalizedVectorsInVertices;
 }
@@ -127,26 +121,28 @@ void Object3D::CreateNormalVectors()
     
 void Object3D::LogVertices() const
 {
-  std::cout << __FUNCTION__ << "\n";
+  BOOST_LOG_TRIVIAL(debug) << __FUNCTION__;  
   for (auto v : mVertices)
-    {
-      std::cout << v.ToString() << "\n";
-    }
+  {
+    BOOST_LOG_TRIVIAL(debug) << v.ToString();
+  }
 }
 
 void Object3D::LogFaces() const
 {
-  std::cout << __FUNCTION__ << "\n";
+  BOOST_LOG_TRIVIAL(debug) << __FUNCTION__;  
   for (auto face : mFaces)
-    {
-      std::cout << face.ToString() << "\n";
-    }
+  {
+    BOOST_LOG_TRIVIAL(debug) << face.ToString();
+  }
 }
 
 std::pair<Face, Vertices> Object3D::Merge(const Vertices& objectVertices,
                                           const Face& face,
                                           const Vertices& vertices)
 {
+  BOOST_LOG_TRIVIAL(debug) << __FUNCTION__;
+
   Face resultFace;
   Vertices resultVertices = objectVertices;
   

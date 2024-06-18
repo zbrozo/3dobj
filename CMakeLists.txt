@@ -9,7 +9,7 @@ find_package(SDL2 REQUIRED)
 find_package(SDL2_image REQUIRED)
 find_package(SDL2_ttf REQUIRED)
 
-find_package(Boost COMPONENTS filesystem system unit_test_framework program_options REQUIRED)
+find_package(Boost COMPONENTS filesystem system unit_test_framework program_options log REQUIRED)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE INTERNAL "")
@@ -72,7 +72,7 @@ include_directories(${Boost_INCLUDE_DIRS})
 add_executable(tests ${tests_SRC})
 
 target_link_libraries(generator ${Boost_LIBRARIES})
-target_link_libraries(viewer ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES} ${SDL2_TTF_LIBRARIES})
+target_link_libraries(viewer ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES} ${SDL2_TTF_LIBRARIES} ${Boost_LIBRARIES})
 target_link_libraries(tests ${Boost_LIBRARIES})
 
 enable_testing()

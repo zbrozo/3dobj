@@ -19,6 +19,7 @@ namespace
     allComponentFactories.push_back(std::make_unique<Component0Factory>());
     allComponentFactories.push_back(std::make_unique<Component1Factory>());
     allComponentFactories.push_back(std::make_unique<Component2Factory>());
+    allComponentFactories.push_back(std::make_unique<Component3Factory>());
   }
 }
 

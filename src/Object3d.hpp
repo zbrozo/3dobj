@@ -27,7 +27,7 @@ public:
   virtual ~Object3D() = default;
 
   Object3D(Object3D const &) = delete;
-  Object3D(Object3D &&) = default;
+  Object3D(Object3D &&) = delete;
   Object3D& operator=(Object3D const &) = delete;
   Object3D& operator=(Object3D &&) = delete;
   

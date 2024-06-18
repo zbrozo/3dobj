@@ -2,6 +2,8 @@
 #include <fstream>
 #include <string>
 #include <algorithm>
+#include <boost/log/trivial.hpp>
+
 #include "AmigaFile.hpp"
 #include "Object3d.hpp"
 
@@ -63,34 +65,31 @@ bool AmigaFile::Save(const Object3D& object3d)
   
   if (!file)
     {
-      std::cout << "ERROR: File is not opened" << "\n";
+      BOOST_LOG_TRIVIAL(error) << "File is not opened (" << object3d.mName << ")" ;
       return false;
     }
-  
+
+  BOOST_LOG_TRIVIAL(debug) << "Save file: " << object3d.mName;
+
   WriteWord(file, object3d.mVertices.size());
   WriteWord(file, object3d.mFaces.size());
 
-  std::cout << "vertices" << "\n";
   for (auto it = object3d.mVertices.rbegin(); it != object3d.mVertices.rend(); ++it)
     {
       auto value = *it;
-      std::cout << value.ToString() << "\n";
       WriteWord(file, value.mX);
       WriteWord(file, value.mY);
       WriteWord(file, value.mZ);
     }
 
-  std::cout << "normalized vectors in vertices" << "\n";
   for (auto it = object3d.mNormalVectorsInVertices.rbegin(); it != object3d.mNormalVectorsInVertices.rend(); ++it)
     {
       auto value = *it;
-      std::cout << value.ToString() << "\n";
       WriteWord(file, value.mX);
       WriteWord(file, value.mY);
       WriteWord(file, value.mZ);
     }
   
-  std::cout << "faces" << "\n";
   for(auto face : object3d.mFaces)
     {
       WriteWord(file, 0);
@@ -101,12 +100,9 @@ bool AmigaFile::Save(const Object3D& object3d)
         }
     }
 
-  std::cout << "normalized face vectors" << "\n";
-
   for (auto it = object3d.mNormalVectorsInFaces.rbegin(); it != object3d.mNormalVectorsInFaces.rend(); ++it)
     {
       auto face = *it;
-      std::cout << face.ToString() << "\n";
       WriteWord(file, face.mX);
       WriteWord(file, face.mY);
       WriteWord(file, face.mZ);
@@ -126,14 +122,16 @@ bool AmigaFile::Load(const std::string& name, Object3D& object3d)
   
   if (!file)
     {
-      std::cout << "ERROR: File is not opened" << "\n";
+      BOOST_LOG_TRIVIAL(error) << "File is not opened";
       return false;
     }
 
+  BOOST_LOG_TRIVIAL(debug) << "Load file: " << name;
+  
   unsigned short verticesCount = ReadWord(file);
   unsigned short facesCount = ReadWord(file);
 
-  std::cout << "vertices = " + std::to_string(verticesCount) << "\n";
+  BOOST_LOG_TRIVIAL(debug) << "vertices = " + std::to_string(verticesCount);
 
   for (int i = 0; i < verticesCount; i++)
     {
@@ -141,25 +139,21 @@ bool AmigaFile::Load(const std::string& name, Object3D& object3d)
       const auto y = ReadWord(file);
       const auto z = ReadWord(file);
       const Vertex vertex(x,y,z);
-      std::cout << vertex.ToString() << "\n";
       object3d.mVertices.push_back(vertex);
     }
   std::reverse(object3d.mVertices.begin(), object3d.mVertices.end());
   
-  std::cout << "normalized vectors in vertices" << "\n";
-
   for (int i = 0; i < verticesCount; i++)
     {
       const auto x = ReadWord(file);
       const auto y = ReadWord(file);
       const auto z = ReadWord(file);
       const Vector3d vector3d(x,y,z);
-      std::cout << vector3d.ToString() << "\n";
       object3d.mNormalVectorsInVertices.push_back(vector3d);
     }
   std::reverse(object3d.mNormalVectorsInVertices.begin(), object3d.mNormalVectorsInVertices.end());
 
-  std::cout << "faces = " + std::to_string(facesCount) << "\n";
+  BOOST_LOG_TRIVIAL(debug) << "faces = " + std::to_string(facesCount);
 
   for (int i = 0; i < facesCount; i++)
     {
@@ -174,8 +168,6 @@ bool AmigaFile::Load(const std::string& name, Object3D& object3d)
         }
       object3d.mFaces.push_back(face);
     }
-  
-  std::cout << "normalized face vectors" << "\n";
 
   for (int i = 0; i < facesCount; i++)
     {
@@ -186,7 +178,7 @@ bool AmigaFile::Load(const std::string& name, Object3D& object3d)
       object3d.mNormalVectorsInFaces.push_back(vector3d);
     }
   std::reverse(object3d.mNormalVectorsInFaces.begin(), object3d.mNormalVectorsInFaces.end());
-
+  
   file.close();
 
   return true;

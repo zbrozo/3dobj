@@ -13,10 +13,10 @@ Vector3d Face::CalculateNormalVector(const std::vector<Vertex>& vertices) const
     {
       throw std::out_of_range("Vertex numbers in a face error");
     }
-  
-  auto n1 = this->at(0);
-  auto n2 = this->at(1);
-  auto n3 = this->at(2);
+
+  const auto n1 = this->at(0);
+  const auto n2 = this->at(1);
+  const auto n3 = this->at(2);
 
   auto v1 = Vector3d(vertices[n2].mX - vertices[n1].mX,
                      vertices[n2].mY - vertices[n1].mY,
@@ -50,9 +50,9 @@ Vertex Face::GetCenter(const std::vector<Vertex>& vertices) const
       z += vertices[nr].mZ;
     }
 
-  x /= size;
-  y /= size;
-  z /= size;
+  x /= static_cast<int>(size);
+  y /= static_cast<int>(size);
+  z /= static_cast<int>(size);
   
   return Vertex(x, y, z);
 }

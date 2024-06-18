@@ -4,6 +4,7 @@
 #include <memory>
 #include <algorithm>
 #include <any>
+#include <stdexcept>
 
 #include "Vertices.hpp"
 #include "Object3d.hpp"
@@ -54,6 +55,7 @@ Vertex CalculatePerspective(const Vertex& v)
   auto y = (v.mY << 10) / z;
   return Vertex(x, y, 0);
 }
+
 const char *help =
   "ESC - quit viewer\n"
   "F1-F12 - objects\n"
@@ -121,6 +123,26 @@ void CalculateLight(int light,
     }
 }
 
+void RenderFace(SDL_Renderer* rend, int size, const std::vector<SDL_Vertex>& geometryVertices, SDL_Texture* texture = nullptr)
+{
+  switch(size)
+  {
+  case 3:
+  {
+    SDL_RenderGeometry(rend, texture, geometryVertices.data(), geometryVertices.size(), nullptr, 0);
+    break;
+  }
+  case 4:
+  {
+    const int triangleIndices[] = {0,1,2,3,2,0};
+    SDL_RenderGeometry(rend, texture, geometryVertices.data(), geometryVertices.size(), triangleIndices, 6);
+    break;
+  }
+  default:
+    throw std::invalid_argument("Face is not handled");
+  }
+}
+
 void DrawFlatShading(SDL_Renderer* rend,
                      const Vertices& vertices2d,
                      const Faces& faces,
@@ -152,10 +174,9 @@ void DrawFlatShading(SDL_Renderer* rend,
           vertex.position.y = y + CenterY;
           geometryVertices.push_back(vertex);
         }
-      
-      const int triangleIndices[] = {0,1,2,3,2,0};
-      SDL_RenderGeometry(rend, NULL, geometryVertices.data(), geometryVertices.size(), triangleIndices, 6);
 
+      RenderFace(rend, face.size(), geometryVertices);
+      
       ++faceNr;
     }
 }
@@ -190,8 +211,7 @@ void DrawGouraudShading(SDL_Renderer* rend,
           geometryVertices.push_back(vertex);
         }
 
-      const int triangleIndices[] = {0,1,2,3,2,0};
-      SDL_RenderGeometry(rend, NULL, geometryVertices.data(), geometryVertices.size(), triangleIndices, 6);
+      RenderFace(rend, face.size(), geometryVertices);
     }
 }
 
@@ -228,8 +248,7 @@ void DrawTextureMapping(SDL_Renderer* rend,
           geometryVertices.push_back(vertex);
         }
 
-      const int triangleIndices[] = {0,1,2,3,2,0};
-      SDL_RenderGeometry(rend, texture, geometryVertices.data(), geometryVertices.size(), triangleIndices, 6);
+      RenderFace(rend, face.size(), geometryVertices, texture);
     }
 }
 
@@ -256,9 +275,9 @@ void DrawNormalVectorsInFaces(SDL_Renderer* rend,
       const auto v2 = CalculatePerspective(v + normalVectorsInFaces[faceNr]);
       
       SDL_RenderDrawLine(rend,
-                         v1.mX + CenterX, v1.mY + CenterY,
-                         v2.mX + CenterX, v2.mY + CenterY
-                         );
+        v1.mX + CenterX, v1.mY + CenterY,
+        v2.mX + CenterX, v2.mY + CenterY
+        );
 
       ++faceNr;
     }
@@ -379,7 +398,7 @@ int main(int argc, char* argv[])
     {
       std::cout << "No object files provided\n"
                 << "Command line:\n"
-                << "  viewer file...\n";
+                << "  viewer file..." << std::endl;
       return 0;
     }
   
@@ -416,7 +435,7 @@ int main(int argc, char* argv[])
   SDL_Surface* surface = IMG_Load("wood.png");
   if (surface == 0)
     {
-      std::cout << "No image file" << "\n";
+      std::cerr << "No image file" << std::endl;
       return 1;
     }
  
