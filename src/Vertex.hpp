@@ -1,38 +1,37 @@
 #pragma once
 
 #include <string>
-
-class Vertex
+  
+template<class T>
+class Vertex3D
 {
-
 public:
 
-  short mX;
-  short mY;
-  short mZ;
+  T mX = 0;
+  T mY = 0;
+  T mZ = 0;
 
-  Vertex() :
-    mX(0), mY(0), mZ(0)
-  {
-  }
+  Vertex3D() {}
     
-  Vertex(short x, short y, short z) :
+  Vertex3D(T x, T y, T z) :
     mX(x), mY(y), mZ(z)
   {
   }
 
-  virtual ~Vertex() = default;
+  virtual ~Vertex3D() = default;
 
-  Vertex(Vertex const &) = default;
-  Vertex(Vertex &&) = default;
-  Vertex& operator=(const Vertex& v) = default;
-  Vertex& operator=(Vertex &&) = default;
+  Vertex3D(Vertex3D const &) = default;
+  Vertex3D(Vertex3D &&) = default;
+  Vertex3D& operator=(const Vertex3D& v) = default;
+  Vertex3D& operator=(Vertex3D &&) = default;
   
-  Vertex operator+(const Vertex& v) const;
-  bool operator==(const Vertex& v) const;
-  Vertex operator*(short value) const;
-  Vertex operator/(short value) const;
+  Vertex3D operator+(const Vertex3D& v) const;
+  bool operator==(const Vertex3D& v) const;
+  Vertex3D operator*(T value) const;
+  Vertex3D operator/(T value) const;
   
   std::string ToString() const;
-  Vertex Rotate(int degX, int degY, int degZ) const;
+  //  Vertex3D Rotate(int degX, int degY, int degZ) const;
 };
+
+using Vertex = Vertex3D<short>;

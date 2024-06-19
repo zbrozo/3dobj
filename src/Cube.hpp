@@ -28,10 +28,11 @@ protected:
   
   std::pair<Faces, Vertices> CreateCube(const Faces& faces, const Vertices& vertices);
 
-  void RotateSide(int degx, int degy, int degz,
-                  const Faces& faces,
-                  const Vertices& vertices,
-                  Faces& objectFaces,
-                  Vertices& objectVertices);
+  static void RotateSide(
+    int degx, int degy, int degz,
+    const Faces& faces,
+    const Vertices& vertices,
+    Faces& objectFaces,
+    Vertices& objectVertices);
   
 };

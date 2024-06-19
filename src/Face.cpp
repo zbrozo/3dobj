@@ -1,5 +1,5 @@
-#include "Face.hpp"
 #include "Vertex.hpp"
+#include "Face.hpp"
 #include "Vector3d.hpp"
 #include <cmath>
 #include <stdexcept>

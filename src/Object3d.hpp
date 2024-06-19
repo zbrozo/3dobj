@@ -4,8 +4,8 @@
 #include <string>
 #include <utility>
 
-#include "Vector3d.hpp"
 #include "Vertex.hpp"
+#include "Vector3d.hpp"
 #include "Face.hpp"
 #include "Vertices.hpp"
 

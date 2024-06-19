@@ -1,4 +1,5 @@
 #include "ObjectComponents.hpp"
+
 #include <algorithm>
 
 namespace

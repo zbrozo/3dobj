@@ -2,7 +2,8 @@
 #include <vector>
 #include <string>
 
-class Vertex;
+#include "Vertex.hpp"
+
 class Vector3d;
 
 class Face : public std::vector<unsigned short>

@@ -71,8 +71,8 @@ const char *helpDetailed =
   "6 - textured\n"
   "space - rotate\n"
   "cursors - modify rotation\n"
-  ", - zoom\n"
-  ". - zoom\n"
+  ", - zoom in\n"
+  ". - zoom out\n"
   ;
 
 void RotateObject(Object3D* object,

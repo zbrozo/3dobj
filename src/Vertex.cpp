@@ -1,53 +1,54 @@
 #include "Vertex.hpp"
-#include "Rotation.hpp"
+//#include "Rotation.hpp"
 
-Vertex Vertex::operator+(const Vertex& v) const
+template<class T>
+Vertex3D<T> Vertex3D<T>::operator+(const Vertex3D<T>& v) const
 {
-  const Vertex result(mX + v.mX,
-                      mY + v.mY,
-                      mZ + v.mZ);
-  return result;
+  return Vertex3D<T>(mX + v.mX, mY + v.mY, mZ + v.mZ);
 }
 
-bool Vertex::operator==(const Vertex& v) const
+template<class T>
+bool Vertex3D<T>::operator==(const Vertex3D<T>& v) const
 {
   return (mX == v.mX && mY == v.mY && mZ == v.mZ);
 }
 
-Vertex Vertex::operator*(short value) const
+template<typename T>
+Vertex3D<T> Vertex3D<T>::operator*(T value) const
 {
-  const Vertex result(mX * value, mY * value, mZ * value);
-  return result;
+  return Vertex3D<T>(mX * value, mY * value, mZ * value);
 }
 
-Vertex Vertex::operator/(short value) const
+template<typename T>
+Vertex3D<T> Vertex3D<T>::operator/(T value) const
 {
-  Vertex vertex(mX / value, mY / value, mZ / value);
-  
-  if (abs(mX % value) >= (value / 2))
+  Vertex3D<T> vertex(mX / value, mY / value, mZ / value);
+
+  auto rounding = [value](T pos, T& result)
+  {
+    if (abs(pos % value) >= (value / 2))
     {
-      vertex.mX += vertex.mX < 0 ? -1 : 1;
+      result += result < 0 ? -1 : 1;
     }
-  
-  if (abs(mY % value) >= (value / 2))
-    {
-      vertex.mY += vertex.mY < 0 ? -1 : 1;
-    }
-  
-  if (abs(mZ % value) >= (value / 2))
-    {
-      vertex.mZ += vertex.mZ < 0 ? -1 : 1;
-    }
-  
+  };
+
+  rounding(mX, vertex.mX);
+  rounding(mY, vertex.mY);
+  rounding(mZ, vertex.mZ);
+
   return vertex;
 }
 
-std::string Vertex::ToString() const
+template<typename T>
+std::string Vertex3D<T>::ToString() const
 {
-  const std::string s(std::to_string(mX) + ", " + std::to_string(mY) + ", " + std::to_string(mZ));
-  return s;
+  return std::to_string(mX) + ", " + std::to_string(mY) + ", " + std::to_string(mZ);
 }
 
+template class Vertex3D<short>;
+template class Vertex3D<long>;
+
+/*
 Vertex Vertex::Rotate(int degX, int degY, int degZ) const
 {
   Rotation rotation;
@@ -71,3 +72,4 @@ Vertex Vertex::Rotate(int degX, int degY, int degZ) const
 
   return v;
 }
+*/
