@@ -1,4 +1,5 @@
-./generator -t cube 50 -v
+cmake --build build
+./generator -t cube 50 
 ./generator -t cube-ext -c 1 2 -p 100 
 ./generator -t cube-ext -c 3 -p 50
 ./generator -t thorus 4 3 

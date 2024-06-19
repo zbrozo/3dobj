@@ -56,7 +56,8 @@ Vertex CalculatePerspective(const Vertex& v)
   return Vertex(x, y, 0);
 }
 
-const char *help =
+const char *help = "press h for help";
+const char *helpDetailed =
   "ESC - quit viewer\n"
   "F1-F12 - objects\n"
   "1 - line vectors\n"
@@ -75,11 +76,7 @@ void RotateObject(Object3D* object,
                   Vectors& normalVectorsInVertices)
 {
   auto rotate = [degx, degy, degz](const Vector3d& v){
-    Rotation rotation;
-    const auto v2 = rotation.rotateX(v, degx);
-    const auto v3 = rotation.rotateY(v2, degy);
-    const auto v4 = rotation.rotateZ(v3, degz);
-    return v4;
+    return v.Rotate(degx, degy, degz);
   };
   
   for (auto v : object->mVertices)
@@ -428,8 +425,10 @@ int main(int argc, char* argv[])
   // creates a renderer to render our images
   SDL_Renderer* rend = SDL_CreateRenderer(win, -1, render_flags);
 
-  SDL_Rect messageRect;
-  SDL_Texture *messageTexture = getMessage(rend, 0, 0, help, font, &messageRect);
+  SDL_Rect helpRect;
+  SDL_Rect helpDetailsRect;
+  SDL_Texture *helpTexture = getMessage(rend, 0, 0, help, font, &helpRect);
+  SDL_Texture *helpDetailsTexture = getMessage(rend, 0, 0, helpDetailed, font, &helpDetailsRect);
   
   SDL_Surface* surface = IMG_Load("wood.png");
   if (surface == 0)
@@ -453,6 +452,8 @@ int main(int argc, char* argv[])
   int speedz = 0;
   
   int light = maxLightValue;
+
+  bool help = false;
   
   unsigned short drawMode = 0;
   auto SwitchDrawMode = [&](DrawMode mode){
@@ -474,6 +475,7 @@ int main(int argc, char* argv[])
 
   std::map<int, std::function<void()>> keyActions{
     {SDL_SCANCODE_ESCAPE, [&](){ close = 1; }},
+    {SDL_SCANCODE_H, [&](){ help = !help; }},
     {SDL_SCANCODE_1, [&](){ SwitchDrawMode(DrawMode_LineVectors); }},
     {SDL_SCANCODE_2, [&](){ SwitchDrawMode(DrawMode_NormalVectorsInFaces); }},
     {SDL_SCANCODE_3, [&](){ SwitchDrawMode(DrawMode_NormalVectorsInVertices); }},
@@ -651,17 +653,21 @@ int main(int argc, char* argv[])
       {
         degz = 0;
       }
-        
+
+    auto msgTexture = help ? helpDetailsTexture : helpTexture;
+    auto msgRect = help ? &helpDetailsRect : &helpRect;
+    SDL_RenderCopy(rend, msgTexture, NULL, msgRect);
+
     // triggers the double buffers
     // for multiple rendering
-    SDL_RenderCopy(rend, messageTexture, NULL, &messageRect);
     SDL_RenderPresent(rend);
 
     // calculates to 60 fps
     SDL_Delay(1000 / 60);
   }
 
-  SDL_DestroyTexture(messageTexture);
+  SDL_DestroyTexture(helpTexture);
+  SDL_DestroyTexture(helpDetailsTexture);
   TTF_Quit();
     
   SDL_DestroyRenderer(rend);
