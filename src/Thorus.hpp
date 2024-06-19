@@ -2,26 +2,23 @@
 
 #include "Object3d.hpp"
 #include "IGenerator.hpp"
+#include <optional>
 
 class Thorus : public Object3D, public IGenerator
 {
-
-  int mCircleSize;
-  int mRingSize;
+  int mCircleAmount = 10;
+  int mRingAmount = 10;
+  int mCircleRadius = 30;
+  int mCircleOffset = 50;
   
 public:
 
-  Thorus(int circleSize, int ringSize, const char* name) :
-    Object3D(name),
-    mCircleSize(circleSize), mRingSize(ringSize)
-  {
-  }
-  
-  Thorus(int circleSize, int ringSize) :
-    Object3D("thorus"),
-    mCircleSize(circleSize), mRingSize(ringSize)
-  {
-  }
+  Thorus(
+    const char* name,
+    std::optional<int> circleAmount,
+    std::optional<int> ringAmount,
+    std::optional<int> circleRadius,
+    std::optional<int> circleOffset);
 
   virtual ~Thorus() = default;
   

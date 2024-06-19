@@ -13,11 +13,23 @@ using namespace std::placeholders;
 
 namespace
 {
-  const std::string TooLessParamsMessage = "Too less parameters for ";
+const std::string TooLessParamsMessage = "Too less parameters for ";
 
-  auto findParamsVector = [](const std::pair<ParamsId, ParamsVector>& params, ParamsId id) {
-    return params.first == id;
-  };
+auto findParamsVector = [](const std::pair<ParamsId, ParamsVector> &params,  ParamsId id)
+{
+  return params.first == id;
+};
+
+auto getParam(std::vector<int> values, unsigned int index)
+{
+  if (values.size() > index)
+  {
+    return std::optional<int>{values[index]};
+  }
+  
+  return std::optional<int>();
+}
+
 }
 
 std::unique_ptr<Object3D> CubeFactory::FactoryMethod(
@@ -53,19 +65,15 @@ std::unique_ptr<Object3D> ThorusFactory::FactoryMethod(
   const std::string& name,
   const ParamsMap& params) const
 {
-  const auto& additionalParams = params.at(ParamsId::AdditionalParams);
+  const auto& foundParams = params.at(ParamsId::AdditionalParams);
   
-  if (additionalParams.size() < 2)
-  {
-    throw std::out_of_range(TooLessParamsMessage + name);
-  }
+  const auto circleAmount = getParam(foundParams, 0);
+  const auto ringAmount = getParam(foundParams, 1);
+  const auto circleRadius = getParam(foundParams, 2);
+  const auto circleOffset = getParam(foundParams, 3);
   
-  const auto circleSize = additionalParams[0];
-  const auto ringSize = additionalParams[1];
   const auto nameExt = CreateFullName(name, params);
   
-  return std::make_unique<Thorus>(
-    circleSize,
-    ringSize,
-    nameExt.c_str());
+  return std::make_unique<Thorus>(nameExt.c_str(),
+    circleAmount, ringAmount, circleRadius, circleOffset);
 }

@@ -39,8 +39,8 @@ std::map<std::string, ObjectId> ObjectIdMap {
 
 std::map<ObjectId, std::string> ParamsHelp {
   {ObjectId::Cube, "additional-params: size"},
-  {ObjectId::CubeExt, "component-params depends on components"},
-  {ObjectId::Thorus, "additional-params: thorusCircleSize thorusRingSize"}
+  {ObjectId::CubeExt, "component-list and component-params must be defined"},
+  {ObjectId::Thorus, "additional-params: circleAmount ringAmount circleSize circleOffset"}
 };
 
 using ObjectFactoryPair = std::pair<ObjectId, std::unique_ptr<ObjectFactoryBase>>;
@@ -109,14 +109,14 @@ void SetLogging(bool verbose)
 
 int main(int argc, char* argv[])
 {
-  po::options_description optionsDesc("generator [options] <type> [params]\n");
+  po::options_description optionsDesc("generator <type> [params]\n");
   optionsDesc.add_options()
     ("help,h", "produce help message")
     ("verbose,v", "produce verbose logs")
     ("type,t", po::value<std::string>(), "object3d type")
-    ("component-list,c", po::value<ParamsVector>()->multitoken(), "component id list")
-    ("component-params,p", po::value<ParamsVector>()->multitoken(), "component params")
-    ("additional-params", po::value<ParamsVector>(), "additional params");
+    ("component-list,c", po::value<ParamsVector>()->multitoken(), "0 - Square, 1 - SquareWithHolePart1, 2 - SquareWithHolePart2, 3 - Pyramid")
+    ("component-params,p", po::value<ParamsVector>()->multitoken(), "depends on particular component")
+    ("additional-params", po::value<ParamsVector>(), "depends on selected object in type");
 
   const po::variables_map& options = ReadGeneratorParams(argc, argv, optionsDesc);
 

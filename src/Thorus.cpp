@@ -59,18 +59,18 @@ namespace {
     return faces;
   }
   
-  Vertices CreateCircleVertices(int size)
+Vertices CreateCircleVertices(int amount, int radius)
   {
-    Vertex vertex(0, 0, 30);
+    Vertex vertex(0, 0, radius);
     Rotation rotate;
 
-    const int degStep = (360 << 8) / size;
+    const int degStep = (360 << 8) / amount;
     int degree = 0;
 
     Vertices circle;
 
     // obrót w X punktu aby utworzyć "okrąg"
-    for (int i = 0; i < size; i++)
+    for (int i = 0; i < amount; i++)
       {
         const int d = (degree >> 8);
         circle.push_back(rotate.rotateX(vertex, d));
@@ -92,16 +92,16 @@ namespace {
   }
 
 
-  Vertices CreateRingVertices(Vertices circle, int size)
+  Vertices CreateRingVertices(Vertices circle, int amount)
   {
     Vertices vertices;
     Rotation rotate;
     
-    const int degStep = (360 << 8) / size;
+    const int degStep = (360 << 8) / amount;
     int degree = 0;
   
     // obrót w Z okręgu tworzy torus
-    for (int i = 0; i < size; i++)
+    for (int i = 0; i < amount; i++)
     {
       for (const auto& v : circle)
         {
@@ -173,23 +173,48 @@ namespace {
   
 }
 
+Thorus::Thorus(
+  const char* name,
+  std::optional<int> circleAmount,
+  std::optional<int> ringAmount,
+  std::optional<int> circleRadius,
+  std::optional<int> circleOffset) :
+  Object3D(name)
+{
+  if (circleAmount.has_value())
+  {
+    mCircleAmount = circleAmount.value();
+  }
+  if (ringAmount.has_value())
+  {
+    mRingAmount = ringAmount.value();
+  }
+  if (circleRadius.has_value())
+  {
+    mCircleRadius = circleRadius.value();
+  }
+  if (circleOffset.has_value())
+  {
+    mCircleOffset = circleOffset.value();
+  }
+}
 
 void Thorus::Generate()
 {
-  Vertices circle = CreateCircleVertices(mCircleSize);
-  circle = MoveVertices(circle, Vertex(0,50,0));
-  mVertices = CreateRingVertices(circle, mRingSize);
+  Vertices circle = CreateCircleVertices(mCircleAmount, mCircleRadius);
+  circle = MoveVertices(circle, Vertex(0, mCircleOffset, 0));
+  mVertices = CreateRingVertices(circle, mRingAmount);
 
   /// --- Faces ---
 
-  auto internalFaces = CreateInternalFacesInRing(mCircleSize, mRingSize);
+  auto internalFaces = CreateInternalFacesInRing(mCircleAmount, mRingAmount);
     
   for (auto face : internalFaces)
     {
       mFaces.push_back(face);
     }
 
-  auto externalFaces = CreateExternalFacesInRing(mCircleSize, mRingSize);
+  auto externalFaces = CreateExternalFacesInRing(mCircleAmount, mRingAmount);
     
   for (auto face : externalFaces)
     {
