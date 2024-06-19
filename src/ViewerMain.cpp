@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <any>
 #include <stdexcept>
+#include <functional>
 
 #include "Vertices.hpp"
 #include "Object3d.hpp"
@@ -17,6 +18,8 @@
 #include <SDL2/SDL_timer.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
+
+using namespace std::placeholders;
 
 const int maxColorNumber = 64;
 const int maxLightValue = 64;
@@ -48,9 +51,9 @@ void PrepareColors()
   }
 }
 
-Vertex CalculatePerspective(const Vertex& v)
+Vertex CalculatePerspective(const Vertex& v, int zoom = 400)
 {
-  auto z = v.mZ + 400;
+  auto z = v.mZ + zoom;
   auto x = (v.mX << 10) / z;
   auto y = (v.mY << 10) / z;
   return Vertex(x, y, 0);
@@ -67,7 +70,10 @@ const char *helpDetailed =
   "5 - gouraud shaded\n"
   "6 - textured\n"
   "space - rotate\n"
-  "cursors - modify rotation\n";
+  "cursors - modify rotation\n"
+  ", - zoom\n"
+  ". - zoom\n"
+  ;
 
 void RotateObject(Object3D* object,
   int degx, int degy, int degz,
@@ -75,8 +81,10 @@ void RotateObject(Object3D* object,
   Vectors& normalVectorsInFaces,
   Vectors& normalVectorsInVertices)
 {
-  auto rotate = [degx, degy, degz](const Vector3d& v){
-    return v.Rotate(degx, degy, degz);
+  Rotation rotation;
+  
+  auto rotate = [&rotation, degx, degy, degz](const Vector3d& v){
+    return rotation.rotateZ(rotation.rotateY(rotation.rotateX(v, degx) ,degy), degz);
   };
   
   for (auto v : object->mVertices)
@@ -119,9 +127,13 @@ void CalculateLight(int light,
   }
 }
 
-void RenderFace(SDL_Renderer* rend, int size, const std::vector<SDL_Vertex>& geometryVertices, SDL_Texture* texture = nullptr)
+void RenderFace(
+  SDL_Renderer* rend,
+  int quantityOfVertices,
+  const std::vector<SDL_Vertex>& geometryVertices,
+  SDL_Texture* texture = nullptr)
 {
-  switch(size)
+  switch(quantityOfVertices)
   {
   case 3:
   {
@@ -253,7 +265,8 @@ void DrawNormalVectorsInFaces(SDL_Renderer* rend,
   const Vertices& vertices,
   const Vertices& vertices2d,
   const Faces& faces,
-  const Vectors& normalVectorsInFaces
+  const Vectors& normalVectorsInFaces,
+  const std::function<Vector3d(const Vector3d&)> calcPerspectiveFunction
   )
 {
   unsigned int faceNr = 0;
@@ -267,12 +280,12 @@ void DrawNormalVectorsInFaces(SDL_Renderer* rend,
     }
 
     const auto v = face.GetCenter(vertices);
-    const auto v1 = CalculatePerspective(v);
-    const auto v2 = CalculatePerspective(v + normalVectorsInFaces[faceNr]);
+    const auto vBegin = calcPerspectiveFunction(v);
+    const auto vEnd = calcPerspectiveFunction(v + normalVectorsInFaces[faceNr]);
       
     SDL_RenderDrawLine(rend,
-      v1.mX + CenterX, v1.mY + CenterY,
-      v2.mX + CenterX, v2.mY + CenterY
+      vBegin.mX + CenterX, vBegin.mY + CenterY,
+      vEnd.mX + CenterX, vEnd.mY + CenterY
       );
 
     ++faceNr;
@@ -283,7 +296,8 @@ void DrawNormalVectorsInVertices(SDL_Renderer* rend,
   const Vertices& vertices,
   const Vertices& vertices2d,
   const Faces& faces,
-  const Vectors& normalVectorsInVertices
+  const Vectors& normalVectorsInVertices,
+  const std::function<Vector3d(const Vector3d&)> calcPerspectiveFunction
   )
 {
   unsigned int faceNr = 0;
@@ -300,12 +314,12 @@ void DrawNormalVectorsInVertices(SDL_Renderer* rend,
             
     for (unsigned int i = 0; i < size; ++i)
     {
-      const auto v1 = vertices2d[face[i]];
-      const auto v2 = CalculatePerspective(vertices[face[i]] + normalVectorsInVertices[face[i]]);
+      const auto vBegin = vertices2d[face[i]];
+      const auto vEnd = calcPerspectiveFunction(vertices[face[i]] + normalVectorsInVertices[face[i]]);
                 
       SDL_RenderDrawLine(rend,
-        v1.mX + CenterX, v1.mY + CenterY,
-        v2.mX + CenterX, v2.mY + CenterY
+        vBegin.mX + CenterX, vBegin.mY + CenterY,
+        vEnd.mX + CenterX, vEnd.mY + CenterY
         );
     }
 
@@ -452,7 +466,8 @@ int main(int argc, char* argv[])
   int speedz = 0;
   
   int light = maxLightValue;
-
+  int zoom = 400;
+  
   bool help = false;
   
   unsigned short drawMode = 0;
@@ -474,6 +489,8 @@ int main(int argc, char* argv[])
   };
 
   std::map<int, std::function<void()>> keyActions{
+    {SDL_SCANCODE_COMMA, [&](){ zoom -= 10; }},
+    {SDL_SCANCODE_PERIOD, [&](){ zoom += 10; }},
     {SDL_SCANCODE_ESCAPE, [&](){ close = 1; }},
     {SDL_SCANCODE_H, [&](){ help = !help; }},
     {SDL_SCANCODE_1, [&](){ SwitchDrawMode(DrawMode_LineVectors); }},
@@ -583,7 +600,7 @@ int main(int argc, char* argv[])
       Vertices vertices2d;
       for (const auto& v : vertices)
       {
-        const auto v2d = CalculatePerspective(v);
+        const auto v2d = CalculatePerspective(v, zoom);
         vertices2d.push_back(v2d);
       }
 
@@ -619,7 +636,8 @@ int main(int argc, char* argv[])
           vertices,
           vertices2d,
           object->mFaces,
-          normalVectorsInFaces);
+          normalVectorsInFaces,
+          std::bind(CalculatePerspective, _1, zoom));
       }
 
       if (drawMode & DrawMode_NormalVectorsInVertices)
@@ -628,7 +646,8 @@ int main(int argc, char* argv[])
           vertices,
           vertices2d,
           object->mFaces,
-          normalVectorsInVertices);
+          normalVectorsInVertices,
+          std::bind(CalculatePerspective, _1, zoom));
       }
         
       if (drawMode & DrawMode_LineVectors)
