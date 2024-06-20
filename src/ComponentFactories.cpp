@@ -1,5 +1,5 @@
 #include "ComponentFactories.hpp"
-#include "ObjectComponents.hpp"
+#include "Components.hpp"
 #include "Object3D.hpp"
 #include "Params.hpp"
 
@@ -9,22 +9,23 @@
 
 using namespace std::placeholders;
 
-namespace {
+namespace
+{
 
-  auto findParamsVector = [](const std::pair<ParamsId, ParamsVector> &params, ParamsId id)
-  {
-    return params.first == id;
-  };
+auto findParamsVector = [](const std::pair<ParamsId, ParamsVector> &params, ParamsId id)
+{
+  return params.first == id;
+};
 
-  auto getParam(std::vector<int> values, unsigned int index)
+auto getParam(std::vector<int> values, unsigned int index)
+{
+  if (values.size() > index)
   {
-    if (values.size() > index)
-    {
-      return std::optional<int>{values[index]};
-    }
-    
-    return std::optional<int>();
+    return std::optional<int>{values[index]};
   }
+    
+  return std::optional<int>();
+}
   
 } // namespace
   
@@ -40,7 +41,7 @@ std::unique_ptr<Object3D> Component0Factory::FactoryMethod(
     param = getParam(it->second, 0);
   }
   
-  return std::make_unique<Component0>(param);
+  return std::make_unique<Components::Square>(param);
 }
 
 std::unique_ptr<Object3D> Component1Factory::FactoryMethod(
@@ -59,7 +60,7 @@ std::unique_ptr<Object3D> Component1Factory::FactoryMethod(
     param3 = getParam(it->second, 2);
   }
 
-  return std::make_unique<Component1>(param1, param2, param3);
+  return std::make_unique<Components::SquareWithHolePart1>(param1, param2, param3);
 }
 
 std::unique_ptr<Object3D> Component2Factory::FactoryMethod(
@@ -76,7 +77,7 @@ std::unique_ptr<Object3D> Component2Factory::FactoryMethod(
     param2 = getParam(it->second, 1);
   }
   
-  return std::make_unique<Component2>(param1, param2);
+  return std::make_unique<Components::SquareWithHolePart2>(param1, param2);
 }
 
 std::unique_ptr<Object3D> Component3Factory::FactoryMethod(
@@ -93,5 +94,5 @@ std::unique_ptr<Object3D> Component3Factory::FactoryMethod(
     param2 = getParam(it->second, 1);
   }
   
-  return std::make_unique<Component3>(param1, param2);
+  return std::make_unique<Components::Pyramid>(param1, param2);
 }

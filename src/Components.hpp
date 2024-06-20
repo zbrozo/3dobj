@@ -6,13 +6,16 @@
 #include <optional>
 #include <iostream>
 
-class Component0 : public Object3D, public IGenerator
+namespace Components
+{
+
+class Square : public Object3D, public IGenerator
 {
   int mSize = 50;
   
 public:
 
-  Component0(std::optional<int> size) :
+  Square(std::optional<int> size) :
     Object3D("")
   {
     if (size.has_value())
@@ -23,16 +26,16 @@ public:
 
   void Generate() override;
   
-  virtual ~Component0() = default;
+  virtual ~Square() = default;
   
-  Component0(Component0 const &) = delete;
-  Component0(Component0 &&) = delete;
-  Component0& operator=(const Component0&) = delete;
-  Component0& operator=(Component0 &&) = delete;
+  Square(Square const &) = delete;
+  Square(Square &&) = delete;
+  Square& operator=(const Square&) = delete;
+  Square& operator=(Square &&) = delete;
 
 };
 
-class Component1 : public Object3D, public IGenerator
+class SquareWithHolePart1 : public Object3D, public IGenerator
 {
   int mSize1 = 50;
   int mSize2 = 20;
@@ -40,7 +43,7 @@ class Component1 : public Object3D, public IGenerator
   
 public:
 
-  Component1(
+  SquareWithHolePart1(
     const std::optional<int>& size1,
     const std::optional<int>& size2,
     const std::optional<int>& size3
@@ -65,23 +68,23 @@ public:
 
   void Generate() override;
   
-  virtual ~Component1() = default;
+  virtual ~SquareWithHolePart1() = default;
   
-  Component1(Component1 const &) = delete;
-  Component1(Component1 &&) = delete;
-  Component1& operator=(const Component1&) = delete;
-  Component1& operator=(Component1 &&) = delete;
+  SquareWithHolePart1(SquareWithHolePart1 const &) = delete;
+  SquareWithHolePart1(SquareWithHolePart1 &&) = delete;
+  SquareWithHolePart1& operator=(const SquareWithHolePart1&) = delete;
+  SquareWithHolePart1& operator=(SquareWithHolePart1 &&) = delete;
 
 };
 
-class Component2 : public Object3D, public IGenerator
+class SquareWithHolePart2 : public Object3D, public IGenerator
 {
   int mSize1 = 50;
   int mSize2 = 20;
   
 public:
 
-  Component2(
+  SquareWithHolePart2(
     const std::optional<int>& size1,
     const std::optional<int>& size2
     ) :
@@ -100,23 +103,23 @@ public:
 
   void Generate() override;
   
-  virtual ~Component2() = default;
+  virtual ~SquareWithHolePart2() = default;
   
-  Component2(Component2 const &) = delete;
-  Component2(Component2 &&) = delete;
-  Component2& operator=(const Component2&) = delete;
-  Component2& operator=(Component2 &&) = delete;
+  SquareWithHolePart2(SquareWithHolePart2 const &) = delete;
+  SquareWithHolePart2(SquareWithHolePart2 &&) = delete;
+  SquareWithHolePart2& operator=(const SquareWithHolePart2&) = delete;
+  SquareWithHolePart2& operator=(SquareWithHolePart2 &&) = delete;
 
 };
 
-class Component3 : public Object3D, public IGenerator
+class Pyramid : public Object3D, public IGenerator
 {
   int mSize1 = 50;
   int mSize2 = 20;
   
 public:
 
-  Component3(
+  Pyramid(
     const std::optional<int>& size1,
     const std::optional<int>& size2
     ) :
@@ -135,11 +138,13 @@ public:
 
   void Generate() override;
   
-  virtual ~Component3() = default;
+  virtual ~Pyramid() = default;
   
-  Component3(Component3 const &) = delete;
-  Component3(Component3 &&) = delete;
-  Component3& operator=(const Component3&) = delete;
-  Component3& operator=(Component3 &&) = delete;
+  Pyramid(Pyramid const &) = delete;
+  Pyramid(Pyramid &&) = delete;
+  Pyramid& operator=(const Pyramid&) = delete;
+  Pyramid& operator=(Pyramid &&) = delete;
 
 };
+
+}

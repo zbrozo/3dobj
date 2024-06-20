@@ -2,7 +2,7 @@
 #include "Cube.hpp"
 #include "CubeExt.hpp"
 #include "Thorus.hpp"
-#include "ObjectComponents.hpp"
+#include "Components.hpp"
 #include "Params.hpp"
 
 #include <memory>

@@ -1,42 +1,45 @@
-#include "ObjectComponents.hpp"
-
+#include "Components.hpp"
 #include <algorithm>
 
 namespace
 {
-  auto CreateSideVertices(Vertices& vertices)
+auto CreateSideVertices(Vertices& vertices)
+{
+  std::vector<Vertices> allVertices;
+
+  const size_t facesCount = 4;
+
+  for (size_t i = 0; i < facesCount; ++i)
   {
-    std::vector<Vertices> allVertices;
-
-    const size_t facesCount = 4;
-
-    for (size_t i = 0; i < facesCount; ++i)
-    {
-      const auto rotatedVertices = vertices.Rotate(0, 0, i * 90);
-      allVertices.push_back(rotatedVertices);
-    }
-
-    return allVertices;
+    const auto rotatedVertices = vertices.Rotate(0, 0, i * 90);
+    allVertices.push_back(rotatedVertices);
   }
 
-  auto CreateSideFaces(const std::vector<Vertices>& allVertices)
-  {
-    Faces faces;
-    Vertices vertices;
+  return allVertices;
+}
 
-    for(const auto& tmpVertices : allVertices)
-    {
-      Face face{0,1,2,3};
-      const auto [resultFace, resultVertices] = Object3D::Merge(vertices, face, tmpVertices);
-      vertices = resultVertices;
-      faces.push_back(resultFace);
-    }
+auto CreateSideFaces(const std::vector<Vertices>& allVertices)
+{
+  Faces faces;
+  Vertices vertices;
+
+  for(const auto& tmpVertices : allVertices)
+  {
+    Face face{0,1,2,3};
+    const auto [resultFace, resultVertices] = Object3D::Merge(vertices, face, tmpVertices);
+    vertices = resultVertices;
+    faces.push_back(resultFace);
+  }
   
-    return std::make_pair(faces, vertices);
-  }
+  return std::make_pair(faces, vertices);
+}
+
 } // namespace
 
-void Component0::Generate()
+namespace Components
+{
+
+void Square::Generate()
 {
   Vertices vertices= {
     {1, 1, 1},
@@ -54,7 +57,7 @@ void Component0::Generate()
   mVertices = vertices;
 }
 
-void Component1::Generate()
+void SquareWithHolePart1::Generate()
 {
   Vertices vertices = {
     {1, 1, 1},
@@ -92,7 +95,7 @@ void Component1::Generate()
   mVertices = facesWithVertices.second;
 }
 
-void Component2::Generate()
+void SquareWithHolePart2::Generate()
 {
   Vertices vertices = {
     {1, 1, 1},
@@ -130,7 +133,7 @@ void Component2::Generate()
   mVertices = facesWithVertices.second;
 }
 
-void Component3::Generate()
+void Pyramid::Generate()
 {
   Vertices vertices= {
     {1, 1, 1},
@@ -152,4 +155,6 @@ void Component3::Generate()
   mFaces.push_back({1,2,4});
   mFaces.push_back({2,3,4});
   mFaces.push_back({3,0,4});
+}
+
 }

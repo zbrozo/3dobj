@@ -20,7 +20,7 @@ set(generator_SRC
   src/ObjectFactories.cpp
   src/ComponentFactoryBase.cpp
   src/ComponentFactories.cpp
-  src/ObjectComponents.cpp
+  src/Components.cpp
   src/AmigaFile.cpp
   src/Cube.cpp
   src/CubeExt.cpp
@@ -46,7 +46,7 @@ set(tests_SRC
   src/Cube.cpp
   src/CubeExt.cpp
   src/Thorus.cpp
-  src/ObjectComponents.cpp
+  src/Components.cpp
   src/Face.cpp
   src/Rotation.cpp
   src/Vertex3D.cpp

@@ -1,6 +1,6 @@
 #include "ObjectFactoryBase.hpp"
 #include "IGenerator.hpp"
-#include "ObjectComponents.hpp"
+#include "Components.hpp"
 #include "ComponentFactories.hpp"
 
 #include <algorithm>
