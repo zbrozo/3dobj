@@ -72,9 +72,9 @@ auto CalculateVectorsInVertices(const FaceNumbersInVertices& vertexInFaceDepende
       
     for(auto faceNr : faces)
     {
-      x += normalFaceVectors[faceNr].mX;
-      y += normalFaceVectors[faceNr].mY;
-      z += normalFaceVectors[faceNr].mZ;
+      x += normalFaceVectors[faceNr].getX();
+      y += normalFaceVectors[faceNr].getY();
+      z += normalFaceVectors[faceNr].getZ();
     }
 
     const short count = faces.size();
@@ -86,7 +86,7 @@ auto CalculateVectorsInVertices(const FaceNumbersInVertices& vertexInFaceDepende
       z = z / count;
     }
 
-    vectorsInVertices.push_back(Vector(x,y,z));      
+    vectorsInVertices.push_back(Vector({x,y,z}));      
   }
 
   return vectorsInVertices;
@@ -156,9 +156,9 @@ std::pair<Face, Vertices> Object3D::Merge(const Vertices& objectVertices,
     auto found = std::find_if(resultVertices.begin(), resultVertices.end(), [&](const Vertex& v){
       const short vertexRange = 0;
 
-      if ((vertex.mX >= v.mX - vertexRange && vertex.mX <= v.mX + vertexRange)
-        && (vertex.mY >= v.mY - vertexRange && vertex.mY <= v.mY + vertexRange)
-        && (vertex.mZ >= v.mZ - vertexRange && vertex.mZ <= v.mZ + vertexRange))
+      if ((vertex.getX() >= v.getX() - vertexRange && vertex.getX() <= v.getX() + vertexRange)
+        && (vertex.getY() >= v.getY() - vertexRange && vertex.getY() <= v.getY() + vertexRange)
+        && (vertex.getZ() >= v.getZ() - vertexRange && vertex.getZ() <= v.getZ() + vertexRange))
       {
         return true;
       }

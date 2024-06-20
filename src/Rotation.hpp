@@ -11,3 +11,4 @@ class Rotation3D
 };
 
 using Rotation = Rotation3D<Vertex>;
+using VectorRotation = Rotation3D<Vector>;

@@ -78,7 +78,7 @@ void SquareWithHolePart1::Generate()
   });
 
   std::transform(verticesModify.cbegin(), verticesModify.cend(), verticesModify.begin(), [&](const Vertex& vertex){
-    return Vertex(vertex.mX * mSize2, vertex.mY * mSize2, vertex.mZ * mSize3);
+    return Vertex(vertex.getX() * mSize2, vertex.getY() * mSize2, vertex.getZ() * mSize3);
   });
 
   for (size_t i = 0; i < vertices.size(); i++)
@@ -116,7 +116,7 @@ void SquareWithHolePart2::Generate()
   });
 
   std::transform(verticesModify.cbegin(), verticesModify.cend(), verticesModify.begin(), [&](const Vertex& vertex){
-    return Vertex(vertex.mX * mSize2, vertex.mY * mSize2, vertex.mZ);
+    return Vertex(vertex.getX() * mSize2, vertex.getY() * mSize2, vertex.getZ());
   });
 
   for (size_t i = 0; i < vertices.size(); i++)
@@ -146,8 +146,8 @@ void Pyramid::Generate()
   std::transform(vertices.cbegin(), vertices.cend(), vertices.begin(), [&](const Vertex& vertex){
     return vertex * mSize1;
   });
-
-  vertices[4].mZ += mSize2;
+  
+  vertices[4] = Vertex(vertices[4].getX(), vertices[4].getY(), vertices[4].getZ() + mSize2);
   
   mVertices = vertices;
 

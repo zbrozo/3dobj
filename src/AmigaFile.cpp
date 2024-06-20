@@ -41,9 +41,9 @@ void WriteWord(std::ofstream& file, unsigned short value)
   file.write(reinterpret_cast<const char*>(&swappedShort), sizeof(short));
 }
 
-unsigned short ReadWord(std::ifstream& file)
+short ReadWord(std::ifstream& file)
 {
-  unsigned short swappedShort;
+  short swappedShort;
   file.read(reinterpret_cast<char*>(&swappedShort), sizeof(short));
   return swapByteOrder(swappedShort);
 }
@@ -77,17 +77,17 @@ bool AmigaFile::Save(const Object3D& object3d)
   for (auto it = object3d.mVertices.rbegin(); it != object3d.mVertices.rend(); ++it)
     {
       auto value = *it;
-      WriteWord(file, value.mX);
-      WriteWord(file, value.mY);
-      WriteWord(file, value.mZ);
+      WriteWord(file, value.getX());
+      WriteWord(file, value.getY());
+      WriteWord(file, value.getZ());
     }
 
   for (auto it = object3d.mNormalVectorsInVertices.rbegin(); it != object3d.mNormalVectorsInVertices.rend(); ++it)
     {
       auto value = *it;
-      WriteWord(file, value.mX);
-      WriteWord(file, value.mY);
-      WriteWord(file, value.mZ);
+      WriteWord(file, value.getX());
+      WriteWord(file, value.getY());
+      WriteWord(file, value.getZ());
     }
   
   for(auto face : object3d.mFaces)
@@ -103,9 +103,9 @@ bool AmigaFile::Save(const Object3D& object3d)
   for (auto it = object3d.mNormalVectorsInFaces.rbegin(); it != object3d.mNormalVectorsInFaces.rend(); ++it)
     {
       auto face = *it;
-      WriteWord(file, face.mX);
-      WriteWord(file, face.mY);
-      WriteWord(file, face.mZ);
+      WriteWord(file, face.getX());
+      WriteWord(file, face.getY());
+      WriteWord(file, face.getZ());
     }
 
   file.close();
@@ -148,7 +148,7 @@ bool AmigaFile::Load(const std::string& name, Object3D& object3d)
       const auto x = ReadWord(file);
       const auto y = ReadWord(file);
       const auto z = ReadWord(file);
-      const Vector vector(x,y,z);
+      const Vector vector({x,y,z});
       object3d.mNormalVectorsInVertices.push_back(vector);
     }
   std::reverse(object3d.mNormalVectorsInVertices.begin(), object3d.mNormalVectorsInVertices.end());
@@ -174,7 +174,7 @@ bool AmigaFile::Load(const std::string& name, Object3D& object3d)
       const auto x = ReadWord(file);
       const auto y = ReadWord(file);
       const auto z = ReadWord(file);
-      const Vector vector(x,y,z);
+      const Vector vector({x,y,z});
       object3d.mNormalVectorsInFaces.push_back(vector);
     }
   std::reverse(object3d.mNormalVectorsInFaces.begin(), object3d.mNormalVectorsInFaces.end());

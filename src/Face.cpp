@@ -17,15 +17,15 @@ Vector Face::CalculateNormalVector(const std::vector<Vertex>& vertices) const
   const auto n2 = this->at(1);
   const auto n3 = this->at(2);
 
-  auto v1 = Vector(
-    vertices[n2].mX - vertices[n1].mX,
-    vertices[n2].mY - vertices[n1].mY,
-    vertices[n2].mZ - vertices[n1].mZ);
+  auto v1 = Vector(Vertex(
+      vertices[n2].getX() - vertices[n1].getX(),
+      vertices[n2].getZ() - vertices[n1].getY(),
+      vertices[n2].getZ() - vertices[n1].getZ()));
   
-  auto v2 = Vector(
-    vertices[n3].mX - vertices[n2].mX,
-    vertices[n3].mY - vertices[n2].mY,
-    vertices[n3].mZ - vertices[n2].mZ);
+  auto v2 = Vector(Vertex(
+      vertices[n3].getX() - vertices[n2].getX(),
+      vertices[n3].getY() - vertices[n2].getY(),
+      vertices[n3].getZ() - vertices[n2].getZ()));
   
   return v1.CrossProduct(v2).Normalize();
 }
@@ -46,9 +46,9 @@ Vertex Face::GetCenter(const std::vector<Vertex>& vertices) const
   for (unsigned int i = 0; i < size; ++i)
   {
     const auto nr = this->at(i);
-    x += vertices[nr].mX;
-    y += vertices[nr].mY;
-    z += vertices[nr].mZ;
+    x += vertices[nr].getX();
+    y += vertices[nr].getY();
+    z += vertices[nr].getZ();
   }
 
   x /= static_cast<int>(size);
@@ -69,19 +69,19 @@ bool Face::IsVisible(const std::vector<Vertex>& vertices) const
   const auto n1 = this->at(1);
   const auto n2 = this->at(2);
 
-  const auto v1 = Vector(
-    vertices[n1].mX - vertices[n0].mX,
-    vertices[n1].mY - vertices[n0].mY,
-    0);
+  const auto v1 = Vector(Vertex(
+      vertices[n1].getX() - vertices[n0].getX(),
+      vertices[n1].getY() - vertices[n0].getY(),
+      0));
   
-  const auto v2 = Vector(
-    vertices[n2].mX - vertices[n1].mX,
-    vertices[n2].mY - vertices[n1].mY,
-    0);
+  const auto v2 = Vector(Vertex(
+      vertices[n2].getX() - vertices[n1].getX(),
+      vertices[n2].getY() - vertices[n1].getY(),
+      0));
 
   // cross product w Z (jest większy niż short bo liczony po perspektywie)
-  int result = v1.mX * v2.mY - v1.mY * v2.mX;
-
+  int result = v1.getX() * v2.getY() - v1.getY() * v2.getX();
+  
   return (result <= 0);
 }
 

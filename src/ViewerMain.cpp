@@ -51,11 +51,12 @@ void PrepareColors()
   }
 }
 
-Vertex CalculatePerspective(const Vertex& v, int zoom = 400)
+template<typename T>
+Vertex CalculatePerspective(const T& v, int zoom = 400)
 {
-  auto z = v.mZ + zoom;
-  auto x = (v.mX << 10) / z;
-  auto y = (v.mY << 10) / z;
+  auto z = v.getZ() + zoom;
+  auto x = (v.getX() << 10) / z;
+  auto y = (v.getY() << 10) / z;
   return Vertex(x, y, 0);
 }
 
@@ -86,6 +87,11 @@ void RotateObject(Object3D* object,
     return rotation.rotateZ(rotation.rotateY(rotation.rotateX(v, degx) ,degy), degz);
   };
 
+  auto rotateVector = [degx, degy, degz](const Vector& v){
+    VectorRotation rotation;
+    return rotation.rotateZ(rotation.rotateY(rotation.rotateX(v, degx) ,degy), degz);
+  };
+  
   for (auto v : object->mVertices)
   {
     vertices.push_back(rotate(v));
@@ -93,12 +99,12 @@ void RotateObject(Object3D* object,
 
   for (auto v : object->mNormalVectorsInFaces)
   {
-    normalVectorsInFaces.push_back(rotate(v));
+    normalVectorsInFaces.push_back(rotateVector(v));
   }
 
   for (auto v : object->mNormalVectorsInVertices)
   {
-    normalVectorsInVertices.push_back(rotate(v));
+    normalVectorsInVertices.push_back(rotateVector(v));
   }
 }
 
@@ -110,7 +116,7 @@ void CalculateLight(int light,
 {
   auto calcColorNumber = [light](const Vector& v){
     Vertex lightVector(0,0,light);
-    const auto z = (v.mZ * lightVector.mZ) + (maxLightValue * maxLightValue);
+    const auto z = (v.getZ() * lightVector.getZ()) + (maxLightValue * maxLightValue);
     const int id = (z * maxColorNumber) / (maxLightValue * 2 * maxLightValue);
     return id;
   };
@@ -175,8 +181,8 @@ void DrawFlatShading(SDL_Renderer* rend,
         
     for (size_t i = 0; i < face.size(); ++i)
     {
-      const auto x = vertices2d[face[i]].mX;
-      const auto y = vertices2d[face[i]].mY;
+      const auto x = vertices2d[face[i]].getX();
+      const auto y = vertices2d[face[i]].getY();
       vertex.position.x = x + CenterX;
       vertex.position.y = y + CenterY;
       geometryVertices.push_back(vertex);
@@ -211,8 +217,8 @@ void DrawGouraudShading(SDL_Renderer* rend,
     {
       vertex.color = colors[colorNumbersInVertices[face[i]]];
                 
-      const auto x = vertices2d[face[i]].mX;
-      const auto y = vertices2d[face[i]].mY;
+      const auto x = vertices2d[face[i]].getX();
+      const auto y = vertices2d[face[i]].getY();
       vertex.position.x = x + CenterX;
       vertex.position.y = y + CenterY;
       geometryVertices.push_back(vertex);
@@ -245,8 +251,8 @@ void DrawTextureMapping(SDL_Renderer* rend,
     for (size_t i = 0; i < face.size(); ++i)
     {
       SDL_Vertex vertex;
-      const auto x = vertices2d[face[i]].mX;
-      const auto y = vertices2d[face[i]].mY;
+      const auto x = vertices2d[face[i]].getX();
+      const auto y = vertices2d[face[i]].getY();
       vertex.position.x = x + CenterX;
       vertex.position.y = y + CenterY;
       vertex.tex_coord.x = textureCoords[i][0];
@@ -280,11 +286,11 @@ void DrawNormalVectorsInFaces(SDL_Renderer* rend,
 
     const auto v = face.GetCenter(vertices);
     const auto vBegin = calcPerspectiveFunction(v);
-    const auto vEnd = calcPerspectiveFunction(v + normalVectorsInFaces[faceNr]);
+    const auto vEnd = calcPerspectiveFunction(v + normalVectorsInFaces[faceNr].getEnd());
       
     SDL_RenderDrawLine(rend,
-      vBegin.mX + CenterX, vBegin.mY + CenterY,
-      vEnd.mX + CenterX, vEnd.mY + CenterY
+      vBegin.getX() + CenterX, vBegin.getY() + CenterY,
+      vEnd.getX() + CenterX, vEnd.getY() + CenterY
       );
 
     ++faceNr;
@@ -314,11 +320,11 @@ void DrawNormalVectorsInVertices(SDL_Renderer* rend,
     for (unsigned int i = 0; i < size; ++i)
     {
       const auto vBegin = vertices2d[face[i]];
-      const auto vEnd = calcPerspectiveFunction(vertices[face[i]] + normalVectorsInVertices[face[i]]);
+      const auto vEnd = calcPerspectiveFunction(vertices[face[i]] + normalVectorsInVertices[face[i]].getEnd());
                 
       SDL_RenderDrawLine(rend,
-        vBegin.mX + CenterX, vBegin.mY + CenterY,
-        vEnd.mX + CenterX, vEnd.mY + CenterY
+        vBegin.getX() + CenterX, vBegin.getY() + CenterY,
+        vEnd.getX() + CenterX, vEnd.getY() + CenterY
         );
     }
 
@@ -342,21 +348,21 @@ void DrawLines(SDL_Renderer* rend,
             
     for (unsigned int i = 0; i < size; ++i)
     {
-      auto x1 = vertices2d[face[i]].mX;
-      auto y1 = vertices2d[face[i]].mY;
+      auto x1 = vertices2d[face[i]].getX();
+      auto y1 = vertices2d[face[i]].getY();
             
       int x2 = 0;
       int y2 = 0;
             
       if (i == size-1)
       {  
-        x2 = vertices2d[face[0]].mX;
-        y2 = vertices2d[face[0]].mY;
+        x2 = vertices2d[face[0]].getX();
+        y2 = vertices2d[face[0]].getY();
       }
       else
       {
-        x2 = vertices2d[face[i + 1]].mX;
-        y2 = vertices2d[face[i + 1]].mY;
+        x2 = vertices2d[face[i + 1]].getX();
+        y2 = vertices2d[face[i + 1]].getY();
       }
                 
       SDL_RenderDrawLine(rend,
@@ -599,7 +605,7 @@ int main(int argc, char* argv[])
       Vertices vertices2d;
       for (const auto& v : vertices)
       {
-        const auto v2d = CalculatePerspective(v, zoom);
+        const auto v2d = CalculatePerspective<Vertex>(v, zoom);
         vertices2d.push_back(v2d);
       }
 
@@ -636,7 +642,7 @@ int main(int argc, char* argv[])
           vertices2d,
           object->mFaces,
           normalVectorsInFaces,
-          std::bind(CalculatePerspective, _1, zoom));
+          std::bind(CalculatePerspective<Vertex>, _1, zoom));
       }
 
       if (drawMode & DrawMode_NormalVectorsInVertices)
@@ -646,7 +652,7 @@ int main(int argc, char* argv[])
           vertices2d,
           object->mFaces,
           normalVectorsInVertices,
-          std::bind(CalculatePerspective, _1, zoom));
+          std::bind(CalculatePerspective<Vector>, _1, zoom));
       }
         
       if (drawMode & DrawMode_LineVectors)

@@ -4,16 +4,16 @@
 // iloczyn wektorowy
 Vector3D Vector3D::CrossProduct(const Vector3D& v) const
 {
-  const auto newX = mY * v.mZ - mZ * v.mY;
-  const auto newY = mZ * v.mX - mX * v.mZ;
-  const auto newZ = mX * v.mY - mY * v.mX;
+  const short x = getY() * v.getZ() - getZ() * v.getY();
+  const short y = getZ() * v.getX() - getX() * v.getZ();
+  const short z = getX() * v.getY() - getY() * v.getX();
 
-  return Vector3D(newX, newY, newZ);
+  return Vector3D({x, y, z});
 }
 
 Vector3D Vector3D::Normalize(int normalizedVectorLength) const
 {
-  const double len = sqrt(mX * mX + mY * mY + mZ * mZ);
+  const double len = length();
 
   short x = 0;
   short y = 0;
@@ -21,11 +21,11 @@ Vector3D Vector3D::Normalize(int normalizedVectorLength) const
   
   if (len != 0)
   {
-    x = mX * normalizedVectorLength / len;
-    y = mY * normalizedVectorLength / len;
-    z = mZ * normalizedVectorLength / len;
+    x = getX() * normalizedVectorLength / len;
+    y = getY() * normalizedVectorLength / len;
+    z = getZ() * normalizedVectorLength / len;
   }
   
-  return Vector3D(x, y, z);
+  return Vector3D({x, y, z});
 }
 

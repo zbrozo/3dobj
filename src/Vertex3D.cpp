@@ -47,28 +47,3 @@ std::string Vertex3D<T>::ToString() const
 
 template class Vertex3D<short>;
 
-/*
-Vertex Vertex::Rotate(int degX, int degY, int degZ) const
-{
-  Rotation rotation;
-
-  Vertex v = *this;
-  
-  if (degX)
-    {
-      v = rotation.rotateX(v, degX);
-    }
-  
-  if (degY)
-    {
-      v = rotation.rotateY(v, degY);
-    }
-  
-  if (degZ)
-    {
-      v = rotation.rotateZ(v, degZ);
-    }
-
-  return v;
-}
-*/

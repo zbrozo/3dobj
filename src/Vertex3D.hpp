@@ -5,11 +5,12 @@
 template<class T>
 class Vertex3D
 {
-public:
-
+  
   T mX = 0;
   T mY = 0;
   T mZ = 0;
+
+public:
 
   Vertex3D() {}
     
@@ -29,8 +30,11 @@ public:
   bool operator==(const Vertex3D& v) const;
   Vertex3D operator*(T value) const;
   Vertex3D operator/(T value) const;
+
+  T getX() const { return mX; } 
+  T getY() const { return mY; } 
+  T getZ() const { return mZ; } 
   
   std::string ToString() const;
-  //  Vertex3D Rotate(int degX, int degY, int degZ) const;
 };
 

@@ -84,9 +84,7 @@ Vertices MoveVertices(Vertices vertices, Vertex moveVector)
 {
   for (auto& v : vertices)
   {
-    v.mX += moveVector.mX;
-    v.mY += moveVector.mY;
-    v.mZ += moveVector.mZ;
+    v = (v + moveVector);
   }
   return vertices;
 }
