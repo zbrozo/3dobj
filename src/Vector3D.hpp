@@ -1,6 +1,7 @@
 #pragma once
 #include "Vertex3D.hpp"
 #include <cmath>
+#include <ostream>
 
 template<typename T>
 class Vector3D
@@ -29,6 +30,11 @@ public:
   Vector3D& operator=(const Vector3D& v) = default;
   Vector3D& operator=(Vector3D &&) = default;
 
+  bool operator==(const Vector3D& vector) const
+  {
+    return getX() == vector.getX() && getY() == vector.getY() && getZ() == vector.getZ();
+  }
+
   Vertex3D<T> getBegin() const
   {
     return mBegin;
@@ -39,22 +45,22 @@ public:
     return mEnd;
   }
   
-  short getX() const
+  T getX() const
   {
     return mEnd.getX() - mBegin.getX();
   }
 
-  short getY() const
+  T getY() const
   {
     return mEnd.getY() - mBegin.getY();
   }
 
-  short getZ() const
+  T getZ() const
   {
     return mEnd.getZ() - mBegin.getZ();
   }
 
-  short length() const
+  int length() const
   {
     const auto x = getX();
     const auto y = getY();
@@ -62,6 +68,13 @@ public:
     return sqrt(x * x + y * y + z * z);
   }
   
-  Vector3D CrossProduct(const Vector3D& v) const;
-  Vector3D Normalize(int normalizedVectorLength = 64) const;
+  Vector3D calculateCrossProduct(const Vector3D& v) const;
+  Vector3D normalize(int normalizedVectorLength = 64) const;
 };
+
+template <typename T>
+std::ostream& operator<<(std::ostream& os, const Vector3D<T>& vector)
+{
+  os << "[" << vector.getX()  << ", " << vector.getY() << ", " << vector.getZ() << "]";
+  return os;
+}

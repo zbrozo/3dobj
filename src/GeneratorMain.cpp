@@ -113,7 +113,8 @@ int main(int argc, char* argv[])
     ("help,h", "produce help message")
     ("verbose,v", "produce verbose logs")
     ("type,t", po::value<std::string>(), "object3d type")
-    ("component-list,c", po::value<ParamsVector>()->multitoken(), "0 - Square, 1 - SquareWithHolePart1, 2 - SquareWithHolePart2, 3 - Pyramid")
+    ("component-list,c", po::value<ParamsVector>()->multitoken(),
+      "0 - Square, 1 - SquareWithHolePart1, 2 - SquareWithHolePart2, 3 - Pyramid")
     ("component-params,p", po::value<ParamsVector>()->multitoken(), "depends on particular component")
     ("additional-params", po::value<ParamsVector>(), "depends on selected object in type");
 

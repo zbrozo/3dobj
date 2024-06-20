@@ -27,7 +27,7 @@ Vector Face::CalculateNormalVector(const std::vector<Vertex>& vertices) const
       vertices[n3].getY() - vertices[n2].getY(),
       vertices[n3].getZ() - vertices[n2].getZ()));
   
-  return v1.CrossProduct(v2).Normalize();
+  return v1.calculateCrossProduct(v2).normalize();
 }
 
 Vertex Face::GetCenter(const std::vector<Vertex>& vertices) const

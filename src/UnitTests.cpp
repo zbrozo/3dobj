@@ -10,6 +10,22 @@
 
 BOOST_AUTO_TEST_SUITE(ObjectFactory_Suite)
 
+BOOST_AUTO_TEST_CASE(vector_crossproduct_test)
+{
+  Vector3D<int> vector1 {{0,0,0}, {10, 5, 10}};
+  Vector3D<int> vector2 {{0,0,0}, {5, 10, 5}};
+  const auto result = vector1.calculateCrossProduct(vector2);
+  BOOST_CHECK_EQUAL(result, Vector3D<int>(Vertex3D<int>(-75, 0, 75)));
+}
+
+BOOST_AUTO_TEST_CASE(vector_normalize_test)
+{
+  Vector3D<int> vector {{0,0,0}, {10, 10, 10}};
+  const auto result = vector.normalize();
+  BOOST_CHECK_EQUAL(result.length(), 64);
+  BOOST_CHECK_EQUAL(result, Vector3D<int>(Vertex3D<int>(37, 37, 37)));
+}
+
 BOOST_AUTO_TEST_CASE(cube_factory_test)
 {
   CubeFactory factory;

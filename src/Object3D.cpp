@@ -100,7 +100,7 @@ auto NormalizeVectorsInVertices(const Vectors& vectorsInVertices)
 
   for (auto vector : vectorsInVertices)
   {
-    normalizedVectorsInVertices.push_back(vector.Normalize());
+    normalizedVectorsInVertices.push_back(vector.normalize());
   }
 
   return normalizedVectorsInVertices;

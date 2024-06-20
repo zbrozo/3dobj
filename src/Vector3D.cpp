@@ -3,7 +3,7 @@
 
 // iloczyn wektorowy
 template <class T>
-Vector3D<T> Vector3D<T>::CrossProduct(const Vector3D<T>& v) const
+Vector3D<T> Vector3D<T>::calculateCrossProduct(const Vector3D<T>& v) const
 {
   const auto x = getY() * v.getZ() - getZ() * v.getY();
   const auto y = getZ() * v.getX() - getX() * v.getZ();
@@ -13,9 +13,9 @@ Vector3D<T> Vector3D<T>::CrossProduct(const Vector3D<T>& v) const
 }
 
 template <class T>
-Vector3D<T> Vector3D<T>::Normalize(int normalizedVectorLength) const
+Vector3D<T> Vector3D<T>::normalize(int normalizedVectorLength) const
 {
-  const double len = length();
+  const auto len = length();
 
   T x = 0;
   T y = 0;
