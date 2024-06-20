@@ -2,21 +2,22 @@
 #include "Vertex3D.hpp"
 #include <cmath>
 
+template<typename T>
 class Vector3D
 {
-  Vertex3D<short> mBegin = {0,0,0};
-  Vertex3D<short> mEnd = {0,0,0};
+  Vertex3D<T> mBegin = {0,0,0};
+  Vertex3D<T> mEnd = {0,0,0};
   
 public:
 
   Vector3D() {}
 
-  Vector3D(Vertex3D<short> end) :
+  Vector3D(Vertex3D<T> end) :
     mBegin({0,0,0}), mEnd(end)
   {
   }
   
-  Vector3D(Vertex3D<short> begin, Vertex3D<short> end) :
+  Vector3D(Vertex3D<T> begin, Vertex3D<T> end) :
     mBegin(begin), mEnd(end)
   {
   }
@@ -28,12 +29,12 @@ public:
   Vector3D& operator=(const Vector3D& v) = default;
   Vector3D& operator=(Vector3D &&) = default;
 
-  Vertex3D<short> getBegin() const
+  Vertex3D<T> getBegin() const
   {
     return mBegin;
   }
 
-  Vertex3D<short> getEnd() const
+  Vertex3D<T> getEnd() const
   {
     return mEnd;
   }

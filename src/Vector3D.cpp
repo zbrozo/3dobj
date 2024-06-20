@@ -2,22 +2,24 @@
 #include <cmath>
 
 // iloczyn wektorowy
-Vector3D Vector3D::CrossProduct(const Vector3D& v) const
+template <class T>
+Vector3D<T> Vector3D<T>::CrossProduct(const Vector3D<T>& v) const
 {
-  const short x = getY() * v.getZ() - getZ() * v.getY();
-  const short y = getZ() * v.getX() - getX() * v.getZ();
-  const short z = getX() * v.getY() - getY() * v.getX();
+  const auto x = getY() * v.getZ() - getZ() * v.getY();
+  const auto y = getZ() * v.getX() - getX() * v.getZ();
+  const auto z = getX() * v.getY() - getY() * v.getX();
 
-  return Vector3D({x, y, z});
+  return Vector3D<T>(Vertex3D<T>(x, y, z));
 }
 
-Vector3D Vector3D::Normalize(int normalizedVectorLength) const
+template <class T>
+Vector3D<T> Vector3D<T>::Normalize(int normalizedVectorLength) const
 {
   const double len = length();
 
-  short x = 0;
-  short y = 0;
-  short z = 0;
+  T x = 0;
+  T y = 0;
+  T z = 0;
   
   if (len != 0)
   {
@@ -26,6 +28,8 @@ Vector3D Vector3D::Normalize(int normalizedVectorLength) const
     z = getZ() * normalizedVectorLength / len;
   }
   
-  return Vector3D({x, y, z});
+  return Vector3D<T>(Vertex3D<T>(x, y, z));
 }
 
+template class Vector3D<short>;
+template class Vector3D<int>;

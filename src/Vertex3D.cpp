@@ -46,4 +46,5 @@ std::string Vertex3D<T>::ToString() const
 }
 
 template class Vertex3D<short>;
+template class Vertex3D<int>;
 
