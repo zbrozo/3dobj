@@ -19,7 +19,7 @@ Vector Face::CalculateNormalVector(const std::vector<Vertex>& vertices) const
 
   auto v1 = Vector(Vertex(
       vertices[n2].getX() - vertices[n1].getX(),
-      vertices[n2].getZ() - vertices[n1].getY(),
+      vertices[n2].getY() - vertices[n1].getY(),
       vertices[n2].getZ() - vertices[n1].getZ()));
   
   auto v2 = Vector(Vertex(
