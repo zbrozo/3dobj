@@ -2,7 +2,7 @@
 
 #include "Cube.hpp"
 #include "IGenerator.hpp"
-#include "Object3d.hpp"
+#include "Object3D.hpp"
 #include <memory>
 #include <vector>
 

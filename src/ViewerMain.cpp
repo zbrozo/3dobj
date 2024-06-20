@@ -7,10 +7,10 @@
 #include <stdexcept>
 #include <functional>
 
+#include "Types.hpp"
 #include "Vertices.hpp"
-#include "Object3d.hpp"
+#include "Object3D.hpp"
 #include "Face.hpp"
-#include "Vector3d.hpp"
 #include "Rotation.hpp"
 #include "AmigaFile.hpp"
 
@@ -81,12 +81,11 @@ void RotateObject(Object3D* object,
   Vectors& normalVectorsInFaces,
   Vectors& normalVectorsInVertices)
 {
-  Rotation rotation;
-  
-  auto rotate = [&rotation, degx, degy, degz](const Vector3d& v){
+  auto rotate = [degx, degy, degz](const Vertex& v){
+    Rotation rotation;
     return rotation.rotateZ(rotation.rotateY(rotation.rotateX(v, degx) ,degy), degz);
   };
-  
+
   for (auto v : object->mVertices)
   {
     vertices.push_back(rotate(v));
@@ -109,7 +108,7 @@ void CalculateLight(int light,
   std::vector<int>& colorNumbersInFaces,
   std::vector<int>& colorNumbersInVertices)
 {
-  auto calcColorNumber = [light](const Vector3d& v){
+  auto calcColorNumber = [light](const Vector& v){
     Vertex lightVector(0,0,light);
     const auto z = (v.mZ * lightVector.mZ) + (maxLightValue * maxLightValue);
     const int id = (z * maxColorNumber) / (maxLightValue * 2 * maxLightValue);
@@ -266,7 +265,7 @@ void DrawNormalVectorsInFaces(SDL_Renderer* rend,
   const Vertices& vertices2d,
   const Faces& faces,
   const Vectors& normalVectorsInFaces,
-  const std::function<Vector3d(const Vector3d&)> calcPerspectiveFunction
+  const std::function<Vertex(const Vertex&)> calcPerspectiveFunction
   )
 {
   unsigned int faceNr = 0;
@@ -297,7 +296,7 @@ void DrawNormalVectorsInVertices(SDL_Renderer* rend,
   const Vertices& vertices2d,
   const Faces& faces,
   const Vectors& normalVectorsInVertices,
-  const std::function<Vector3d(const Vector3d&)> calcPerspectiveFunction
+  const std::function<Vector(const Vector&)> calcPerspectiveFunction
   )
 {
   unsigned int faceNr = 0;

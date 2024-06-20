@@ -4,8 +4,8 @@
 
 #include <boost/log/trivial.hpp>
 
-#include "Object3d.hpp"
-#include "Vector3d.hpp"
+#include "Types.hpp"
+#include "Object3D.hpp"
 
 namespace
 {
@@ -86,7 +86,7 @@ auto CalculateVectorsInVertices(const FaceNumbersInVertices& vertexInFaceDepende
       z = z / count;
     }
 
-    vectorsInVertices.push_back(Vector3d(x,y,z));      
+    vectorsInVertices.push_back(Vector(x,y,z));      
   }
 
   return vectorsInVertices;
@@ -138,8 +138,8 @@ void Object3D::LogFaces() const
 }
 
 std::pair<Face, Vertices> Object3D::Merge(const Vertices& objectVertices,
-                                          const Face& face,
-                                          const Vertices& vertices)
+  const Face& face,
+  const Vertices& vertices)
 {
   BOOST_LOG_TRIVIAL(debug) << __FUNCTION__;
 
@@ -147,38 +147,38 @@ std::pair<Face, Vertices> Object3D::Merge(const Vertices& objectVertices,
   Vertices resultVertices = objectVertices;
   
   for (size_t i = 0; i < face.size(); ++i)
-    {
-      auto vertexNr = face[i];
-      Vertex vertex = vertices[vertexNr];
+  {
+    auto vertexNr = face[i];
+    Vertex vertex = vertices[vertexNr];
 
-      int foundNr = 0;
+    int foundNr = 0;
 
-      auto found = std::find_if(resultVertices.begin(), resultVertices.end(), [&](const Vertex& v){
-        const short vertexRange = 0;
+    auto found = std::find_if(resultVertices.begin(), resultVertices.end(), [&](const Vertex& v){
+      const short vertexRange = 0;
 
-        if ((vertex.mX >= v.mX - vertexRange && vertex.mX <= v.mX + vertexRange)
-            && (vertex.mY >= v.mY - vertexRange && vertex.mY <= v.mY + vertexRange)
-            && (vertex.mZ >= v.mZ - vertexRange && vertex.mZ <= v.mZ + vertexRange))
-          {
-            return true;
-          }
+      if ((vertex.mX >= v.mX - vertexRange && vertex.mX <= v.mX + vertexRange)
+        && (vertex.mY >= v.mY - vertexRange && vertex.mY <= v.mY + vertexRange)
+        && (vertex.mZ >= v.mZ - vertexRange && vertex.mZ <= v.mZ + vertexRange))
+      {
+        return true;
+      }
         
-        ++foundNr;
-        return false;
-      });
+      ++foundNr;
+      return false;
+    });
 
-      if (found != resultVertices.end())
-        {
-          resultFace.push_back(foundNr);
-        }
-      else
-        {
-          const short nr = resultVertices.size();
-          
-          resultFace.push_back(nr);
-          resultVertices.push_back(vertex);
-        }
+    if (found != resultVertices.end())
+    {
+      resultFace.push_back(foundNr);
     }
+    else
+    {
+      const short nr = resultVertices.size();
+          
+      resultFace.push_back(nr);
+      resultVertices.push_back(vertex);
+    }
+  }
   
   return std::make_pair(resultFace, resultVertices);
 }

@@ -1,5 +1,5 @@
 #include "Cube.hpp"
-#include "Object3d.hpp"
+#include "Object3D.hpp"
 #include <algorithm>
 
 void Cube::RotateSide(int degx, int degy, int degz,

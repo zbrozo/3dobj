@@ -3,14 +3,11 @@
 #include <vector>
 #include <string>
 #include <utility>
-
-#include "Vertex.hpp"
-#include "Vector3d.hpp"
 #include "Face.hpp"
 #include "Vertices.hpp"
+#include "Types.hpp"
 
 using Faces = std::vector<Face>;
-using Vectors = std::vector<Vector3d>;
 using FaceNumbers = std::vector<unsigned short>;
 using FaceNumbersInVertices = std::vector<FaceNumbers>;
 

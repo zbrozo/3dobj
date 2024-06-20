@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-  
+
 template<class T>
 class Vertex3D
 {
@@ -34,4 +34,3 @@ public:
   //  Vertex3D Rotate(int degX, int degY, int degZ) const;
 };
 
-using Vertex = Vertex3D<short>;

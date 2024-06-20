@@ -1,7 +1,6 @@
 #include "IGenerator.hpp"
 #include "Face.hpp"
-#include "Object3d.hpp"
-#include "Vector3d.hpp"
+#include "Object3D.hpp"
 #include "Cube.hpp"
 #include "CubeExt.hpp"
 #include "Thorus.hpp"

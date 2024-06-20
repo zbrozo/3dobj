@@ -1,10 +1,8 @@
 #pragma once
+
 #include <vector>
 #include <string>
-
-#include "Vertex.hpp"
-
-class Vector3d;
+#include "Types.hpp"
 
 class Face : public std::vector<unsigned short>
 {
@@ -23,7 +21,7 @@ public:
   Face& operator=(const Face& v) = default;
   Face& operator=(Face &&) = delete;
   
-  Vector3d CalculateNormalVector(const std::vector<Vertex>& vertices) const;
+  Vector CalculateNormalVector(const std::vector<Vertex>& vertices) const;
   Vertex GetCenter(const std::vector<Vertex>& vertices) const;
   bool IsVisible(const std::vector<Vertex>& vertices) const;
 

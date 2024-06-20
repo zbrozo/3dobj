@@ -3,7 +3,7 @@
 
 #include "IGenerator.hpp"
 #include "ObjectFactories.hpp"
-#include "Object3d.hpp"
+#include "Object3D.hpp"
 #include "Cube.hpp"
 #include "Thorus.hpp"
 #include "Params.hpp"

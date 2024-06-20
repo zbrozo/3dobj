@@ -5,7 +5,7 @@
 #include <boost/log/trivial.hpp>
 
 #include "AmigaFile.hpp"
-#include "Object3d.hpp"
+#include "Object3D.hpp"
 
 namespace
 {
@@ -148,8 +148,8 @@ bool AmigaFile::Load(const std::string& name, Object3D& object3d)
       const auto x = ReadWord(file);
       const auto y = ReadWord(file);
       const auto z = ReadWord(file);
-      const Vector3d vector3d(x,y,z);
-      object3d.mNormalVectorsInVertices.push_back(vector3d);
+      const Vector vector(x,y,z);
+      object3d.mNormalVectorsInVertices.push_back(vector);
     }
   std::reverse(object3d.mNormalVectorsInVertices.begin(), object3d.mNormalVectorsInVertices.end());
 
@@ -174,8 +174,8 @@ bool AmigaFile::Load(const std::string& name, Object3D& object3d)
       const auto x = ReadWord(file);
       const auto y = ReadWord(file);
       const auto z = ReadWord(file);
-      const Vector3d vector3d(x,y,z);
-      object3d.mNormalVectorsInFaces.push_back(vector3d);
+      const Vector vector(x,y,z);
+      object3d.mNormalVectorsInFaces.push_back(vector);
     }
   std::reverse(object3d.mNormalVectorsInFaces.begin(), object3d.mNormalVectorsInFaces.end());
   

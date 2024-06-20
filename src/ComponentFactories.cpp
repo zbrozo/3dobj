@@ -1,6 +1,6 @@
 #include "ComponentFactories.hpp"
 #include "ObjectComponents.hpp"
-#include "Object3d.hpp"
+#include "Object3D.hpp"
 #include "Params.hpp"
 
 #include <memory>

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "IGenerator.hpp"
-#include "Object3d.hpp"
+#include "Object3D.hpp"
 
 #include <optional>
 #include <iostream>

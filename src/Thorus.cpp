@@ -1,175 +1,174 @@
-#include "Vertex.hpp"
+#include "Types.hpp"
 #include "Rotation.hpp"
 #include "Thorus.hpp"
 
 namespace {
 
-  Face CreateFace(int face1, int face2, int face3, int face4)
-  {
-    Face face;
-    face.push_back(face1);
-    face.push_back(face2);
-    face.push_back(face3);
-    face.push_back(face4);
-    return face;
-  }
+Face CreateFace(int face1, int face2, int face3, int face4)
+{
+  Face face;
+  face.push_back(face1);
+  face.push_back(face2);
+  face.push_back(face3);
+  face.push_back(face4);
+  return face;
+}
   
-  Faces CreateFacesInCircle(int ringIndex,
-                            int circleSize,
-                            int begin,
-                            int count,
-                            bool last = false)
+Faces CreateFacesInCircle(int ringIndex,
+  int circleSize,
+  int begin,
+  int count,
+  bool last = false)
+{
+  if (begin + count > circleSize)
   {
-    if (begin + count > circleSize)
-      {
-        return Faces();
-      }
+    return Faces();
+  }
     
-    Faces faces;
+  Faces faces;
 
-    for (int rowIndex = 0; rowIndex < count; rowIndex++)
-      {
-        int faceNr1 = 0;
-        int faceNr2 = 0;
-        int faceNr3 = 0;
-        int faceNr4 = 0;
+  for (int rowIndex = 0; rowIndex < count; rowIndex++)
+  {
+    int faceNr1 = 0;
+    int faceNr2 = 0;
+    int faceNr3 = 0;
+    int faceNr4 = 0;
 
-        const int pos = ringIndex * circleSize + begin;
-        const int next = last ? begin : (pos + circleSize);
+    const int pos = ringIndex * circleSize + begin;
+    const int next = last ? begin : (pos + circleSize);
         
-        if ((begin + count) == circleSize &&
-            (begin + rowIndex) == (circleSize - 1))
-          {
-            faceNr1 = pos - begin;
-            faceNr2 = pos + rowIndex;
-            faceNr3 = next + rowIndex;
-            faceNr4 = next - begin;
-          }
-        else
-          {
-            faceNr1 = pos + rowIndex + 1;
-            faceNr2 = pos + rowIndex;
-            faceNr3 = next + rowIndex;
-            faceNr4 = next + rowIndex + 1;
-          }
-
-        faces.push_back(CreateFace(faceNr1, faceNr2, faceNr3, faceNr4));
-      }
-
-    return faces;
-  }
-  
-Vertices CreateCircleVertices(int amount, int radius)
-  {
-    Vertex vertex(0, 0, radius);
-    Rotation rotate;
-
-    const int degStep = (360 << 8) / amount;
-    int degree = 0;
-
-    Vertices circle;
-
-    // obrót w X punktu aby utworzyć "okrąg"
-    for (int i = 0; i < amount; i++)
-      {
-        const int d = (degree >> 8);
-        circle.push_back(rotate.rotateX(vertex, d));
-        degree += degStep;
-      }
-
-    return circle;
-  }
-
-  Vertices MoveVertices(Vertices vertices, Vertex moveVector)
-  {
-    for (auto& v : vertices)
-      {
-        v.mX += moveVector.mX;
-        v.mY += moveVector.mY;
-        v.mZ += moveVector.mZ;
-      }
-    return vertices;
-  }
-
-
-  Vertices CreateRingVertices(Vertices circle, int amount)
-  {
-    Vertices vertices;
-    Rotation rotate;
-    
-    const int degStep = (360 << 8) / amount;
-    int degree = 0;
-  
-    // obrót w Z okręgu tworzy torus
-    for (int i = 0; i < amount; i++)
+    if ((begin + count) == circleSize &&
+      (begin + rowIndex) == (circleSize - 1))
     {
-      for (const auto& v : circle)
-        {
-          const int d = (degree >> 8);
-          vertices.push_back(rotate.rotateZ(v, d));
-        }
-      degree += degStep;
+      faceNr1 = pos - begin;
+      faceNr2 = pos + rowIndex;
+      faceNr3 = next + rowIndex;
+      faceNr4 = next - begin;
+    }
+    else
+    {
+      faceNr1 = pos + rowIndex + 1;
+      faceNr2 = pos + rowIndex;
+      faceNr3 = next + rowIndex;
+      faceNr4 = next + rowIndex + 1;
     }
 
-    return vertices;
+    faces.push_back(CreateFace(faceNr1, faceNr2, faceNr3, faceNr4));
   }
 
-  Faces CreateInternalFacesInRing(int circleSize, int ringSize)
+  return faces;
+}
+  
+Vertices CreateCircleVertices(int amount, int radius)
+{
+  Vertex vertex(0, 0, radius);
+  Rotation rotation;
+
+  const int degStep = (360 << 8) / amount;
+  int degree = 0;
+
+  Vertices circle;
+
+  // obrót w X punktu aby utworzyć "okrąg"
+  for (int i = 0; i < amount; i++)
   {
-    Faces facesInRing;
-    
-    for (int ringIndex = 0; ringIndex < ringSize; ++ringIndex)
-      {
-        Faces faces;
-        
-        const auto isLast = (ringIndex == (ringSize - 1));
-        
-        if (isLast)
-          {
-            faces = CreateFacesInCircle(ringIndex, circleSize, 0, circleSize/2, true);
-          }
-        else
-          {
-            faces = CreateFacesInCircle(ringIndex, circleSize, 0, circleSize/2);
-          }
-        
-        for (auto face : faces)
-          {
-            facesInRing.push_back(face);
-          }
-      }
-    
-    return facesInRing;
+    const int d = (degree >> 8);
+    circle.push_back(rotation.rotateX(vertex, d));
+    degree += degStep;
   }
 
+  return circle;
+}
 
-  Faces CreateExternalFacesInRing(int circleSize, int ringSize)
+Vertices MoveVertices(Vertices vertices, Vertex moveVector)
+{
+  for (auto& v : vertices)
   {
-    Faces facesInRing;
-    
-    for (int ringIndex = 0; ringIndex < ringSize; ++ringIndex)
-      {
-        Faces faces;
-        
-        const auto isLast = (ringIndex == (ringSize - 1));
-        
-        if (isLast)
-          {
-            faces = CreateFacesInCircle(ringIndex, circleSize, circleSize/2, circleSize/2, true);
-          }
-        else
-          {
-            faces = CreateFacesInCircle(ringIndex, circleSize, circleSize/2, circleSize/2);
-          }
-        
-        for (auto face : faces)
-          {
-            facesInRing.push_back(face);
-          }
-      }
-    
-    return facesInRing;
+    v.mX += moveVector.mX;
+    v.mY += moveVector.mY;
+    v.mZ += moveVector.mZ;
   }
+  return vertices;
+}
+
+
+Vertices CreateRingVertices(Vertices circle, int amount)
+{
+  Vertices vertices;
+  Rotation rotation;
+    
+  const int degStep = (360 << 8) / amount;
+  int degree = 0;
+  
+  // obrót w Z okręgu tworzy torus
+  for (int i = 0; i < amount; i++)
+  {
+    for (const auto& v : circle)
+    {
+      const int d = (degree >> 8);
+      vertices.push_back(rotation.rotateZ(v, d));
+    }
+    degree += degStep;
+  }
+
+  return vertices;
+}
+
+Faces CreateInternalFacesInRing(int circleSize, int ringSize)
+{
+  Faces facesInRing;
+    
+  for (int ringIndex = 0; ringIndex < ringSize; ++ringIndex)
+  {
+    Faces faces;
+        
+    const auto isLast = (ringIndex == (ringSize - 1));
+        
+    if (isLast)
+    {
+      faces = CreateFacesInCircle(ringIndex, circleSize, 0, circleSize/2, true);
+    }
+    else
+    {
+      faces = CreateFacesInCircle(ringIndex, circleSize, 0, circleSize/2);
+    }
+        
+    for (auto face : faces)
+    {
+      facesInRing.push_back(face);
+    }
+  }
+    
+  return facesInRing;
+}
+
+Faces CreateExternalFacesInRing(int circleSize, int ringSize)
+{
+  Faces facesInRing;
+    
+  for (int ringIndex = 0; ringIndex < ringSize; ++ringIndex)
+  {
+    Faces faces;
+        
+    const auto isLast = (ringIndex == (ringSize - 1));
+        
+    if (isLast)
+    {
+      faces = CreateFacesInCircle(ringIndex, circleSize, circleSize/2, circleSize/2, true);
+    }
+    else
+    {
+      faces = CreateFacesInCircle(ringIndex, circleSize, circleSize/2, circleSize/2);
+    }
+        
+    for (auto face : faces)
+    {
+      facesInRing.push_back(face);
+    }
+  }
+    
+  return facesInRing;
+}
   
 }
 
@@ -210,15 +209,14 @@ void Thorus::Generate()
   auto internalFaces = CreateInternalFacesInRing(mCircleAmount, mRingAmount);
     
   for (auto face : internalFaces)
-    {
-      mFaces.push_back(face);
-    }
+  {
+    mFaces.push_back(face);
+  }
 
   auto externalFaces = CreateExternalFacesInRing(mCircleAmount, mRingAmount);
     
   for (auto face : externalFaces)
-    {
-      mFaces.push_back(face);
-    }
-
+  {
+    mFaces.push_back(face);
+  }
 }

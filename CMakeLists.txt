@@ -26,20 +26,20 @@ set(generator_SRC
   src/CubeExt.cpp
   src/Thorus.cpp
   src/Face.cpp
-  src/Object3d.cpp
   src/Rotation.cpp
-  src/Vector3d.cpp
-  src/Vertex.cpp
+  src/Vertex3D.cpp
+  src/Vector3D.cpp
+  src/Object3D.cpp
   src/Vertices.cpp)
 
 set(viewer_SRC
   src/ViewerMain.cpp
   src/AmigaFile.cpp
   src/Face.cpp
-  src/Object3d.cpp
   src/Rotation.cpp
-  src/Vector3d.cpp
-  src/Vertex.cpp
+  src/Vertex3D.cpp
+  src/Vector3D.cpp
+  src/Object3D.cpp
   src/Vertices.cpp)
 
 set(tests_SRC
@@ -48,11 +48,11 @@ set(tests_SRC
   src/Thorus.cpp
   src/ObjectComponents.cpp
   src/Face.cpp
-  src/Vertices.cpp
-  src/Vertex.cpp
   src/Rotation.cpp
-  src/Vector3d.cpp
-  src/Object3d.cpp
+  src/Vertex3D.cpp
+  src/Vector3D.cpp
+  src/Vertices.cpp
+  src/Object3D.cpp
   src/ObjectFactoryBase.cpp
   src/ObjectFactories.cpp
   src/ComponentFactoryBase.cpp

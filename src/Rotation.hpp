@@ -1,12 +1,13 @@
-#include "Vertex.hpp"
+#include "Types.hpp"
 
-class Rotation
+template<class T>
+class Rotation3D
 {
-  
  public:
   
-  Vertex rotateX(Vertex vertex, int d);
-  Vertex rotateY(Vertex vertex, int d);
-  Vertex rotateZ(Vertex vertex, int d);
-  
+  T rotateX(T coord, int d);
+  T rotateY(T coord, int d);
+  T rotateZ(T coors, int d);
 };
+
+using Rotation = Rotation3D<Vertex>;

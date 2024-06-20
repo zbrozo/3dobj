@@ -6,12 +6,12 @@ Vertices Vertices::Rotate(int degX, int degY, int degZ) const
   const short scaleValue = 10;
   
   Vertices rotatedVertices;
-  Rotation rotation;
+  Rotation rotate;
   
   for (const auto& vertex : *this)
   {
     Vertex v = vertex * scaleValue;
-    v = rotation.rotateZ(rotation.rotateY(rotation.rotateX(v, degX), degY), degZ);
+    v = rotate.rotateZ(rotate.rotateY(rotate.rotateX(v, degX), degY), degZ);
     v = v / scaleValue;
     
     rotatedVertices.push_back(v);

@@ -1,4 +1,4 @@
-#include "Vertex.hpp"
+#include "Vertex3D.hpp"
 //#include "Rotation.hpp"
 
 template<class T>
@@ -46,7 +46,6 @@ std::string Vertex3D<T>::ToString() const
 }
 
 template class Vertex3D<short>;
-template class Vertex3D<long>;
 
 /*
 Vertex Vertex::Rotate(int degX, int degY, int degZ) const

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Object3d.hpp"
+#include "Object3D.hpp"
 #include "IGenerator.hpp"
 
 class Cube : public Object3D, public IGenerator

@@ -1,6 +1,6 @@
 #include "ComponentFactoryBase.hpp"
 #include "IGenerator.hpp"
-#include "Object3d.hpp"
+#include "Object3D.hpp"
 
 std::unique_ptr<Object3D> ComponentFactoryBase::Create(
   const std::string& name,
