@@ -11,13 +11,13 @@ public:
 
   std::unique_ptr<Object3D> Create(
     const std::string& name,
-    const ParamsMap& params) const;
+    const ParamsVector& params) const;
 
 protected:
   
   virtual std::unique_ptr<Object3D> FactoryMethod(
     const std::string& name,
-    const ParamsMap& params) const = 0;
+    const ParamsVector& params) const = 0;
 
   void Generate(Object3D& object) const;
 };

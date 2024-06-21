@@ -19,3 +19,13 @@ Vertices Vertices::Rotate(int degX, int degY, int degZ) const
 
   return rotatedVertices;
 }
+
+Vertices &Vertices::operator+=(const Vertex &vertex)
+{
+  for (auto& v : *this)
+  {
+    v += vertex;
+  }
+  return *this;
+}
+

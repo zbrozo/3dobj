@@ -25,6 +25,7 @@ set(generator_SRC
   src/Cube.cpp
   src/CubeExt.cpp
   src/Thorus.cpp
+  src/Cuboid.cpp
   src/Face.cpp
   src/Rotation.cpp
   src/Vertex3D.cpp
@@ -46,6 +47,7 @@ set(tests_SRC
   src/Cube.cpp
   src/CubeExt.cpp
   src/Thorus.cpp
+  src/Cuboid.cpp
   src/Components.cpp
   src/Face.cpp
   src/Rotation.cpp

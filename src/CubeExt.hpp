@@ -3,10 +3,10 @@
 #include "Cube.hpp"
 #include "IGenerator.hpp"
 #include "Object3D.hpp"
+#include "Params.hpp"
+
 #include <memory>
 #include <vector>
-
-using ComponentsVector = std::vector<std::unique_ptr<Object3D>>;
 
 class CubeExt : public Cube
 {

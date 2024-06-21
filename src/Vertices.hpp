@@ -16,9 +16,10 @@ public:
   {
     insert(end(), init.begin(), init.end());
   }
-    
-  Vertices Rotate(int degX, int degY, int degZ) const;
 
+  Vertices& operator+=(const Vertex& vertex);
+  
+  Vertices Rotate(int degX, int degY, int degZ) const;
 };
 
 

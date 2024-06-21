@@ -4,7 +4,7 @@
 
 std::unique_ptr<Object3D> ComponentFactoryBase::Create(
   const std::string& name,
-  const ParamsMap& params) const
+  const ParamsVector& params) const
 {
   auto object = FactoryMethod(name, params);
   Generate(*object);

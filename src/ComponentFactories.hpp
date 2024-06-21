@@ -11,7 +11,7 @@ class SquareFactory : public ComponentFactoryBase
 public:
   std::unique_ptr<Object3D> FactoryMethod(
     const std::string& name,
-    const ParamsMap& params) const override;
+    const ParamsVector& params) const override;
 };
 
 class SquareWithHolePart1Factory : public ComponentFactoryBase
@@ -19,7 +19,7 @@ class SquareWithHolePart1Factory : public ComponentFactoryBase
 public:
   std::unique_ptr<Object3D> FactoryMethod(
     const std::string& name,
-    const ParamsMap& params) const override;
+    const ParamsVector& params) const override;
 };
 
 class SquareWithHolePart2Factory : public ComponentFactoryBase
@@ -27,7 +27,7 @@ class SquareWithHolePart2Factory : public ComponentFactoryBase
 public:
   std::unique_ptr<Object3D> FactoryMethod(
     const std::string& name,
-    const ParamsMap& params) const override;
+    const ParamsVector& params) const override;
 };
 
 class PyramidFactory : public ComponentFactoryBase
@@ -35,7 +35,7 @@ class PyramidFactory : public ComponentFactoryBase
 public:
   std::unique_ptr<Object3D> FactoryMethod(
     const std::string& name,
-    const ParamsMap& params) const override;
+    const ParamsVector& params) const override;
 };
 
 } // namespace

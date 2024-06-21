@@ -28,18 +28,21 @@ enum class ObjectId {
   Cube = 1,
   CubeExt = 2,
   Thorus = 3,
+  Cuboid = 4,
 };
 
 std::map<std::string, ObjectId> ObjectIdMap {
   {"cube", ObjectId::Cube},
   {"cube-ext", ObjectId::CubeExt},
-  {"thorus", ObjectId::Thorus}
+  {"thorus", ObjectId::Thorus},
+  {"cuboid", ObjectId::Cuboid},
 };
 
 std::map<ObjectId, std::string> ParamsHelp {
   {ObjectId::Cube, "additional-params: size"},
   {ObjectId::CubeExt, "component-list and component-params must be defined"},
-  {ObjectId::Thorus, "additional-params: circleAmount ringAmount circleSize circleOffset"}
+  {ObjectId::Thorus, "additional-params: circleAmount ringAmount circleSize circleOffset"},
+  {ObjectId::Cuboid, ""}
 };
 
 using ObjectFactoryPair = std::pair<ObjectId, std::unique_ptr<ObjectFactoryBase>>;
@@ -50,6 +53,7 @@ void InitObjectFactoryMap()
   ObjectFactoryMap.insert(ObjectFactoryPair(ObjectId::Cube, std::make_unique<CubeFactory>()));
   ObjectFactoryMap.insert(ObjectFactoryPair(ObjectId::CubeExt, std::make_unique<CubeExtFactory>()));
   ObjectFactoryMap.insert(ObjectFactoryPair(ObjectId::Thorus, std::make_unique<ThorusFactory>()));
+  ObjectFactoryMap.insert(ObjectFactoryPair(ObjectId::Cuboid, std::make_unique<CuboidFactory>()));
 }
 
 const auto& GetFactory(const std::string& name)
@@ -116,7 +120,26 @@ int main(int argc, char* argv[])
     ("component-list,c", po::value<ParamsVector>()->multitoken(),
       "0 - Square, 1 - SquareWithHolePart1, 2 - SquareWithHolePart2, 3 - Pyramid")
     ("component-params,p", po::value<ParamsVector>()->multitoken(), "depends on particular component")
-    ("additional-params", po::value<ParamsVector>(), "depends on selected object in type");
+    ("additional-params", po::value<ParamsVector>(), "depends on selected object in type")
+    ("c0", po::value<ParamsVector>()->multitoken(), "")
+    ("c1", po::value<ParamsVector>()->multitoken(), "")
+    ("c2", po::value<ParamsVector>()->multitoken(), "") 
+    ("c3", po::value<ParamsVector>()->multitoken(), "")
+    ("c4", po::value<ParamsVector>()->multitoken(), "")
+    ("c5", po::value<ParamsVector>()->multitoken(), "")
+    ("p0", po::value<ParamsVector>()->multitoken(), "")
+    ("p1", po::value<ParamsVector>()->multitoken(), "")
+    ("p2", po::value<ParamsVector>()->multitoken(), "") 
+    ("p3", po::value<ParamsVector>()->multitoken(), "")
+    ("p4", po::value<ParamsVector>()->multitoken(), "")
+    ("p5", po::value<ParamsVector>()->multitoken(), "")
+    ("f0", po::value<ParamsVector>()->multitoken(), "")
+    ("f1", po::value<ParamsVector>()->multitoken(), "")
+    ("f2", po::value<ParamsVector>()->multitoken(), "") 
+    ("f3", po::value<ParamsVector>()->multitoken(), "")
+    ("f4", po::value<ParamsVector>()->multitoken(), "")
+    ("f5", po::value<ParamsVector>()->multitoken(), "")
+    ;
 
   const po::variables_map& options = ReadGeneratorParams(argc, argv, optionsDesc);
 
@@ -143,24 +166,39 @@ int main(int argc, char* argv[])
 
   std::map<ParamsId, ParamsVector> paramsMap;
 
-  if (!options["component-list"].empty())
-  {
-    const auto& list = options["component-list"].as<ParamsVector>();
-    paramsMap[ParamsId::ComponentsList] = list;
-  }
-
-  if (!options["component-params"].empty())
-  {
-    const auto& list = options["component-params"].as<ParamsVector>();
-    paramsMap[ParamsId::ComponentsParams] = list;
-  }
+  auto getParams = [&options, &paramsMap](std::string name, ParamsId param){
+    if (!options[name].empty())
+    {
+      const auto& list = options[name].as<ParamsVector>();
+      paramsMap[param] = list;
+    }
+  };
   
-  if (options.count("additional-params"))
-  {
-    const auto& params = options["additional-params"].as<ParamsVector>();
-    paramsMap[ParamsId::AdditionalParams] = params;
-  }
+  getParams("component-list", ParamsId::ComponentsList);
+  getParams("component-params", ParamsId::ComponentsParams);
+  getParams("additional-params", ParamsId::AdditionalParams);
 
+  getParams("c0", ParamsId::ComponentsListFace0);
+  getParams("c1", ParamsId::ComponentsListFace1);
+  getParams("c2", ParamsId::ComponentsListFace2);
+  getParams("c3", ParamsId::ComponentsListFace3);
+  getParams("c4", ParamsId::ComponentsListFace4);
+  getParams("c5", ParamsId::ComponentsListFace5);
+
+  getParams("p0", ParamsId::ComponentsParamsFace0);
+  getParams("p1", ParamsId::ComponentsParamsFace1);
+  getParams("p2", ParamsId::ComponentsParamsFace2);
+  getParams("p3", ParamsId::ComponentsParamsFace3);
+  getParams("p4", ParamsId::ComponentsParamsFace4);
+  getParams("p5", ParamsId::ComponentsParamsFace5);
+
+  getParams("f0", ParamsId::ParamsFace0);
+  getParams("f1", ParamsId::ParamsFace1);
+  getParams("f2", ParamsId::ParamsFace2);
+  getParams("f3", ParamsId::ParamsFace3);
+  getParams("f4", ParamsId::ParamsFace4);
+  getParams("f5", ParamsId::ParamsFace5);
+  
   SetLogging(verbose);
   
   try {

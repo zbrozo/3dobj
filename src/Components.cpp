@@ -1,8 +1,11 @@
 #include "Components.hpp"
 #include <algorithm>
 
+#include <boost/log/trivial.hpp>
+
 namespace
 {
+
 auto CreateSideVertices(Vertices& vertices)
 {
   std::vector<Vertices> allVertices;
