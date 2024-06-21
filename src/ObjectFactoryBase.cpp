@@ -16,10 +16,10 @@ namespace
 
   void InitAllComponentFactoriesVector(ComponentFactories& allComponentFactories)
   {
-    allComponentFactories.push_back(std::make_unique<Component0Factory>());
-    allComponentFactories.push_back(std::make_unique<Component1Factory>());
-    allComponentFactories.push_back(std::make_unique<Component2Factory>());
-    allComponentFactories.push_back(std::make_unique<Component3Factory>());
+    allComponentFactories.push_back(std::make_unique<Components::SquareFactory>());
+    allComponentFactories.push_back(std::make_unique<Components::SquareWithHolePart1Factory>());
+    allComponentFactories.push_back(std::make_unique<Components::SquareWithHolePart2Factory>());
+    allComponentFactories.push_back(std::make_unique<Components::PyramidFactory>());
   }
 }
 

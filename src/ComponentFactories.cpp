@@ -28,8 +28,11 @@ auto getParam(std::vector<int> values, unsigned int index)
 }
   
 } // namespace
-  
-std::unique_ptr<Object3D> Component0Factory::FactoryMethod(
+
+namespace Components
+{
+
+std::unique_ptr<Object3D> SquareFactory::FactoryMethod(
   const std::string& /*name*/,
   const ParamsMap& params) const
 {
@@ -44,7 +47,7 @@ std::unique_ptr<Object3D> Component0Factory::FactoryMethod(
   return std::make_unique<Components::Square>(param);
 }
 
-std::unique_ptr<Object3D> Component1Factory::FactoryMethod(
+std::unique_ptr<Object3D> SquareWithHolePart1Factory::FactoryMethod(
   const std::string& /*name*/,
   const ParamsMap& params) const
 {
@@ -63,7 +66,7 @@ std::unique_ptr<Object3D> Component1Factory::FactoryMethod(
   return std::make_unique<Components::SquareWithHolePart1>(param1, param2, param3);
 }
 
-std::unique_ptr<Object3D> Component2Factory::FactoryMethod(
+std::unique_ptr<Object3D> SquareWithHolePart2Factory::FactoryMethod(
   const std::string& /*name*/,
   const ParamsMap& params) const
 {
@@ -80,7 +83,7 @@ std::unique_ptr<Object3D> Component2Factory::FactoryMethod(
   return std::make_unique<Components::SquareWithHolePart2>(param1, param2);
 }
 
-std::unique_ptr<Object3D> Component3Factory::FactoryMethod(
+std::unique_ptr<Object3D> PyramidFactory::FactoryMethod(
   const std::string& /*name*/,
   const ParamsMap& params) const
 {
@@ -96,3 +99,5 @@ std::unique_ptr<Object3D> Component3Factory::FactoryMethod(
   
   return std::make_unique<Components::Pyramid>(param1, param2);
 }
+
+} // namespace

@@ -157,4 +157,4 @@ void Pyramid::Generate()
   mFaces.push_back({3,0,4});
 }
 
-}
+} // namespace

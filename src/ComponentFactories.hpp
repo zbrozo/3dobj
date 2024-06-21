@@ -1,8 +1,12 @@
 #include "ComponentFactoryBase.hpp"
+#include "Components.hpp"
 
 class Object3D;
 
-class Component0Factory : public ComponentFactoryBase
+namespace Components
+{
+
+class SquareFactory : public ComponentFactoryBase
 {
 public:
   std::unique_ptr<Object3D> FactoryMethod(
@@ -10,7 +14,7 @@ public:
     const ParamsMap& params) const override;
 };
 
-class Component1Factory : public ComponentFactoryBase
+class SquareWithHolePart1Factory : public ComponentFactoryBase
 {
 public:
   std::unique_ptr<Object3D> FactoryMethod(
@@ -18,7 +22,7 @@ public:
     const ParamsMap& params) const override;
 };
 
-class Component2Factory : public ComponentFactoryBase
+class SquareWithHolePart2Factory : public ComponentFactoryBase
 {
 public:
   std::unique_ptr<Object3D> FactoryMethod(
@@ -26,10 +30,12 @@ public:
     const ParamsMap& params) const override;
 };
 
-class Component3Factory : public ComponentFactoryBase
+class PyramidFactory : public ComponentFactoryBase
 {
 public:
   std::unique_ptr<Object3D> FactoryMethod(
     const std::string& name,
     const ParamsMap& params) const override;
 };
+
+} // namespace
