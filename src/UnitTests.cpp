@@ -8,7 +8,17 @@
 #include "Thorus.hpp"
 #include "Params.hpp"
 
-BOOST_AUTO_TEST_SUITE(ObjectFactory_Suite)
+BOOST_AUTO_TEST_SUITE(Basic_Suite)
+
+BOOST_AUTO_TEST_CASE(vertex_add_operations_test)
+{
+  Vertex3D<int> vertex1 {0, 1, 2};
+  Vertex3D<int> vertex2 {1, 1, 1};
+  vertex1 += vertex2;
+  BOOST_CHECK_EQUAL(vertex1, Vertex3D<int>(1,2,3));
+  vertex1 = vertex1 + vertex2;
+  BOOST_CHECK_EQUAL(vertex1, Vertex3D<int>(2,3,4));
+}
 
 BOOST_AUTO_TEST_CASE(vector_crossproduct_test)
 {
@@ -25,6 +35,10 @@ BOOST_AUTO_TEST_CASE(vector_normalize_test)
   BOOST_CHECK_EQUAL(result.length(), 64);
   BOOST_CHECK_EQUAL(result, Vector3D<int>(Vertex3D<int>(37, 37, 37)));
 }
+
+BOOST_AUTO_TEST_SUITE_END()
+
+BOOST_AUTO_TEST_SUITE(ObjectFactory_Suite)
 
 BOOST_AUTO_TEST_CASE(cube_factory_test)
 {

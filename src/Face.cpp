@@ -85,12 +85,11 @@ bool Face::IsVisible(const std::vector<Vertex>& vertices) const
   return (result <= 0);
 }
 
-std::string Face::ToString() const
+std::ostream& operator<<(std::ostream& os, const Face& face)
 {
-  std::string s;
-  for (size_t i = 0; i < size(); ++i)
+  for (size_t i = 0; i < face.size(); ++i)
   {
-    s += std::to_string(at(i)) + ((i != size() - 1) ? ", " : "");
+    os << "[" << std::to_string(face.at(i)) << ((i != face.size() - 1) ? ", " : "") << "]";
   }
-  return s;
+  return os;
 }

@@ -27,7 +27,7 @@ public:
 
   Vector3D(const Vector3D&) = default;
   Vector3D(Vector3D &&) = default;
-  Vector3D& operator=(const Vector3D& v) = default;
+  Vector3D& operator=(const Vector3D&) = default;
   Vector3D& operator=(Vector3D &&) = default;
 
   bool operator==(const Vector3D& vector) const

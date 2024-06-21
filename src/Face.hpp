@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <string>
+#include <ostream>
 #include "Types.hpp"
 
 class Face : public std::vector<unsigned short>
@@ -20,10 +21,12 @@ public:
   Face(Face &&) = default;
   Face& operator=(const Face& v) = default;
   Face& operator=(Face &&) = delete;
+
+  friend std::ostream& operator<<(std::ostream& os, const Face& face);
   
   Vector CalculateNormalVector(const std::vector<Vertex>& vertices) const;
   Vertex GetCenter(const std::vector<Vertex>& vertices) const;
   bool IsVisible(const std::vector<Vertex>& vertices) const;
-
-  std::string ToString() const;
 };
+
+

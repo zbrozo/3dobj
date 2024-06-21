@@ -124,7 +124,7 @@ void Object3D::LogVertices() const
   BOOST_LOG_TRIVIAL(debug) << __FUNCTION__;  
   for (auto v : mVertices)
   {
-    BOOST_LOG_TRIVIAL(debug) << v.ToString();
+    BOOST_LOG_TRIVIAL(debug) << v;
   }
 }
 
@@ -133,7 +133,7 @@ void Object3D::LogFaces() const
   BOOST_LOG_TRIVIAL(debug) << __FUNCTION__;  
   for (auto face : mFaces)
   {
-    BOOST_LOG_TRIVIAL(debug) << face.ToString();
+    BOOST_LOG_TRIVIAL(debug) << face;
   }
 }
 

@@ -8,6 +8,15 @@ Vertex3D<T> Vertex3D<T>::operator+(const Vertex3D<T>& v) const
 }
 
 template<class T>
+Vertex3D<T>& Vertex3D<T>::operator+=(const Vertex3D<T>& v)
+{
+  mX += v.mX;
+  mY += v.mY;
+  mZ += v.mZ;
+  return *this;
+}
+
+template<class T>
 bool Vertex3D<T>::operator==(const Vertex3D<T>& v) const
 {
   return (mX == v.mX && mY == v.mY && mZ == v.mZ);
@@ -37,12 +46,6 @@ Vertex3D<T> Vertex3D<T>::operator/(T value) const
   rounding(mZ, vertex.mZ);
 
   return vertex;
-}
-
-template<typename T>
-std::string Vertex3D<T>::ToString() const
-{
-  return std::to_string(mX) + ", " + std::to_string(mY) + ", " + std::to_string(mZ);
 }
 
 template class Vertex3D<short>;
