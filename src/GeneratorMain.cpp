@@ -110,7 +110,7 @@ int main(int argc, char* argv[])
     ("verbose,v", "debug")
     ("type,t", po::value<std::string>(), "object3d type")
     ("component-list,c", po::value<ComponentNamesVector>()->multitoken(),
-      "0 - Square, 1 - SquareWithHolePart1, 2 - SquareWithHolePart2, 3 - Pyramid")
+      "Square, SquareHolePart1, SquareHolePart2, Pyramid")
     ("component-params,p", po::value<ParamsVector>()->multitoken(), "depends on particular component")
     ("additional-params", po::value<ParamsVector>(), "depends on selected object in type")
     ("c0", po::value<ComponentNamesVector>()->multitoken(), "")

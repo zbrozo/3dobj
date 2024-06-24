@@ -172,8 +172,6 @@ std::pair<Face, Vertices> Object3D::Merge(const Vertices& objectVertices,
 
 std::ostream& operator<<(std::ostream& os, const Object3D& object)
 {
-  BOOST_LOG_TRIVIAL(trace) << __FUNCTION__;
-
   os << "Type: " << object.mName << "\n";
   os << object.mVertices;
   os << object.mFaces;
