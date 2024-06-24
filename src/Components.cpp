@@ -44,7 +44,7 @@ namespace Components
 
 void Square::Generate()
 {
-  Vertices vertices= {
+  Vertices vertices {
     {1, 1, 1},
     {-1, 1, 1},
     {-1, -1, 1},
@@ -62,14 +62,14 @@ void Square::Generate()
 
 void SquareWithHolePart1::Generate()
 {
-  Vertices vertices = {
+  Vertices vertices {
     {1, 1, 1},
     {-1, 1, 1},
     {-1, 1, 1},
     {1, 1, 1},
   };
   
-  Vertices verticesModify = {
+  Vertices verticesModify {
     {-1, -1, 0},
     {1, -1, 0},
     {1, -1, -1},
@@ -100,14 +100,14 @@ void SquareWithHolePart1::Generate()
 
 void SquareWithHolePart2::Generate()
 {
-  Vertices vertices = {
+  Vertices vertices {
     {1, 1, 1},
     {-1, 1, 1},
     {-1, 1, 1},
     {1, 1, 1},
   };
 
-  Vertices verticesModify = {
+  Vertices verticesModify {
     {0, 0, 0},
     {0, 0, 0},
     {1, -1, 0},
@@ -138,7 +138,7 @@ void SquareWithHolePart2::Generate()
 
 void Pyramid::Generate()
 {
-  Vertices vertices= {
+  Vertices vertices {
     {1, 1, 1},
     {-1, 1, 1},
     {-1, -1, 1},

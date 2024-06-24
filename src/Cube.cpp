@@ -38,7 +38,7 @@ std::pair<Faces, Vertices> Cube::CreateCube(const Faces& faces, const Vertices& 
 
 void Cube::Generate()
 {
-  Vertices vertices= {
+  Vertices vertices {
     {1, 1, 1},
     {-1, 1, 1},
     {-1, -1, 1},

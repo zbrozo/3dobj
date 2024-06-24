@@ -17,6 +17,13 @@ public:
     insert(end(), init.begin(), init.end());
   }
 
+  virtual ~Vertices() = default;
+  
+  Vertices(Vertices const &) = default;
+  Vertices(Vertices&&) = delete;
+  Vertices& operator=(const Vertices&) = default;
+  Vertices& operator=(Vertices &&) = delete;
+  
   Vertices& operator+=(const Vertex& vertex);
   
   Vertices Rotate(int degX, int degY, int degZ) const;
