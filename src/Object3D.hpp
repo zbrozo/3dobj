@@ -3,17 +3,13 @@
 #include <vector>
 #include <string>
 #include <utility>
-#include "Face.hpp"
+
+#include "Faces.hpp"
 #include "Vertices.hpp"
 #include "Types.hpp"
 
-using Faces = std::vector<Face>;
-using FaceNumbers = std::vector<unsigned short>;
-using FaceNumbersInVertices = std::vector<FaceNumbers>;
-
 class Object3D
 {
-  
 public:
 
   Object3D(const char* name) :
@@ -27,6 +23,8 @@ public:
   Object3D(Object3D &&) = delete;
   Object3D& operator=(Object3D const &) = delete;
   Object3D& operator=(Object3D &&) = delete;
+
+  friend std::ostream& operator<<(std::ostream& os, const Object3D& object);
   
   std::string mName;
   Vertices mVertices;
@@ -46,10 +44,8 @@ public:
   
   void CreateNormalVectors();
   
-  void LogVertices() const;
-  void LogFaces() const;
-  
   static std::pair<Face, Vertices> Merge(const Vertices& objectVertices,
                                          const Face& face,
                                          const Vertices& vertices);
 };
+

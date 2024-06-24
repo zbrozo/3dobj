@@ -32,7 +32,8 @@ set(generator_SRC
   src/Vertex3D.cpp
   src/Vector3D.cpp
   src/Object3D.cpp
-  src/Vertices.cpp)
+  src/Vertices.cpp
+  src/Faces.cpp)
 
 set(viewer_SRC
   src/ViewerMain.cpp
@@ -42,7 +43,8 @@ set(viewer_SRC
   src/Vertex3D.cpp
   src/Vector3D.cpp
   src/Object3D.cpp
-  src/Vertices.cpp)
+  src/Vertices.cpp
+  src/Faces.cpp)
 
 set(tests_SRC
   src/Cube.cpp
@@ -55,6 +57,7 @@ set(tests_SRC
   src/Vertex3D.cpp
   src/Vector3D.cpp
   src/Vertices.cpp
+  src/Faces.cpp
   src/Object3D.cpp
   src/ObjectFactoryBase.cpp
   src/ObjectFactories.cpp

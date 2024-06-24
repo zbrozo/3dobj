@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <ostream>
 
 #include "Types.hpp"
 
@@ -25,8 +26,9 @@ public:
   Vertices& operator=(Vertices &&) = default;
   
   Vertices& operator+=(const Vertex& vertex);
+
+  friend std::ostream& operator<<(std::ostream& os, const Vertices& vertices);
   
   Vertices Rotate(int degX, int degY, int degZ) const;
 };
-
 

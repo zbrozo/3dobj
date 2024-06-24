@@ -7,6 +7,9 @@
 #include "Types.hpp"
 #include "Object3D.hpp"
 
+using FaceNumbers = std::vector<unsigned short>;
+using FaceNumbersInVertices = std::vector<FaceNumbers>;
+
 namespace
 {
   
@@ -14,7 +17,7 @@ auto PrepareFacesAssignedToVertices(
   const Vertices& vertices,
   const Faces& faces)
 {
-  BOOST_LOG_TRIVIAL(debug) << __FUNCTION__;
+  BOOST_LOG_TRIVIAL(trace) << __FUNCTION__;
 
   FaceNumbersInVertices result;
   
@@ -44,7 +47,7 @@ auto CalculateNormalVectorToFaces(const Vertices& vertices,
   const Faces& faces
   )
 {
-  BOOST_LOG_TRIVIAL(debug) << __FUNCTION__;
+  BOOST_LOG_TRIVIAL(trace) << __FUNCTION__;
 
   Vectors normalVectors;
   
@@ -60,7 +63,7 @@ auto CalculateNormalVectorToFaces(const Vertices& vertices,
 auto CalculateVectorsInVertices(const FaceNumbersInVertices& vertexInFaceDependency,
   const Vectors& normalFaceVectors)
 {
-  BOOST_LOG_TRIVIAL(debug) << __FUNCTION__;  
+  BOOST_LOG_TRIVIAL(trace) << __FUNCTION__;  
 
   Vectors vectorsInVertices;
   
@@ -94,7 +97,7 @@ auto CalculateVectorsInVertices(const FaceNumbersInVertices& vertexInFaceDepende
 
 auto NormalizeVectorsInVertices(const Vectors& vectorsInVertices)
 {
-  BOOST_LOG_TRIVIAL(debug) << __FUNCTION__;  
+  BOOST_LOG_TRIVIAL(trace) << __FUNCTION__;  
 
   Vectors normalizedVectorsInVertices;
 
@@ -110,6 +113,8 @@ auto NormalizeVectorsInVertices(const Vectors& vectorsInVertices)
 
 void Object3D::CreateNormalVectors()
 {
+  BOOST_LOG_TRIVIAL(trace) << __FUNCTION__;
+
   FaceNumbersInVertices facesAssignedToVertex = PrepareFacesAssignedToVertices(mVertices, mFaces);
   
   mNormalVectorsInFaces = CalculateNormalVectorToFaces(mVertices, mFaces);
@@ -118,30 +123,12 @@ void Object3D::CreateNormalVectors()
 
   mNormalVectorsInVertices = NormalizeVectorsInVertices(vectorsInVertices);
 }
-    
-void Object3D::LogVertices() const
-{
-  BOOST_LOG_TRIVIAL(debug) << __FUNCTION__;  
-  for (auto v : mVertices)
-  {
-    BOOST_LOG_TRIVIAL(debug) << v;
-  }
-}
-
-void Object3D::LogFaces() const
-{
-  BOOST_LOG_TRIVIAL(debug) << __FUNCTION__;  
-  for (auto face : mFaces)
-  {
-    BOOST_LOG_TRIVIAL(debug) << face;
-  }
-}
 
 std::pair<Face, Vertices> Object3D::Merge(const Vertices& objectVertices,
   const Face& face,
   const Vertices& vertices)
 {
-  BOOST_LOG_TRIVIAL(debug) << __FUNCTION__;
+  BOOST_LOG_TRIVIAL(trace) << __FUNCTION__;
 
   Face resultFace;
   Vertices resultVertices = objectVertices;
@@ -181,4 +168,14 @@ std::pair<Face, Vertices> Object3D::Merge(const Vertices& objectVertices,
   }
   
   return std::make_pair(resultFace, resultVertices);
+}
+
+std::ostream& operator<<(std::ostream& os, const Object3D& object)
+{
+  BOOST_LOG_TRIVIAL(trace) << __FUNCTION__;
+
+  os << "Type: " << object.mName << "\n";
+  os << object.mVertices;
+  os << object.mFaces;
+  return os;
 }

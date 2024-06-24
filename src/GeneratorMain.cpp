@@ -107,7 +107,7 @@ int main(int argc, char* argv[])
   po::options_description optionsDesc("generator <type> [params]\n");
   optionsDesc.add_options()
     ("help,h", "produce help message")
-    ("verbose,v", "produce verbose logs")
+    ("verbose,v", "debug")
     ("type,t", po::value<std::string>(), "object3d type")
     ("component-list,c", po::value<ComponentNamesVector>()->multitoken(),
       "0 - Square, 1 - SquareWithHolePart1, 2 - SquareWithHolePart2, 3 - Pyramid")
@@ -211,8 +211,7 @@ int main(int argc, char* argv[])
     AmigaFile file;
     file.Save(*object3d);
 
-    object3d->LogVertices();
-    object3d->LogFaces();
+    BOOST_LOG_TRIVIAL(debug) << *object3d;
     
   } catch (const std::out_of_range& ex) {
     BOOST_LOG_TRIVIAL(error) << ex.what();

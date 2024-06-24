@@ -29,3 +29,15 @@ Vertices& Vertices::operator+=(const Vertex &vertex)
   return *this;
 }
 
+std::ostream& operator<<(std::ostream& os, const Vertices& vertices)
+{
+  for (const auto& v : vertices)
+  {
+    os << v;
+  }
+
+  os << std::endl;
+
+  return os;
+}
+
