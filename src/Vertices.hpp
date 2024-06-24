@@ -22,7 +22,7 @@ public:
   Vertices(Vertices const &) = default;
   Vertices(Vertices&&) = delete;
   Vertices& operator=(const Vertices&) = default;
-  Vertices& operator=(Vertices &&) = delete;
+  Vertices& operator=(Vertices &&) = default;
   
   Vertices& operator+=(const Vertex& vertex);
   

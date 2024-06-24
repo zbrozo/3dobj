@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <map>
 #include <string>
 #include <memory>
 #include <functional>
@@ -10,7 +11,7 @@
 
 class Object3D;
 
-using ComponentFactories = std::vector<std::unique_ptr<ComponentFactoryBase>>;
+using ComponentFactories = std::map<ObjectId, std::unique_ptr<ComponentFactoryBase>>;
 
 class ObjectFactoryBase
 {

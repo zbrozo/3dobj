@@ -2,6 +2,7 @@
 #include "IGenerator.hpp"
 #include "Components.hpp"
 #include "ComponentFactories.hpp"
+#include "Params.hpp"
 
 #include <algorithm>
 #include <optional>
@@ -10,18 +11,20 @@ using namespace std::placeholders;
 
 namespace
 {
-  auto findParamsVector = [](const std::pair<ParamsId, ParamsVector>& params, ParamsId id) {
-    return params.first == id;
-  };
 
-  void InitAllComponentFactoriesVector(ComponentFactories& allComponentFactories)
-  {
-    allComponentFactories.push_back(std::make_unique<Components::SquareFactory>());
-    allComponentFactories.push_back(std::make_unique<Components::SquareWithHolePart1Factory>());
-    allComponentFactories.push_back(std::make_unique<Components::SquareWithHolePart2Factory>());
-    allComponentFactories.push_back(std::make_unique<Components::PyramidFactory>());
-  }
+auto findParamsVector = [](const ParamsPair& params, ParamsId id) {
+  return params.first == id;
+};
+
+void InitAllComponentFactoriesVector(ComponentFactories& allComponentFactories)
+{
+  allComponentFactories[ObjectId::Square] = std::make_unique<Components::SquareFactory>();
+  allComponentFactories[ObjectId::SquareHolePart1] = std::make_unique<Components::SquareWithHolePart1Factory>();
+  allComponentFactories[ObjectId::SquareHolePart2] = std::make_unique<Components::SquareWithHolePart2Factory>();
+  allComponentFactories[ObjectId::Pyramid] = std::make_unique<Components::PyramidFactory>();
 }
+
+} // namespace
 
 ObjectFactoryBase::ObjectFactoryBase()
 {
@@ -40,9 +43,18 @@ std::unique_ptr<Object3D> ObjectFactoryBase::Create(
 std::string ObjectFactoryBase::CreateFullName(const std::string& name, const ParamsMap &params) const
 {
   std::string result = name;
-
-  auto appendParams = [&](const ParamsMap::const_iterator& it) {
-    for (int value : it->second)
+  
+  auto appendNames = [&](const ParamsMap::const_iterator& it)
+  {
+    for (std::string value : std::get<ComponentNamesVector>(it->second))
+    {
+      result += "_" + value;
+    }
+  };
+  
+  auto appendParams = [&](const ParamsMap::const_iterator& it)
+  {
+    for (int value : std::get<ParamsVector>(it->second))
     {
       result += "_" + std::to_string(value);
     }
@@ -51,7 +63,7 @@ std::string ObjectFactoryBase::CreateFullName(const std::string& name, const Par
   if (auto it = std::find_if(params.begin(), params.end(),
       std::bind(findParamsVector, _1,  ParamsId::ComponentsList)); it != params.end())
   {
-    appendParams(it);
+    appendNames(it);
   }
 
   if (auto it = std::find_if(params.begin(), params.end(),

@@ -6,24 +6,34 @@
 #include "Components.hpp"
 #include "Params.hpp"
 
+#include <cctype>
 #include <memory>
 #include <stdexcept>
 #include <algorithm>
 
 #include <boost/log/trivial.hpp>
+#include <boost/algorithm/string.hpp>
 
 using namespace std::placeholders;
 
 namespace
 {
+
+std::map<std::string, ObjectId> ComponentIdMap {
+  {"square", ObjectId::Square},
+  {"squareholepart1", ObjectId::SquareHolePart1},
+  {"squareholepart2", ObjectId::SquareHolePart2},
+  {"pyramid", ObjectId::Pyramid},
+};  
+
 const std::string TooLessParamsMessage = "Too less parameters for ";
 
-auto findParamsVector = [](const std::pair<ParamsId, ParamsVector> &params,  ParamsId id)
+auto findParamsVector = [](const ParamsPair& params,  ParamsId id)
 {
   return params.first == id;
 };
 
-auto getParam(std::vector<int> values, unsigned int index)
+auto getParam(ParamsVector values, unsigned int index)
 {
   if (values.size() > index)
   {
@@ -42,7 +52,7 @@ std::unique_ptr<Object3D> CubeFactory::FactoryMethod(
   if (auto it = std::find_if(params.begin(), params.end(),
       std::bind(findParamsVector, _1,  ParamsId::AdditionalParams)); it != params.end())
   {
-    return std::make_unique<Cube>(name.c_str(), it->second[0]);
+    return std::make_unique<Cube>(name.c_str(), std::get<ParamsVector>(it->second)[0]);
   }
   
   return std::make_unique<Cube>(name.c_str());
@@ -53,18 +63,24 @@ std::unique_ptr<Object3D> CubeExtFactory::FactoryMethod(
   const ParamsMap& params) const 
 {
   auto components = std::make_unique<ComponentsVector>();
+
+  const auto& names =  std::get<ComponentNamesVector>(params.at(ParamsId::ComponentsList));
   
-  for (int i : params.at(ParamsId::ComponentsList))
+  for (auto name : names)
   {
+    boost::algorithm::to_lower(name);
+
+    const auto id = ComponentIdMap[name];
+           
     ParamsVector paramsVector;
     
     if (auto it = std::find_if(params.begin(), params.end(),
         std::bind(findParamsVector, _1,  ParamsId::ComponentsParams)); it != params.end())
     {
-      paramsVector = it->second;
+      paramsVector = std::get<ParamsVector>(it->second);
     }
     
-    components->push_back(std::move(GetAllComponentFactories()[i]->Create(name, paramsVector)));
+    components->push_back(std::move(GetAllComponentFactories().at(id)->Create(name, paramsVector)));
   }
 
   const auto nameExt = CreateFullName(name, params);
@@ -76,7 +92,7 @@ std::unique_ptr<Object3D> ThorusFactory::FactoryMethod(
   const std::string& name,
   const ParamsMap& params) const
 {
-  const auto& foundParams = params.at(ParamsId::AdditionalParams);
+  const auto& foundParams = std::get<ParamsVector>(params.at(ParamsId::AdditionalParams));
   
   const auto circleAmount = getParam(foundParams, 0);
   const auto ringAmount = getParam(foundParams, 1);
@@ -106,27 +122,33 @@ std::unique_ptr<Object3D> CuboidFactory::FactoryMethod(
     if (auto it = std::find_if(params.begin(), params.end(),
         std::bind(findParamsVector, _1,  paramsId)); it != params.end())
     {
-      paramsVector = it->second;
+      paramsVector = std::get<ParamsVector>(it->second);
     }
     
     if (auto it = std::find_if(params.begin(), params.end(),
         std::bind(findParamsVector, _1,  mainParamsId)); it != params.end())
     {
-      mainParamsVector = it->second;
+      mainParamsVector = std::get<ParamsVector>(it->second);
     }
     
     if (auto it = std::find_if(params.begin(), params.end(),
         std::bind(findParamsVector, _1,  listId)); it != params.end())
     {
-      for (auto i : it->second)
+      const auto& names = std::get<ComponentNamesVector>(it->second);
+        
+      for (auto name : names)
       {
+        boost::algorithm::to_lower(name);
+        
+        const auto id = ComponentIdMap[name];
+
+        BOOST_LOG_TRIVIAL(trace) << "Found component: " << name << " " << std::to_string(static_cast<int>(id));
+        
         components->push_back(
-          std::move(GetAllComponentFactories()[i]->Create(name, paramsVector)));
+          std::move(GetAllComponentFactories().at(id)->Create(name, paramsVector)));
       }
     }
 
-    components->at(0)->LogVertices();
-    
     componentsPerFaceVector->push_back(
       ComponentsAndMainParamsPair(mainParamsVector, std::move(components)));
   };

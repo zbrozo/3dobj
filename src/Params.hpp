@@ -4,6 +4,19 @@
 #include <string>
 #include <map>
 #include <memory>
+#include <variant>
+
+enum class ObjectId {
+  None = 0,
+  Cube = 1,
+  CubeExt = 2,
+  Thorus = 3,
+  Cuboid = 4,
+  Square = 5,
+  SquareHolePart1 = 6,
+  SquareHolePart2 = 7,
+  Pyramid = 8,
+};
 
 enum class ParamsId {
   ComponentsList,
@@ -30,7 +43,9 @@ enum class ParamsId {
 };
 
 using ParamsVector = std::vector<int>;
-using ParamsMap = std::map<ParamsId, ParamsVector>;
+using ComponentNamesVector = std::vector<std::string>;
+using ParamsPair = std::pair<ParamsId, std::variant<ParamsVector, ComponentNamesVector>>;
+using ParamsMap = std::map<ParamsId, std::variant<ParamsVector, ComponentNamesVector>>;
 
 class Object3D;
 using ComponentsVector = std::vector<std::unique_ptr<Object3D>>;

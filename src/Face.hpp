@@ -20,7 +20,7 @@ public:
   Face(Face const &) = default;
   Face(Face &&) = default;
   Face& operator=(const Face& v) = default;
-  Face& operator=(Face &&) = delete;
+  Face& operator=(Face &&) = default;
 
   friend std::ostream& operator<<(std::ostream& os, const Face& face);
   

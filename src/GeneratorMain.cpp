@@ -23,14 +23,6 @@
 
 namespace po = boost::program_options;
 
-enum class ObjectId {
-  None = 0,
-  Cube = 1,
-  CubeExt = 2,
-  Thorus = 3,
-  Cuboid = 4,
-};
-
 std::map<std::string, ObjectId> ObjectIdMap {
   {"cube", ObjectId::Cube},
   {"cube-ext", ObjectId::CubeExt},
@@ -117,16 +109,16 @@ int main(int argc, char* argv[])
     ("help,h", "produce help message")
     ("verbose,v", "produce verbose logs")
     ("type,t", po::value<std::string>(), "object3d type")
-    ("component-list,c", po::value<ParamsVector>()->multitoken(),
+    ("component-list,c", po::value<ComponentNamesVector>()->multitoken(),
       "0 - Square, 1 - SquareWithHolePart1, 2 - SquareWithHolePart2, 3 - Pyramid")
     ("component-params,p", po::value<ParamsVector>()->multitoken(), "depends on particular component")
     ("additional-params", po::value<ParamsVector>(), "depends on selected object in type")
-    ("c0", po::value<ParamsVector>()->multitoken(), "")
-    ("c1", po::value<ParamsVector>()->multitoken(), "")
-    ("c2", po::value<ParamsVector>()->multitoken(), "") 
-    ("c3", po::value<ParamsVector>()->multitoken(), "")
-    ("c4", po::value<ParamsVector>()->multitoken(), "")
-    ("c5", po::value<ParamsVector>()->multitoken(), "")
+    ("c0", po::value<ComponentNamesVector>()->multitoken(), "")
+    ("c1", po::value<ComponentNamesVector>()->multitoken(), "")
+    ("c2", po::value<ComponentNamesVector>()->multitoken(), "") 
+    ("c3", po::value<ComponentNamesVector>()->multitoken(), "")
+    ("c4", po::value<ComponentNamesVector>()->multitoken(), "")
+    ("c5", po::value<ComponentNamesVector>()->multitoken(), "")
     ("p0", po::value<ParamsVector>()->multitoken(), "")
     ("p1", po::value<ParamsVector>()->multitoken(), "")
     ("p2", po::value<ParamsVector>()->multitoken(), "") 
@@ -164,26 +156,36 @@ int main(int argc, char* argv[])
     return 1;
   }
 
-  std::map<ParamsId, ParamsVector> paramsMap;
+  ParamsMap paramsMap;
 
-  auto getParams = [&options, &paramsMap](std::string name, ParamsId param){
+  auto getParams = [&options, &paramsMap](std::string name, ParamsId param)
+  {
     if (!options[name].empty())
     {
       const auto& list = options[name].as<ParamsVector>();
       paramsMap[param] = list;
     }
   };
-  
-  getParams("component-list", ParamsId::ComponentsList);
+
+  auto getComponent = [&options, &paramsMap](std::string name, ParamsId param)
+  {
+    if (!options[name].empty())
+    {
+      const auto& list = options[name].as<ComponentNamesVector>();
+      paramsMap[param] = list;
+    }
+  };
+
+  getComponent("component-list", ParamsId::ComponentsList);
   getParams("component-params", ParamsId::ComponentsParams);
   getParams("additional-params", ParamsId::AdditionalParams);
 
-  getParams("c0", ParamsId::ComponentsListFace0);
-  getParams("c1", ParamsId::ComponentsListFace1);
-  getParams("c2", ParamsId::ComponentsListFace2);
-  getParams("c3", ParamsId::ComponentsListFace3);
-  getParams("c4", ParamsId::ComponentsListFace4);
-  getParams("c5", ParamsId::ComponentsListFace5);
+  getComponent("c0", ParamsId::ComponentsListFace0);
+  getComponent("c1", ParamsId::ComponentsListFace1);
+  getComponent("c2", ParamsId::ComponentsListFace2);
+  getComponent("c3", ParamsId::ComponentsListFace3);
+  getComponent("c4", ParamsId::ComponentsListFace4);
+  getComponent("c5", ParamsId::ComponentsListFace5);
 
   getParams("p0", ParamsId::ComponentsParamsFace0);
   getParams("p1", ParamsId::ComponentsParamsFace1);

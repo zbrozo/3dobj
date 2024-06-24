@@ -198,7 +198,7 @@ Thorus::Thorus(
 
 void Thorus::Generate()
 {
-  Vertices circle = CreateCircleVertices(mCircleAmount, mCircleRadius);
+  Vertices circle { CreateCircleVertices(mCircleAmount, mCircleRadius) };
   circle = MoveVertices(circle, Vertex(0, mCircleOffset, 0));
   mVertices = CreateRingVertices(circle, mRingAmount);
 
