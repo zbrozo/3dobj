@@ -13,10 +13,10 @@ class ComponetsVector;
 class Cuboid : public Object3D, public IGenerator
 {
 
-  std::unique_ptr<ComponentsPerFaceVector> mObjects = nullptr;
+  std::unique_ptr<ComponentsWithParamsVector> mObjects = nullptr;
   
 public:
-  Cuboid(const char *name, std::unique_ptr<ComponentsPerFaceVector> objects) :
+  Cuboid(const char *name, std::unique_ptr<ComponentsWithParamsVector> objects) :
     Object3D(name), mObjects(std::move(objects))
   {
   }

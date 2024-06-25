@@ -19,6 +19,7 @@ auto findParamsVector = [](const ParamsPair& params, ParamsId id) {
 void InitAllComponentFactoriesVector(ComponentFactories& allComponentFactories)
 {
   allComponentFactories[ObjectId::Square] = std::make_unique<Components::SquareFactory>();
+  allComponentFactories[ObjectId::Rectangle] = std::make_unique<Components::RectangleFactory>();
   allComponentFactories[ObjectId::SquareHolePart1] = std::make_unique<Components::SquareWithHolePart1Factory>();
   allComponentFactories[ObjectId::SquareHolePart2] = std::make_unique<Components::SquareWithHolePart2Factory>();
   allComponentFactories[ObjectId::Pyramid] = std::make_unique<Components::PyramidFactory>();

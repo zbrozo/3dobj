@@ -108,7 +108,9 @@ int main(int argc, char* argv[])
   optionsDesc.add_options()
     ("help,h", "produce help message")
     ("verbose,v", "debug")
+    ("output,o", po::value<std::string>(), "output name")
     ("type,t", po::value<std::string>(), "object3d type")
+    ("params,f", po::value<ParamsVector>()->multitoken(), "")
     ("component-list,c", po::value<ComponentNamesVector>()->multitoken(),
       "Square, SquareHolePart1, SquareHolePart2, Pyramid")
     ("component-params,p", po::value<ParamsVector>()->multitoken(), "depends on particular component")
@@ -156,6 +158,12 @@ int main(int argc, char* argv[])
     return 1;
   }
 
+  std::string outputName;
+  if (options.count("output"))
+  {
+    outputName = options["output"].as<std::string>();
+  }
+  
   ParamsMap paramsMap;
 
   auto getParams = [&options, &paramsMap](std::string name, ParamsId param)
@@ -177,29 +185,30 @@ int main(int argc, char* argv[])
   };
 
   getComponent("component-list", ParamsId::ComponentsList);
+  getParams("params", ParamsId::Params);
   getParams("component-params", ParamsId::ComponentsParams);
   getParams("additional-params", ParamsId::AdditionalParams);
 
-  getComponent("c0", ParamsId::ComponentsListFace0);
-  getComponent("c1", ParamsId::ComponentsListFace1);
-  getComponent("c2", ParamsId::ComponentsListFace2);
-  getComponent("c3", ParamsId::ComponentsListFace3);
-  getComponent("c4", ParamsId::ComponentsListFace4);
-  getComponent("c5", ParamsId::ComponentsListFace5);
+  getComponent("c0", ParamsId::ComponentsList0);
+  getComponent("c1", ParamsId::ComponentsList1);
+  getComponent("c2", ParamsId::ComponentsList2);
+  getComponent("c3", ParamsId::ComponentsList3);
+  getComponent("c4", ParamsId::ComponentsList4);
+  getComponent("c5", ParamsId::ComponentsList5);
 
-  getParams("p0", ParamsId::ComponentsParamsFace0);
-  getParams("p1", ParamsId::ComponentsParamsFace1);
-  getParams("p2", ParamsId::ComponentsParamsFace2);
-  getParams("p3", ParamsId::ComponentsParamsFace3);
-  getParams("p4", ParamsId::ComponentsParamsFace4);
-  getParams("p5", ParamsId::ComponentsParamsFace5);
+  getParams("p0", ParamsId::ComponentsParams0);
+  getParams("p1", ParamsId::ComponentsParams1);
+  getParams("p2", ParamsId::ComponentsParams2);
+  getParams("p3", ParamsId::ComponentsParams3);
+  getParams("p4", ParamsId::ComponentsParams4);
+  getParams("p5", ParamsId::ComponentsParams5);
 
-  getParams("f0", ParamsId::ParamsFace0);
-  getParams("f1", ParamsId::ParamsFace1);
-  getParams("f2", ParamsId::ParamsFace2);
-  getParams("f3", ParamsId::ParamsFace3);
-  getParams("f4", ParamsId::ParamsFace4);
-  getParams("f5", ParamsId::ParamsFace5);
+  getParams("f0", ParamsId::Params0);
+  getParams("f1", ParamsId::Params1);
+  getParams("f2", ParamsId::Params2);
+  getParams("f3", ParamsId::Params3);
+  getParams("f4", ParamsId::Params4);
+  getParams("f5", ParamsId::Params5);
   
   SetLogging(verbose);
   
@@ -208,6 +217,11 @@ int main(int argc, char* argv[])
     const auto& factory = GetFactory(name);
     const auto object3d = factory->Create(name, paramsMap);
 
+    if (!outputName.empty())
+    {
+      object3d->mName = outputName;
+    }
+      
     AmigaFile file;
     file.Save(*object3d);
 

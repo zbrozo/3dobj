@@ -45,28 +45,51 @@ namespace Components
 void Square::Generate()
 {
   Vertices vertices {
-    {1, 1, 1},
-    {-1, 1, 1},
-    {-1, -1, 1},
-    {1, -1, 1},
+    {1, 1, 0},
+    {-1, 1, 0},
+    {-1, -1, 0},
+    {1, -1, 0},
   };
 
-  std::transform(vertices.cbegin(), vertices.cend(), vertices.begin(), [&](const Vertex& vertex){
-    return vertex * mSize;
-  });
+  std::transform(vertices.cbegin(), vertices.cend(), vertices.begin(),
+    [&](const Vertex& vertex)
+    {
+      return vertex * mSize;
+    });
    
-  Face face{0,1,2,3};
-  mFaces.push_back(face);
+  mFaces.push_back({0,1,2,3});
+  mVertices = vertices;
+}
+
+void Rectangle::Generate()
+{
+  Vertices vertices {
+    {1, 1, 0},
+    {-1, 1, 0},
+    {-1, -1, 0},
+    {1, -1, 0},
+  };
+
+  std::transform(vertices.cbegin(), vertices.cend(), vertices.begin(),
+    [&](const Vertex& vertex)
+    {
+      return Vertex(
+        vertex.getX() * mSizeX,
+        vertex.getY() * mSizeY,
+        vertex.getZ());
+    });
+   
+  mFaces.push_back({0,1,2,3});
   mVertices = vertices;
 }
 
 void SquareWithHolePart1::Generate()
 {
   Vertices vertices {
-    {1, 1, 1},
-    {-1, 1, 1},
-    {-1, 1, 1},
-    {1, 1, 1},
+    {1, 1, 0},
+    {-1, 1, 0},
+    {-1, 1, 0},
+    {1, 1, 0},
   };
   
   Vertices verticesModify {
@@ -101,10 +124,10 @@ void SquareWithHolePart1::Generate()
 void SquareWithHolePart2::Generate()
 {
   Vertices vertices {
-    {1, 1, 1},
-    {-1, 1, 1},
-    {-1, 1, 1},
-    {1, 1, 1},
+    {1, 1, 0},
+    {-1, 1, 0},
+    {-1, 1, 0},
+    {1, 1, 0},
   };
 
   Vertices verticesModify {
@@ -139,18 +162,24 @@ void SquareWithHolePart2::Generate()
 void Pyramid::Generate()
 {
   Vertices vertices {
-    {1, 1, 1},
-    {-1, 1, 1},
-    {-1, -1, 1},
-    {1, -1, 1},
-    {0, 0, 1}
+    {1, 1, 0},
+    {-1, 1, 0},
+    {-1, -1, 0},
+    {1, -1, 0},
+    {0, 0, 0}
   };
 
-  std::transform(vertices.cbegin(), vertices.cend(), vertices.begin(), [&](const Vertex& vertex){
-    return vertex * mSize1;
-  });
+  std::transform(vertices.cbegin(), vertices.cend(), vertices.begin(),
+    [&](const Vertex& vertex)
+    {
+      return vertex * mSize1;
+    });
   
-  vertices[4] = Vertex(vertices[4].getX(), vertices[4].getY(), vertices[4].getZ() + mSize2);
+  vertices[4] = Vertex(
+    vertices[4].getX(),
+    vertices[4].getY(),
+    vertices[4].getZ() + mSize2
+    );
   
   mVertices = vertices;
 

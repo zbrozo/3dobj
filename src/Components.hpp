@@ -35,6 +35,40 @@ public:
 
 };
 
+class Rectangle : public Object3D, public IGenerator
+{
+  int mSizeX = 50;
+  int mSizeY = 50;
+  
+public:
+
+  Rectangle(std::optional<int> sizeX, std::optional<int> sizeY) :
+    Object3D("")
+  {
+    if (sizeX.has_value())
+    {
+      mSizeX = sizeX.value();
+    }
+
+    if (sizeY.has_value())
+    {
+      mSizeY = sizeY.value();
+    }
+
+  }
+
+  void Generate() override;
+  
+  virtual ~Rectangle() = default;
+  
+  Rectangle(Rectangle const &) = delete;
+  Rectangle(Rectangle &&) = delete;
+  Rectangle& operator=(const Rectangle&) = delete;
+  Rectangle& operator=(Rectangle &&) = delete;
+
+};
+
+
 class SquareWithHolePart1 : public Object3D, public IGenerator
 {
   int mSize1 = 50;

@@ -38,8 +38,17 @@ std::unique_ptr<Object3D> SquareFactory::FactoryMethod(
   const std::string& /*name*/,
   const ParamsVector& params) const
 {
-  std::optional<int> param = getParam(params, 0);
-  return std::make_unique<Components::Square>(param);
+  std::optional<int> size = getParam(params, 0);
+  return std::make_unique<Components::Square>(size);
+}
+
+std::unique_ptr<Object3D> RectangleFactory::FactoryMethod(
+  const std::string& /*name*/,
+  const ParamsVector& params) const
+{
+  std::optional<int> sizeX = getParam(params, 0);
+  std::optional<int> sizeY = getParam(params, 1);
+  return std::make_unique<Components::Rectangle>(sizeX, sizeY);
 }
 
 std::unique_ptr<Object3D> SquareWithHolePart1Factory::FactoryMethod(
