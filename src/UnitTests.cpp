@@ -97,4 +97,21 @@ BOOST_AUTO_TEST_CASE(thorus_factory_test)
   BOOST_CHECK_EQUAL(48, object->GetFacesQuantity());
 }
 
+BOOST_AUTO_TEST_CASE(taper_factory_test)
+{
+  CuboidFactory factory;
+  ParamsMap paramsMap;
+
+  paramsMap[ParamsId::ComponentsList0] = ComponentNamesVector{"Taper"};
+  paramsMap[ParamsId::ComponentsList1] = ComponentNamesVector{"Taper"};
+  paramsMap[ParamsId::ComponentsParams0] = ParamsVector{3,50,50};
+  paramsMap[ParamsId::ComponentsParams1] = ParamsVector{3,50,-50};
+
+  auto object = factory.Create("cuboid", paramsMap);
+
+  BOOST_CHECK_EQUAL("cuboid", object->mName);
+  BOOST_CHECK_EQUAL(5, object->GetVerticesQuantity());
+  BOOST_CHECK_EQUAL(6, object->GetFacesQuantity());
+}
+
 BOOST_AUTO_TEST_SUITE_END()

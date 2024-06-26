@@ -78,7 +78,7 @@ include_directories(${Boost_INCLUDE_DIRS})
 add_executable(tests ${tests_SRC})
 
 target_link_libraries(generator ${Boost_LIBRARIES})
-target_link_libraries(viewer ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES} ${SDL2_TTF_LIBRARIES} ${Boost_LIBRARIES})
+target_link_libraries(viewer SDL2::Main SDL2::Image SDL2::TTF ${Boost_LIBRARIES})
 target_link_libraries(tests ${Boost_LIBRARIES})
 
 enable_testing()

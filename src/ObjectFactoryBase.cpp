@@ -23,6 +23,7 @@ void InitAllComponentFactoriesVector(ComponentFactories& allComponentFactories)
   allComponentFactories[ObjectId::SquareHolePart1] = std::make_unique<Components::SquareWithHolePart1Factory>();
   allComponentFactories[ObjectId::SquareHolePart2] = std::make_unique<Components::SquareWithHolePart2Factory>();
   allComponentFactories[ObjectId::Pyramid] = std::make_unique<Components::PyramidFactory>();
+  allComponentFactories[ObjectId::Taper] = std::make_unique<Components::TaperFactory>();
 }
 
 } // namespace

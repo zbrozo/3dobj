@@ -1,7 +1,9 @@
 #include "Components.hpp"
+#include "Rotation.hpp"
 #include <algorithm>
 
 #include <boost/log/trivial.hpp>
+#include <cmath>
 
 namespace
 {
@@ -35,6 +37,26 @@ auto CreateSideFaces(const std::vector<Vertices>& allVertices)
   }
   
   return std::make_pair(faces, vertices);
+}
+
+Vertices CreateCircleVertices(int amount, int radius)
+{
+  Vertex vertex(0, radius, 0);
+  Rotation rotation;
+
+  const int degStep = (360 << 8) / amount;
+  int degree = 0;
+
+  Vertices circle;
+
+  for (int i = 0; i < amount; i++)
+  {
+    const int d = (degree >> 8);
+    circle.push_back(rotation.rotateZ(vertex, d));
+    degree += degStep;
+  }
+
+  return circle;
 }
 
 } // namespace
@@ -188,5 +210,34 @@ void Pyramid::Generate()
   mFaces.push_back({2,3,4});
   mFaces.push_back({3,0,4});
 }
+
+void Taper::Generate()
+{
+    
+  Vertices vertices = CreateCircleVertices(mCircleAmount, mCircleRadius);
+  vertices.push_back(Vertex(0, 0, mHeight));
+  
+  mVertices = vertices;
+
+  unsigned short last = vertices.size() - 1;
+  unsigned short nr = 0;
+
+  if (mHeight >= 0)
+  {
+    for (;nr < vertices.size()-2; ++nr)
+    {
+      mFaces.push_back({nr, static_cast<unsigned short>(nr + 1), last});
+    }
+    mFaces.push_back({nr, 0, last});
+  }
+  else {
+    for (;nr < vertices.size()-2; ++nr)
+    {
+      mFaces.push_back({static_cast<unsigned short>(nr + 1), nr, last});
+    }
+    mFaces.push_back({0, nr, last});
+  }
+}
+
 
 } // namespace

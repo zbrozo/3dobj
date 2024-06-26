@@ -17,6 +17,7 @@ enum class ObjectId {
   SquareHolePart2,
   Pyramid,
   Rectangle,
+  Taper,
 };
 
 enum class ParamsId {

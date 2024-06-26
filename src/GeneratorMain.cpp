@@ -83,11 +83,14 @@ auto ReadGeneratorParams(int argc, char *argv[], po::options_description& desc)
   po::variables_map vm;
 
   po::positional_options_description p;
-  p.add("additional-params", -1);
-
-  po::store(po::command_line_parser(argc, argv).
-          options(desc).positional(p).run(), vm);
+  p.add("a", -1);
   
+  po::store(po::command_line_parser(argc, argv)
+    .style(po::command_line_style::unix_style ^ po::command_line_style::allow_short)
+    .options(desc)
+    .positional(p)
+    .run(), vm);
+
   po::notify(vm);
 
   return vm;
@@ -106,15 +109,15 @@ int main(int argc, char* argv[])
 {
   po::options_description optionsDesc("generator <type> [params]\n");
   optionsDesc.add_options()
-    ("help,h", "produce help message")
-    ("verbose,v", "debug")
-    ("output,o", po::value<std::string>(), "output name")
-    ("type,t", po::value<std::string>(), "object3d type")
-    ("params,f", po::value<ParamsVector>()->multitoken(), "")
-    ("component-list,c", po::value<ComponentNamesVector>()->multitoken(),
-      "Square, SquareHolePart1, SquareHolePart2, Pyramid")
-    ("component-params,p", po::value<ParamsVector>()->multitoken(), "depends on particular component")
-    ("additional-params", po::value<ParamsVector>(), "depends on selected object in type")
+    ("help", "produce help message")
+    ("v", "debug")
+    ("o", po::value<std::string>(), "output name")
+    ("t", po::value<std::string>(), "object3d type")
+    ("f", po::value<ParamsVector>()->multitoken(), "")
+    ("c", po::value<ComponentNamesVector>()->multitoken(),
+      "Possible components: Square, SquareHolePart1, SquareHolePart2, Pyramid, Taper")
+    ("p", po::value<ParamsVector>()->multitoken(), "params for component")
+    ("a", po::value<ParamsVector>(), "additional params")
     ("c0", po::value<ComponentNamesVector>()->multitoken(), "")
     ("c1", po::value<ComponentNamesVector>()->multitoken(), "")
     ("c2", po::value<ComponentNamesVector>()->multitoken(), "") 
@@ -144,12 +147,12 @@ int main(int argc, char* argv[])
     return 1;
   }
 
-  const auto verbose = options.count("verbose");
+  const auto verbose = options.count("v");
   
   std::string name;
-  if (options.count("type"))
+  if (options.count("t"))
   {
-    name = options["type"].as<std::string>();
+    name = options["t"].as<std::string>();
   }
   else
   {
@@ -159,9 +162,9 @@ int main(int argc, char* argv[])
   }
 
   std::string outputName;
-  if (options.count("output"))
+  if (options.count("o"))
   {
-    outputName = options["output"].as<std::string>();
+    outputName = options["o"].as<std::string>();
   }
   
   ParamsMap paramsMap;
@@ -184,10 +187,10 @@ int main(int argc, char* argv[])
     }
   };
 
-  getComponent("component-list", ParamsId::ComponentsList);
-  getParams("params", ParamsId::Params);
-  getParams("component-params", ParamsId::ComponentsParams);
-  getParams("additional-params", ParamsId::AdditionalParams);
+  getComponent("c", ParamsId::ComponentsList);
+  getParams("p", ParamsId::ComponentsParams);
+  getParams("f", ParamsId::Params);
+  getParams("a", ParamsId::AdditionalParams);
 
   getComponent("c0", ParamsId::ComponentsList0);
   getComponent("c1", ParamsId::ComponentsList1);

@@ -181,4 +181,47 @@ public:
 
 };
 
+class Taper : public Object3D, public IGenerator
+{
+  int mCircleAmount = 3;
+  int mCircleRadius = 50;
+  int mHeight = 50;
+  
+public:
+
+  Taper(
+    const std::optional<int>& circleAmount,
+    const std::optional<int>& circleRadius,
+    const std::optional<int>& height
+    ) :
+    Object3D("")
+  {
+    if (circleAmount.has_value())
+    {
+      mCircleAmount = circleAmount.value();
+    }
+    
+    if (circleRadius.has_value())
+    {
+      mCircleRadius = circleRadius.value();
+    }
+
+    if (height.has_value())
+    {
+      mHeight = height.value();
+    }
+  }
+
+  void Generate() override;
+  
+  virtual ~Taper() = default;
+  
+  Taper(Taper const &) = delete;
+  Taper(Taper &&) = delete;
+  Taper& operator=(const Taper&) = delete;
+  Taper& operator=(Taper &&) = delete;
+
+};
+
+
 }

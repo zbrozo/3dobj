@@ -25,6 +25,7 @@ std::map<std::string, ObjectId> ComponentIdMap {
   {"squareholepart1", ObjectId::SquareHolePart1},
   {"squareholepart2", ObjectId::SquareHolePart2},
   {"pyramid", ObjectId::Pyramid},
+  {"taper", ObjectId::Taper},
 };  
 
 const std::string TooLessParamsMessage = "Too less parameters for ";

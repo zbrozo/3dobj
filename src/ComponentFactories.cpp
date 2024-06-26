@@ -80,4 +80,14 @@ std::unique_ptr<Object3D> PyramidFactory::FactoryMethod(
   return std::make_unique<Components::Pyramid>(param1, param2);
 }
 
+std::unique_ptr<Object3D> TaperFactory::FactoryMethod(
+  const std::string& /*name*/,
+  const ParamsVector& params) const
+{
+  std::optional<int> param1 = getParam(params, 0);
+  std::optional<int> param2 = getParam(params, 1);
+  std::optional<int> param3 = getParam(params, 2);
+  return std::make_unique<Components::Taper>(param1, param2, param3);
+}
+
 } // namespace Components

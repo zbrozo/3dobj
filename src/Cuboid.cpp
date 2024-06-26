@@ -65,7 +65,6 @@ void Cuboid::Generate()
     {
       Vertices vertices{component->mVertices};
       vertices += Vertex(offX, offY, offZ);
-      
       RotateSide(degX, degY, degZ, component->mFaces, vertices, objectFaces, objectVertices);
     }
 
