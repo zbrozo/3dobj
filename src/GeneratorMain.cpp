@@ -67,6 +67,20 @@ const auto& GetFactory(const std::string& name)
   return creatorIt->second;
 }
 
+template<typename T>
+void AddParams(
+  const po::variables_map& options,
+  const std::string& name,
+  const ParamsId param,
+  ParamsMap& paramsMap)
+{
+  if (!options[name].empty())
+  {
+    const auto& list = options[name].as<T>();
+    paramsMap[param] = list;
+  }
+};
+
 void PrintParamsHelp()
 {
   std::cout << "Possible 3d objects to use:" << std::endl;
@@ -168,50 +182,31 @@ int main(int argc, char* argv[])
   }
   
   ParamsMap paramsMap;
+  AddParams<ComponentNamesVector>(options, "c", ParamsId::ComponentsList, paramsMap);
+  AddParams<ParamsVector>(options, "p", ParamsId::ComponentsParams, paramsMap);
+  AddParams<ParamsVector>(options, "f", ParamsId::Params, paramsMap);
+  AddParams<ParamsVector>(options, "a", ParamsId::AdditionalParams, paramsMap);
 
-  auto getParams = [&options, &paramsMap](std::string name, ParamsId param)
-  {
-    if (!options[name].empty())
-    {
-      const auto& list = options[name].as<ParamsVector>();
-      paramsMap[param] = list;
-    }
-  };
+  AddParams<ComponentNamesVector>(options, "c0", ParamsId::ComponentsList0, paramsMap);
+  AddParams<ComponentNamesVector>(options, "c1", ParamsId::ComponentsList1, paramsMap);
+  AddParams<ComponentNamesVector>(options, "c2", ParamsId::ComponentsList2, paramsMap);
+  AddParams<ComponentNamesVector>(options, "c3", ParamsId::ComponentsList3, paramsMap);
+  AddParams<ComponentNamesVector>(options, "c4", ParamsId::ComponentsList4, paramsMap);
+  AddParams<ComponentNamesVector>(options, "c5", ParamsId::ComponentsList5, paramsMap);
+  
+  AddParams<ParamsVector>(options, "p0", ParamsId::ComponentsParams0, paramsMap);
+  AddParams<ParamsVector>(options, "p1", ParamsId::ComponentsParams1, paramsMap);
+  AddParams<ParamsVector>(options, "p2", ParamsId::ComponentsParams2, paramsMap);
+  AddParams<ParamsVector>(options, "p3", ParamsId::ComponentsParams3, paramsMap);
+  AddParams<ParamsVector>(options, "p4", ParamsId::ComponentsParams4, paramsMap);
+  AddParams<ParamsVector>(options, "p5", ParamsId::ComponentsParams5, paramsMap);
 
-  auto getComponent = [&options, &paramsMap](std::string name, ParamsId param)
-  {
-    if (!options[name].empty())
-    {
-      const auto& list = options[name].as<ComponentNamesVector>();
-      paramsMap[param] = list;
-    }
-  };
-
-  getComponent("c", ParamsId::ComponentsList);
-  getParams("p", ParamsId::ComponentsParams);
-  getParams("f", ParamsId::Params);
-  getParams("a", ParamsId::AdditionalParams);
-
-  getComponent("c0", ParamsId::ComponentsList0);
-  getComponent("c1", ParamsId::ComponentsList1);
-  getComponent("c2", ParamsId::ComponentsList2);
-  getComponent("c3", ParamsId::ComponentsList3);
-  getComponent("c4", ParamsId::ComponentsList4);
-  getComponent("c5", ParamsId::ComponentsList5);
-
-  getParams("p0", ParamsId::ComponentsParams0);
-  getParams("p1", ParamsId::ComponentsParams1);
-  getParams("p2", ParamsId::ComponentsParams2);
-  getParams("p3", ParamsId::ComponentsParams3);
-  getParams("p4", ParamsId::ComponentsParams4);
-  getParams("p5", ParamsId::ComponentsParams5);
-
-  getParams("f0", ParamsId::Params0);
-  getParams("f1", ParamsId::Params1);
-  getParams("f2", ParamsId::Params2);
-  getParams("f3", ParamsId::Params3);
-  getParams("f4", ParamsId::Params4);
-  getParams("f5", ParamsId::Params5);
+  AddParams<ParamsVector>(options, "f0", ParamsId::Params0, paramsMap);
+  AddParams<ParamsVector>(options, "f1", ParamsId::Params1, paramsMap);
+  AddParams<ParamsVector>(options, "f2", ParamsId::Params2, paramsMap);
+  AddParams<ParamsVector>(options, "f3", ParamsId::Params3, paramsMap);
+  AddParams<ParamsVector>(options, "f4", ParamsId::Params4, paramsMap);
+  AddParams<ParamsVector>(options, "f5", ParamsId::Params5, paramsMap);
   
   SetLogging(verbose);
   
