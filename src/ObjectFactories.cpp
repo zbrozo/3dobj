@@ -117,7 +117,13 @@ std::unique_ptr<Object3D> ThorusFactory::FactoryMethod(
     getParam(foundParams, 6),
     getParam(foundParams, 7),
     getParam(foundParams, 8),
-    getParam(foundParams, 9));
+    getParam(foundParams, 9),
+    getParam(foundParams, 10),
+    getParam(foundParams, 11),
+    getParam(foundParams, 12),
+    getParam(foundParams, 13),
+    getParam(foundParams, 14),
+    getParam(foundParams, 15));
 }
 
 std::unique_ptr<Object3D> CuboidFactory::FactoryMethod(

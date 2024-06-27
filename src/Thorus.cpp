@@ -62,42 +62,7 @@ Faces CreateFacesInCircle(int ringIndex,
 
   return faces;
 }
-/*
-Vertices SinusModifications(const Vertices& vertices, int amount)
-{
-  Vertices resultVertices;
-  
-  double translationAdd = 0;
-  const double translationStep = 15;
-  const int translationAmp = 13;
 
-  int translationX = 0;
-  int translationY = 0;
-  int translationZ = 0;
-
-  int i = 0;
-  for (auto& v : vertices)
-  {
-    resultVertices.push_back(Vertex(
-        v.getX() + translationX,
-        v.getY() + translationY,
-        v.getZ() + translationZ)
-      );
-
-    ++i;
-    
-    if (i == amount)
-    {
-      translationAdd += translationStep;
-      const auto translationDeg = translationAdd * 360 / amount;
-      translationZ = sin(translationDeg * radian) * translationAmp;
-      i = 0;
-    }
-  }
-
-  return resultVertices;
-}
-*/
 Faces CreateInternalFacesInRing(int circleSize, int ringSize)
 {
   Faces facesInRing;
@@ -188,7 +153,7 @@ Vertices Thorus::CreateRingVertices(Vertices circle)
   // obrót w Z okręgu tworzy torus
   for (int i = 0; i < mRingAmount; i++)
   {
-    const auto modifiedCircle = MakeSinus(circle, i);
+    const auto modifiedCircle = ApplySinusToCircle(circle, i);
       
     for (const auto& v : modifiedCircle)
     {
@@ -201,17 +166,18 @@ Vertices Thorus::CreateRingVertices(Vertices circle)
   return vertices;
 }
 
-Vertices Thorus::MakeSinus(const Vertices& vertices, int index)
+Vertices Thorus::ApplySinusToCircle(const Vertices& vertices, int index)
 {
   Vertices resultVertices;
 
-  const auto translationDegX = index * mCircleSinusStepX * 360 / mCircleAmount;
-  const auto translationDegY = index * mCircleSinusStepY * 360 / mCircleAmount;
-  const auto translationDegZ = index * mCircleSinusStepZ * 360 / mCircleAmount;
-
-  const auto translationX = sin(translationDegX * radian) * mCircleSinusAmpX;
-  const auto translationY = sin(translationDegY * radian) * mCircleSinusAmpY;
-  const auto translationZ = sin(translationDegZ * radian) * mCircleSinusAmpZ;
+  auto calcTranslation = [&](auto step, int amp){
+    const auto translation =  index * step * 360 / mCircleAmount;
+    return sin(translation * radian) * amp;
+  };
+  
+  const auto translationX = calcTranslation(mCircleSinusStepX, mCircleSinusAmpX);
+  const auto translationY = calcTranslation(mCircleSinusStepY, mCircleSinusAmpY);
+  const auto translationZ = calcTranslation(mCircleSinusStepZ, mCircleSinusAmpZ);
 
   for (auto& v : vertices)
   {
@@ -220,6 +186,46 @@ Vertices Thorus::MakeSinus(const Vertices& vertices, int index)
         v.getY() + translationY,
         v.getZ() + translationZ)
       );
+  }
+
+  return resultVertices;
+}
+
+Vertices Thorus::ApplySinusToRing(const Vertices& vertices)
+{
+  Vertices resultVertices;
+  
+  double addX = 0;
+  double addY = 0;
+  double addZ = 0;
+
+  int i = 0;
+  for (auto& v : vertices)
+  {
+    auto calcTranslation = [&](int add, int amp){
+      const auto deg = add * 360 / mCircleAmount;
+      return sin(deg * radian) * amp;
+    };
+    
+    const auto translationX = calcTranslation(addX, mRingSinusAmpX);
+    const auto translationY = calcTranslation(addY, mRingSinusAmpY);
+    const auto translationZ = calcTranslation(addZ, mRingSinusAmpZ);
+
+    resultVertices.push_back(Vertex(
+        v.getX() + translationX,
+        v.getY() + translationY,
+        v.getZ() + translationZ)
+      );
+
+    ++i;
+    
+    if (i == mCircleAmount)
+    {
+      addX += mRingSinusStepX;
+      addY += mRingSinusStepY;
+      addZ += mRingSinusStepZ;
+      i = 0;
+    }
   }
 
   return resultVertices;
@@ -236,7 +242,13 @@ Thorus::Thorus(
   std::optional<int> circleSinusStepY,
   std::optional<int> circleSinusAmpY,
   std::optional<int> circleSinusStepZ,
-  std::optional<int> circleSinusAmpZ  
+  std::optional<int> circleSinusAmpZ,
+  std::optional<int> ringSinusStepX,
+  std::optional<int> ringSinusAmpX,
+  std::optional<int> ringSinusStepY,
+  std::optional<int> ringSinusAmpY,
+  std::optional<int> ringSinusStepZ,
+  std::optional<int> ringSinusAmpZ  
   ) :
   Object3D(name)
 {
@@ -282,7 +294,32 @@ Thorus::Thorus(
   {
     mCircleSinusAmpZ = circleSinusAmpZ.value();
   }
-  
+
+  if (ringSinusStepX.has_value())
+  {
+    mRingSinusStepX = ringSinusStepX.value();
+  }
+  if (ringSinusStepY.has_value())
+  {
+    mRingSinusStepY = ringSinusStepY.value();
+  }
+  if (ringSinusStepZ.has_value())
+  {
+    mRingSinusStepZ = ringSinusStepZ.value();
+  }
+
+  if (ringSinusAmpX.has_value())
+  {
+    mRingSinusAmpX = ringSinusAmpX.value();
+  }
+  if (ringSinusAmpY.has_value())
+  {
+    mRingSinusAmpY = ringSinusAmpY.value();
+  }
+  if (ringSinusAmpZ.has_value())
+  {
+    mRingSinusAmpZ = ringSinusAmpZ.value();
+  }
 }
 
 void Thorus::Generate()
@@ -292,9 +329,7 @@ void Thorus::Generate()
   std::transform(circle.cbegin(), circle.cend(), circle.begin(),
     [&](const Vertex& vertex ){ return vertex + Vertex(0, mCircleOffset, 0); });
   
-  Vertices allVertices = CreateRingVertices(circle);
-
-  mVertices = allVertices;//SinusModifications(allVertices, mCircleAmount);
+  mVertices = ApplySinusToRing(CreateRingVertices(circle));
 
   /// --- Faces ---
 
