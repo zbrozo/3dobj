@@ -1,5 +1,4 @@
 #include "Vertex3D.hpp"
-//#include "Rotation.hpp"
 
 template<class T>
 Vertex3D<T> Vertex3D<T>::operator+(const Vertex3D<T>& v) const

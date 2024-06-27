@@ -104,16 +104,20 @@ std::unique_ptr<Object3D> ThorusFactory::FactoryMethod(
   const ParamsMap& params) const
 {
   const auto& foundParams = std::get<ParamsVector>(params.at(ParamsId::AdditionalParams));
-  
-  const auto circleAmount = getParam(foundParams, 0);
-  const auto ringAmount = getParam(foundParams, 1);
-  const auto circleRadius = getParam(foundParams, 2);
-  const auto circleOffset = getParam(foundParams, 3);
-  
   const auto nameExt = CreateFullName(name, params);
   
-  return std::make_unique<Thorus>(nameExt.c_str(),
-    circleAmount, ringAmount, circleRadius, circleOffset);
+  return std::make_unique<Thorus>(
+    nameExt.c_str(),
+    getParam(foundParams, 0),
+    getParam(foundParams, 1),
+    getParam(foundParams, 2),
+    getParam(foundParams, 3),
+    getParam(foundParams, 4),
+    getParam(foundParams, 5),
+    getParam(foundParams, 6),
+    getParam(foundParams, 7),
+    getParam(foundParams, 8),
+    getParam(foundParams, 9));
 }
 
 std::unique_ptr<Object3D> CuboidFactory::FactoryMethod(

@@ -83,7 +83,7 @@ void RotateObject(Object3D* object,
   Vectors& normalVectorsInVertices)
 {
   auto rotate = [degx, degy, degz](const Vertex& v){
-    Rotation rotation;
+    VertexRotation rotation;
     return rotation.rotateZ(rotation.rotateY(rotation.rotateX(v, degx) ,degy), degz);
   };
 

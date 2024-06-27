@@ -42,7 +42,7 @@ auto CreateSideFaces(const std::vector<Vertices>& allVertices)
 Vertices CreateCircleVertices(int amount, int radius)
 {
   Vertex vertex(0, radius, 0);
-  Rotation rotation;
+  VertexRotation rotation;
 
   const int degStep = (360 << 8) / amount;
   int degree = 0;

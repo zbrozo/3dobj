@@ -21,7 +21,7 @@ public:
   virtual ~Vertices() = default;
   
   Vertices(Vertices const &) = default;
-  Vertices(Vertices&&) = delete;
+  Vertices(Vertices&&) = default;
   Vertices& operator=(const Vertices&) = default;
   Vertices& operator=(Vertices &&) = default;
   

@@ -6,7 +6,7 @@ Vertices Vertices::Rotate(int degX, int degY, int degZ) const
   const short scaleValue = 10;
   
   Vertices rotatedVertices;
-  Rotation rotate;
+  VertexRotation rotate;
   
   for (const auto& vertex : *this)
   {

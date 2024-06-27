@@ -10,5 +10,5 @@ class Rotation3D
   T rotateZ(T coors, int d);
 };
 
-using Rotation = Rotation3D<Vertex>;
+using VertexRotation = Rotation3D<Vertex>;
 using VectorRotation = Rotation3D<Vector>;
