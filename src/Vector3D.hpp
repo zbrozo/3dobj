@@ -4,7 +4,7 @@
 #include <ostream>
 
 template<typename T>
-class Vector3D
+class Vector3D final
 {
   Vertex3D<T> mBegin = {0,0,0};
   Vertex3D<T> mEnd = {0,0,0};
@@ -23,7 +23,7 @@ public:
   {
   }
 
-  virtual ~Vector3D() = default;
+  ~Vector3D() = default;
 
   Vector3D(const Vector3D&) = default;
   Vector3D(Vector3D &&) = default;
