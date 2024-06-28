@@ -62,7 +62,7 @@ BOOST_AUTO_TEST_CASE(cube_ext_factory_test1)
 
   const auto object = factory.Create("cube-ext", paramsMap);
   
-  BOOST_CHECK_EQUAL("cube-ext_SquareHolePart1_SquareHolePart2", object->mName);
+  BOOST_CHECK_EQUAL("cube-ext_SquareHolePart1_SquareHolePart2_0_0_50", object->mName);
   BOOST_CHECK_EQUAL(40, object->GetVerticesQuantity());
   BOOST_CHECK_EQUAL(48, object->GetFacesQuantity());
 }
@@ -78,7 +78,7 @@ BOOST_AUTO_TEST_CASE(cube_ext_factory_test2)
   
   const auto object = factory.Create("cube-ext", paramsMap);
   
-  BOOST_CHECK_EQUAL("cube-ext_SquareHolePart1_SquareHolePart2_50_20_20", object->mName);
+  BOOST_CHECK_EQUAL("cube-ext_SquareHolePart1_SquareHolePart2_50_20_20_0_0_50", object->mName);
   BOOST_CHECK_EQUAL(40, object->GetVerticesQuantity());
   BOOST_CHECK_EQUAL(48, object->GetFacesQuantity());
 }
@@ -109,7 +109,7 @@ BOOST_AUTO_TEST_CASE(taper_factory_test)
 
   auto object = factory.Create("cuboid", paramsMap);
 
-  BOOST_CHECK_EQUAL("cuboid", object->mName);
+  BOOST_CHECK_EQUAL("cuboid_Taper_Taper_3_50_50_3_50_-50", object->mName);
   BOOST_CHECK_EQUAL(5, object->GetVerticesQuantity());
   BOOST_CHECK_EQUAL(6, object->GetFacesQuantity());
 }

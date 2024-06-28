@@ -51,13 +51,15 @@ std::unique_ptr<Object3D> CubeFactory::FactoryMethod(
   const std::string& name,
   const ParamsMap& params) const
 {
+  const auto nameExt = CreateFullName(name, params);
+
   if (auto it = std::find_if(params.begin(), params.end(),
       std::bind(findParamsVector, _1,  ParamsId::AdditionalParams)); it != params.end())
   {
-    return std::make_unique<Cube>(name.c_str(), std::get<ParamsVector>(it->second)[0]);
+    return std::make_unique<Cube>(nameExt.c_str(), std::get<ParamsVector>(it->second).at(0));
   }
   
-  return std::make_unique<Cube>(name.c_str());
+  return std::make_unique<Cube>(nameExt.c_str());
 }
 
 std::unique_ptr<Object3D> CubeExtFactory::FactoryMethod(
