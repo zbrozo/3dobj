@@ -6,6 +6,9 @@
 
 #include <algorithm>
 #include <optional>
+#include <type_traits>
+#include <variant>
+#include <type_traits>
 
 using namespace std::placeholders;
 
@@ -25,6 +28,19 @@ void InitAllComponentFactoriesVector(ComponentFactories& allComponentFactories)
   allComponentFactories[ObjectId::Pyramid] = std::make_unique<Components::PyramidFactory>();
   allComponentFactories[ObjectId::Taper] = std::make_unique<Components::TaperFactory>();
 }
+
+template<typename T>
+void appendParams (std::string& result, const T& params) {
+  for (auto value : params)
+  {
+    if constexpr (std::is_same_v<T, ParamsVector>) {
+      result += "_" + std::to_string(value);
+    }
+    else {
+      result += "_" + value;
+    }
+  }
+};
 
 } // namespace
 
@@ -46,38 +62,13 @@ std::string ObjectFactoryBase::CreateFullName(const std::string& name, const Par
 {
   std::string result = name;
   
-  auto appendNames = [&](const ParamsMap::const_iterator& it)
+  for (const auto& paramsVector : params)
   {
-    for (std::string value : std::get<ComponentNamesVector>(it->second))
-    {
-      result += "_" + value;
-    }
-  };
-  
-  auto appendParams = [&](const ParamsMap::const_iterator& it)
-  {
-    for (int value : std::get<ParamsVector>(it->second))
-    {
-      result += "_" + std::to_string(value);
-    }
-  };
-  
-  if (auto it = std::find_if(params.begin(), params.end(),
-      std::bind(findParamsVector, _1,  ParamsId::ComponentsList)); it != params.end())
-  {
-    appendNames(it);
-  }
-
-  if (auto it = std::find_if(params.begin(), params.end(),
-      std::bind(findParamsVector, _1,  ParamsId::ComponentsParams)); it != params.end())
-  {
-    appendParams(it);
-  }
-
-  if (auto it = std::find_if(params.begin(), params.end(),
-      std::bind(findParamsVector, _1,  ParamsId::AdditionalParams)); it != params.end())
-  {
-    appendParams(it);
+    std::visit(
+      [&](auto&& arg){
+        appendParams(result, arg);
+      },
+      paramsVector.second);
   }
   
   return result;
