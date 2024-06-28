@@ -27,15 +27,18 @@ public:
   Vertex3D& operator=(const Vertex3D&) = default;
   Vertex3D& operator=(Vertex3D &&) = default;
   
-  Vertex3D operator+(const Vertex3D& v) const;
-  Vertex3D& operator+=(const Vertex3D& v);
-  bool operator==(const Vertex3D& v) const;
-  Vertex3D operator*(T value) const;
-  Vertex3D operator/(T value) const;
+  Vertex3D operator+(const Vertex3D& v) const noexcept;
+  Vertex3D& operator+=(const Vertex3D& v) noexcept;
+  Vertex3D operator-(const Vertex3D& v) const noexcept;
+  Vertex3D& operator-=(const Vertex3D& v) noexcept;
+  Vertex3D operator*(T value) const noexcept;
+  Vertex3D operator/(T value) const noexcept;
 
-  T getX() const { return mX; } 
-  T getY() const { return mY; } 
-  T getZ() const { return mZ; } 
+  bool operator==(const Vertex3D& v) const noexcept;
+
+  constexpr T getX() const noexcept { return mX; } 
+  constexpr T getY() const noexcept { return mY; } 
+  constexpr T getZ() const noexcept { return mZ; } 
 };
 
 template <typename T>

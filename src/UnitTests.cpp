@@ -1,3 +1,4 @@
+#include "Vertex3D.hpp"
 #define BOOST_TEST_MODULE tests
 #include <boost/test/unit_test.hpp>
 
@@ -32,6 +33,13 @@ BOOST_AUTO_TEST_CASE(vector_normalize_test)
   const auto result = vector.normalize();
   BOOST_CHECK_EQUAL(result.length(), 64);
   BOOST_CHECK_EQUAL(result, Vector3D<int>(Vertex3D<int>(37, 37, 37)));
+}
+
+BOOST_AUTO_TEST_CASE(vector_compare_test)
+{
+  const Vector3D<int> vector1 {{0,0,0}, {10, 10, 10}};
+  const Vector3D<int> vector2 {{0,0,0}, {10, 10, 10}};
+  BOOST_CHECK_EQUAL(true, vector1 == vector2);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

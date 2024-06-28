@@ -1,9 +1,17 @@
 #include "Vector3D.hpp"
 #include <cmath>
 
+template<typename T>
+bool Vector3D<T>::operator==(const Vector3D& v) const noexcept
+{
+  return getX() == v.getX()
+    && getY() == v.getY()
+    && getZ() == v.getZ();
+}
+
 // iloczyn wektorowy
 template <class T>
-Vector3D<T> Vector3D<T>::calculateCrossProduct(const Vector3D<T>& v) const
+Vector3D<T> Vector3D<T>::calculateCrossProduct(const Vector3D<T>& v) const noexcept
 {
   const auto x = getY() * v.getZ() - getZ() * v.getY();
   const auto y = getZ() * v.getX() - getX() * v.getZ();
@@ -13,7 +21,7 @@ Vector3D<T> Vector3D<T>::calculateCrossProduct(const Vector3D<T>& v) const
 }
 
 template <class T>
-Vector3D<T> Vector3D<T>::normalize(int normalizedVectorLength) const
+Vector3D<T> Vector3D<T>::normalize(int normalizedVectorLength) const noexcept
 {
   const auto len = length();
 

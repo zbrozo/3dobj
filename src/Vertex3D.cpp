@@ -1,13 +1,13 @@
 #include "Vertex3D.hpp"
 
 template<class T>
-Vertex3D<T> Vertex3D<T>::operator+(const Vertex3D<T>& v) const
+Vertex3D<T> Vertex3D<T>::operator+(const Vertex3D<T>& v) const noexcept
 {
   return Vertex3D<T>(mX + v.mX, mY + v.mY, mZ + v.mZ);
 }
 
 template<class T>
-Vertex3D<T>& Vertex3D<T>::operator+=(const Vertex3D<T>& v)
+Vertex3D<T>& Vertex3D<T>::operator+=(const Vertex3D<T>& v) noexcept
 {
   mX += v.mX;
   mY += v.mY;
@@ -16,19 +16,28 @@ Vertex3D<T>& Vertex3D<T>::operator+=(const Vertex3D<T>& v)
 }
 
 template<class T>
-bool Vertex3D<T>::operator==(const Vertex3D<T>& v) const
+Vertex3D<T> Vertex3D<T>::operator-(const Vertex3D<T>& v) const noexcept
 {
-  return (mX == v.mX && mY == v.mY && mZ == v.mZ);
+  return Vertex3D<T>(mX - v.mX, mY - v.mY, mZ - v.mZ);
+}
+
+template<class T>
+Vertex3D<T>& Vertex3D<T>::operator-=(const Vertex3D<T>& v) noexcept
+{
+  mX -= v.mX;
+  mY -= v.mY;
+  mZ -= v.mZ;
+  return *this;
 }
 
 template<typename T>
-Vertex3D<T> Vertex3D<T>::operator*(T value) const
+Vertex3D<T> Vertex3D<T>::operator*(T value) const noexcept
 {
   return Vertex3D<T>(mX * value, mY * value, mZ * value);
 }
 
 template<typename T>
-Vertex3D<T> Vertex3D<T>::operator/(T value) const
+Vertex3D<T> Vertex3D<T>::operator/(T value) const noexcept
 {
   Vertex3D<T> vertex(mX / value, mY / value, mZ / value);
 
@@ -45,6 +54,12 @@ Vertex3D<T> Vertex3D<T>::operator/(T value) const
   rounding(mZ, vertex.mZ);
 
   return vertex;
+}
+
+template<class T>
+bool Vertex3D<T>::operator==(const Vertex3D<T>& v) const noexcept
+{
+  return (mX == v.mX && mY == v.mY && mZ == v.mZ);
 }
 
 template class Vertex3D<short>;

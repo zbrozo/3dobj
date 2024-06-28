@@ -30,37 +30,34 @@ public:
   Vector3D& operator=(const Vector3D&) = default;
   Vector3D& operator=(Vector3D &&) = default;
 
-  bool operator==(const Vector3D& vector) const
-  {
-    return getX() == vector.getX() && getY() == vector.getY() && getZ() == vector.getZ();
-  }
+  bool operator==(const Vector3D& v) const noexcept;
 
-  Vertex3D<T> getBegin() const
+  constexpr Vertex3D<T> getBegin() const noexcept
   {
     return mBegin;
   }
 
-  Vertex3D<T> getEnd() const
+  constexpr Vertex3D<T> getEnd() const noexcept
   {
     return mEnd;
   }
   
-  T getX() const
+  constexpr T getX() const noexcept
   {
     return mEnd.getX() - mBegin.getX();
   }
 
-  T getY() const
+  constexpr T getY() const noexcept
   {
     return mEnd.getY() - mBegin.getY();
   }
 
-  T getZ() const
+  constexpr T getZ() const noexcept
   {
     return mEnd.getZ() - mBegin.getZ();
   }
 
-  int length() const
+  constexpr int length() const noexcept
   {
     const auto x = getX();
     const auto y = getY();
@@ -68,8 +65,8 @@ public:
     return sqrt(x * x + y * y + z * z);
   }
   
-  Vector3D calculateCrossProduct(const Vector3D& v) const;
-  Vector3D normalize(int normalizedVectorLength = 64) const;
+  Vector3D calculateCrossProduct(const Vector3D& v) const noexcept;
+  Vector3D normalize(int normalizedVectorLength = 64) const noexcept;
 };
 
 template <typename T>
