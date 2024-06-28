@@ -376,12 +376,18 @@ void DrawLines(SDL_Renderer* rend,
 void LoadObjects(int argc, char* argv[], std::vector<std::unique_ptr<Object3D>>& objects)
 {
   AmigaFile file;
+  std::string path;
 
-  for (int i = 1; i < argc; i++)
+  if (argc > 1)
+  {
+    path = argv[1];
+  }
+  
+  for (int i = 2; i < argc; i++)
   {
     std::unique_ptr<Object3D> object = std::make_unique<Object3D>("aaaa");
     const char* name = argv[i];
-    file.Load(name, *object.get());
+    file.Load(path + "/" +name, *object.get());
     objects.push_back(std::move(object));
   }
 }
