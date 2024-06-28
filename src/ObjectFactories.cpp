@@ -26,6 +26,7 @@ std::map<std::string, ObjectId> ComponentIdMap {
   {"squareholepart2", ObjectId::SquareHolePart2},
   {"pyramid", ObjectId::Pyramid},
   {"taper", ObjectId::Taper},
+  {"cylinder", ObjectId::Cylinder},
 };  
 
 auto findParamsVector = [](const ParamsPair& params,  ParamsId id)

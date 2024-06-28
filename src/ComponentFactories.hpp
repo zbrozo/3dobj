@@ -54,4 +54,12 @@ public:
     const ParamsVector& params) const override;
 };
 
+class CylinderFactory : public ComponentFactoryBase
+{
+public:
+  std::unique_ptr<Object3D> FactoryMethod(
+    const std::string& name,
+    const ParamsVector& params) const override;
+};
+
 } // namespace

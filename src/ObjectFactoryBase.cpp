@@ -27,6 +27,7 @@ void InitAllComponentFactoriesVector(ComponentFactories& allComponentFactories)
   allComponentFactories[ObjectId::SquareHolePart2] = std::make_unique<Components::SquareWithHolePart2Factory>();
   allComponentFactories[ObjectId::Pyramid] = std::make_unique<Components::PyramidFactory>();
   allComponentFactories[ObjectId::Taper] = std::make_unique<Components::TaperFactory>();
+  allComponentFactories[ObjectId::Cylinder] = std::make_unique<Components::CylinderFactory>();
 }
 
 template<typename T>

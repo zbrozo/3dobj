@@ -18,6 +18,7 @@ enum class ObjectId {
   Pyramid,
   Rectangle,
   Taper,
+  Cylinder,
 };
 
 enum class ParamsId {

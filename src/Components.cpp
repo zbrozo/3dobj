@@ -1,9 +1,11 @@
 #include "Components.hpp"
 #include "Rotation.hpp"
 #include <algorithm>
+#include <exception>
 
 #include <boost/log/trivial.hpp>
 #include <cmath>
+#include <stdexcept>
 
 namespace
 {
@@ -239,5 +241,42 @@ void Taper::Generate()
   }
 }
 
+void Cylinder::Generate()
+{
+  Vertices vertices = CreateCircleVertices(mCircleAmount, mCircleRadius);
+  Vertices vertices2{vertices};
+
+  std::transform(vertices2.cbegin(), vertices2.cend(), vertices2.begin(),
+    [&](const Vertex& vertex)
+    {
+      return Vertex(vertex.getX(), vertex.getY(), vertex.getZ() - mHeight);
+    });
+  
+  mVertices.insert(mVertices.end(), vertices.cbegin(), vertices.cend());
+  mVertices.insert(mVertices.end(), vertices2.cbegin(), vertices2.cend());
+
+  const auto size = vertices.size();
+
+  unsigned short nr = 0;
+  for (; nr < size - 1; ++nr)
+  {
+    mFaces.push_back(
+      {
+        nr,
+        static_cast<unsigned short>(nr + size),
+        static_cast<unsigned short>(nr + size + 1),
+        static_cast<unsigned short>(nr + 1)
+      });
+  }
+
+  mFaces.push_back(
+    {
+      nr,
+      static_cast<unsigned short>(nr + size),
+      static_cast<unsigned short>(size),
+      static_cast<unsigned short>(0)
+    });
+  
+}
 
 } // namespace
