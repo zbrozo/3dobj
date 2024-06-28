@@ -27,14 +27,14 @@ std::map<std::string, ObjectId> ObjectIdMap {
   {"cube", ObjectId::Cube},
   {"cube-ext", ObjectId::CubeExt},
   {"thorus", ObjectId::Thorus},
-  {"cuboid", ObjectId::Cuboid},
+  {"composite", ObjectId::Composite},
 };
 
 std::map<ObjectId, std::string> ParamsHelp {
   {ObjectId::Cube, "additional-params: size"},
   {ObjectId::CubeExt, "component-list and component-params must be defined"},
   {ObjectId::Thorus, "additional-params: circleAmount ringAmount circleSize circleOffset"},
-  {ObjectId::Cuboid, ""}
+  {ObjectId::Composite, ""}
 };
 
 using ObjectFactoryPair = std::pair<ObjectId, std::unique_ptr<ObjectFactoryBase>>;
@@ -45,7 +45,7 @@ void InitObjectFactoryMap()
   ObjectFactoryMap.insert(ObjectFactoryPair(ObjectId::Cube, std::make_unique<CubeFactory>()));
   ObjectFactoryMap.insert(ObjectFactoryPair(ObjectId::CubeExt, std::make_unique<CubeExtFactory>()));
   ObjectFactoryMap.insert(ObjectFactoryPair(ObjectId::Thorus, std::make_unique<ThorusFactory>()));
-  ObjectFactoryMap.insert(ObjectFactoryPair(ObjectId::Cuboid, std::make_unique<CuboidFactory>()));
+  ObjectFactoryMap.insert(ObjectFactoryPair(ObjectId::Composite, std::make_unique<CompositeFactory>()));
 }
 
 const auto& GetFactory(const std::string& name)

@@ -4,8 +4,6 @@
 #include "IGenerator.hpp"
 #include "ObjectFactories.hpp"
 #include "Object3D.hpp"
-#include "Cube.hpp"
-#include "Thorus.hpp"
 #include "Params.hpp"
 
 BOOST_AUTO_TEST_SUITE(Basic_Suite)
@@ -99,7 +97,7 @@ BOOST_AUTO_TEST_CASE(thorus_factory_test)
 
 BOOST_AUTO_TEST_CASE(taper_factory_test)
 {
-  CuboidFactory factory;
+  CompositeFactory factory;
   ParamsMap paramsMap;
 
   paramsMap[ParamsId::ComponentsList0] = ComponentNamesVector{"Taper"};
@@ -107,9 +105,9 @@ BOOST_AUTO_TEST_CASE(taper_factory_test)
   paramsMap[ParamsId::ComponentsParams0] = ParamsVector{3,50,50};
   paramsMap[ParamsId::ComponentsParams1] = ParamsVector{3,50,-50};
 
-  auto object = factory.Create("cuboid", paramsMap);
+  auto object = factory.Create("composite", paramsMap);
 
-  BOOST_CHECK_EQUAL("cuboid_Taper_Taper_3_50_50_3_50_-50", object->mName);
+  BOOST_CHECK_EQUAL("composite_Taper_Taper_3_50_50_3_50_-50", object->mName);
   BOOST_CHECK_EQUAL(5, object->GetVerticesQuantity());
   BOOST_CHECK_EQUAL(6, object->GetFacesQuantity());
 }

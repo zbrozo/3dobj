@@ -2,7 +2,7 @@
 #include "Cube.hpp"
 #include "CubeExt.hpp"
 #include "Thorus.hpp"
-#include "Cuboid.hpp"
+#include "Composite.hpp"
 #include "Components.hpp"
 #include "Params.hpp"
 
@@ -27,8 +27,6 @@ std::map<std::string, ObjectId> ComponentIdMap {
   {"pyramid", ObjectId::Pyramid},
   {"taper", ObjectId::Taper},
 };  
-
-const std::string TooLessParamsMessage = "Too less parameters for ";
 
 auto findParamsVector = [](const ParamsPair& params,  ParamsId id)
 {
@@ -97,19 +95,25 @@ std::unique_ptr<Object3D> CubeExtFactory::FactoryMethod(
   componentsWithParamsVector->push_back(
     ComponentsWithParamsPair(paramsVector, std::move(components)));
   
-  const auto nameExt = CreateFullName(name, params);
-  return std::make_unique<CubeExt>(nameExt.c_str(), std::move(componentsWithParamsVector));
+  return std::make_unique<CubeExt>(
+    CreateFullName(name, params).c_str(),
+    std::move(componentsWithParamsVector));
 }
 
 std::unique_ptr<Object3D> ThorusFactory::FactoryMethod(
   const std::string& name,
   const ParamsMap& params) const
 {
-  const auto& foundParams = std::get<ParamsVector>(params.at(ParamsId::AdditionalParams));
-  const auto nameExt = CreateFullName(name, params);
+  ParamsVector foundParams;
   
+  if (auto it = std::find_if(params.begin(), params.end(),
+      std::bind(findParamsVector, _1,  ParamsId::AdditionalParams)); it != params.end())
+  {
+    foundParams = std::get<ParamsVector>(params.at(ParamsId::AdditionalParams));
+  }
+
   return std::make_unique<Thorus>(
-    nameExt.c_str(),
+    CreateFullName(name, params).c_str(),
     getParam(foundParams, 0),
     getParam(foundParams, 1),
     getParam(foundParams, 2),
@@ -128,7 +132,7 @@ std::unique_ptr<Object3D> ThorusFactory::FactoryMethod(
     getParam(foundParams, 15));
 }
 
-std::unique_ptr<Object3D> CuboidFactory::FactoryMethod(
+std::unique_ptr<Object3D> CompositeFactory::FactoryMethod(
   const std::string& name,
   const ParamsMap& params) const 
 {
@@ -181,7 +185,7 @@ std::unique_ptr<Object3D> CuboidFactory::FactoryMethod(
   create(ParamsId::ComponentsList4, ParamsId::ComponentsParams4, ParamsId::Params4);
   create(ParamsId::ComponentsList5, ParamsId::ComponentsParams5, ParamsId::Params5);
     
-  const auto nameExt = CreateFullName(name, params);
-  
-  return std::make_unique<Cuboid>(nameExt.c_str(), std::move(componentsWithParamsVector));
+  return std::make_unique<Composite>(
+    CreateFullName(name, params).c_str(),
+    std::move(componentsWithParamsVector));
 }

@@ -2,6 +2,8 @@
 #include "Rotation.hpp"
 #include "Thorus.hpp"
 #include <algorithm>
+#include <exception>
+#include <stdexcept>
 
 #define PI 3.14159265
 #define radian (PI / 180.0)
@@ -254,10 +256,18 @@ Thorus::Thorus(
 {
   if (circleAmount.has_value())
   {
+    if (circleAmount.value() < 3)
+    {
+      throw std::out_of_range("Too less points declared");
+    }
     mCircleAmount = circleAmount.value();
   }
   if (ringAmount.has_value())
   {
+    if (ringAmount.value() < 3)
+    {
+      throw std::out_of_range("Too less points declared");
+    }
     mRingAmount = ringAmount.value();
   }
   if (circleRadius.has_value())

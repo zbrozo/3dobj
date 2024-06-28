@@ -28,7 +28,7 @@ public:
     const ParamsMap& params) const override;
 };
 
-class CuboidFactory : public ObjectFactoryBase
+class CompositeFactory : public ObjectFactoryBase
 {
 public:
   std::unique_ptr<Object3D> FactoryMethod(

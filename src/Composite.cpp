@@ -1,4 +1,4 @@
-#include "Cuboid.hpp"
+#include "Composite.hpp"
 #include "IGenerator.hpp"
 #include <optional>
 
@@ -35,7 +35,7 @@ void RotateSide(int degx, int degy, int degz,
 
 } // namespace
 
-void Cuboid::Generate()
+void Composite::Generate()
 {
   BOOST_LOG_TRIVIAL(debug) << __FUNCTION__;
 

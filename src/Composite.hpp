@@ -10,23 +10,23 @@
 
 class ComponetsVector;
 
-class Cuboid : public Object3D, public IGenerator
+class Composite : public Object3D, public IGenerator
 {
 
   std::unique_ptr<ComponentsWithParamsVector> mObjects = nullptr;
   
 public:
-  Cuboid(const char *name, std::unique_ptr<ComponentsWithParamsVector> objects) :
+  Composite(const char *name, std::unique_ptr<ComponentsWithParamsVector> objects) :
     Object3D(name), mObjects(std::move(objects))
   {
   }
   
-  virtual ~Cuboid() = default;
+  virtual ~Composite() = default;
   
-  Cuboid(Cuboid const &) = delete;
-  Cuboid(Cuboid &&) = delete;
-  Cuboid& operator=(const Cuboid&) = delete;
-  Cuboid& operator=(Cuboid &&) = delete;
+  Composite(Composite const &) = delete;
+  Composite(Composite &&) = delete;
+  Composite& operator=(const Composite&) = delete;
+  Composite& operator=(Composite &&) = delete;
   
   virtual void Generate() override;
 };
