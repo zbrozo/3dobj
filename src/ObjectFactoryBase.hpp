@@ -20,6 +20,12 @@ class ObjectFactoryBase
 public:
 
   ObjectFactoryBase();
+  virtual ~ObjectFactoryBase() = default;
+
+  ObjectFactoryBase(const ObjectFactoryBase&) = delete;
+  ObjectFactoryBase(ObjectFactoryBase&&) = delete;
+  ObjectFactoryBase& operator=(const ObjectFactoryBase&) = delete;
+  ObjectFactoryBase& operator=(ObjectFactoryBase&&) = delete;
   
   std::unique_ptr<Object3D> Create(
     const std::string& name,

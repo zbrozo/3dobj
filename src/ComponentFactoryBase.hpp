@@ -9,6 +9,14 @@ class ComponentFactoryBase
 {
 public:
 
+  ComponentFactoryBase() = default;
+  virtual ~ComponentFactoryBase() = default;
+
+  ComponentFactoryBase(const ComponentFactoryBase&) = delete;
+  ComponentFactoryBase(ComponentFactoryBase&&) = delete;
+  ComponentFactoryBase& operator=(const ComponentFactoryBase&) = delete;
+  ComponentFactoryBase& operator=(ComponentFactoryBase&&) = delete;
+  
   std::unique_ptr<Object3D> Create(
     const std::string& name,
     const ParamsVector& params) const;
