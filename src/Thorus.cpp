@@ -5,10 +5,12 @@
 #include <exception>
 #include <stdexcept>
 
-#define PI 3.14159265
-#define radian (PI / 180.0)
 
 namespace {
+
+template <typename T> constexpr auto pi = T(3.14159265);
+
+auto getRadian(double deg) { return deg * pi<double> / 180.0; }
 
 Face CreateFace(int face1, int face2, int face3, int face4)
 {
@@ -174,7 +176,7 @@ Vertices Thorus::ApplySinusToCircle(const Vertices& vertices, int index)
 
   auto calcTranslation = [&](auto step, int amp){
     const auto translation =  index * step * 360 / mCircleAmount;
-    return sin(translation * radian) * amp;
+    return sin(getRadian(translation)) * amp;
   };
   
   const auto translationX = calcTranslation(mCircleSinusStepX, mCircleSinusAmpX);
@@ -206,7 +208,7 @@ Vertices Thorus::ApplySinusToRing(const Vertices& vertices)
   {
     auto calcTranslation = [&](int add, int amp){
       const auto deg = add * 360 / mCircleAmount;
-      return sin(deg * radian) * amp;
+      return sin(getRadian(deg)) * amp;
     };
     
     const auto translationX = calcTranslation(addX, mRingSinusAmpX);
