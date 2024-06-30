@@ -2,10 +2,12 @@
 
 #include <string>
 #include <ostream>
+#include <type_traits>
 
 template<class T>
 class Vertex3D final
 {
+  static_assert(std::is_integral_v<T>);
   
   T mX = 0;
   T mY = 0;

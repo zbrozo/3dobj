@@ -2,10 +2,13 @@
 #include "Vertex3D.hpp"
 #include <cmath>
 #include <ostream>
+#include <type_traits>
 
 template<typename T>
 class Vector3D final
 {
+  static_assert(std::is_integral_v<T>);
+
   Vertex3D<T> mBegin = {0,0,0};
   Vertex3D<T> mEnd = {0,0,0};
   
