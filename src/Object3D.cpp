@@ -60,8 +60,10 @@ auto CalculateNormalVectorToFaces(const Vertices& vertices,
   return normalVectors;
 }
 
-auto CalculateVectorsInVertices(const FaceNumbersInVertices& vertexInFaceDependency,
-  const Vectors& normalFaceVectors)
+auto CalculateVectorsInVertices(
+  const FaceNumbersInVertices& vertexInFaceDependency,
+  const Vectors& normalFaceVectors
+  )
 {
   BOOST_LOG_TRIVIAL(trace) << __FUNCTION__;  
 
@@ -69,27 +71,24 @@ auto CalculateVectorsInVertices(const FaceNumbersInVertices& vertexInFaceDepende
   
   for(auto faces : vertexInFaceDependency)
   {
-    short x = 0;
-    short y = 0;
-    short z = 0;
-      
+    Vertex vertex;
+    
     for(auto faceNr : faces)
     {
-      x += normalFaceVectors[faceNr].getX();
-      y += normalFaceVectors[faceNr].getY();
-      z += normalFaceVectors[faceNr].getZ();
+      vertex += {normalFaceVectors[faceNr].getX(),
+          normalFaceVectors[faceNr].getY(),
+          normalFaceVectors[faceNr].getZ()
+          };
     }
 
     const short count = faces.size();
       
     if (faces.size() != 0)
     {
-      x = x / count;
-      y = y / count;
-      z = z / count;
+      vertex = vertex / count;
     }
 
-    vectorsInVertices.push_back(Vector({x,y,z}));      
+    vectorsInVertices.push_back(Vector(vertex));      
   }
 
   return vectorsInVertices;
@@ -173,7 +172,24 @@ std::pair<Face, Vertices> Object3D::Merge(const Vertices& objectVertices,
 std::ostream& operator<<(std::ostream& os, const Object3D& object)
 {
   os << "Type: " << object.mName << "\n";
+  os << "Vertices:" << "\n";
   os << object.mVertices;
+  os << "Faces:" << "\n";
   os << object.mFaces;
+
+  os << "Face normals:" << "\n";
+  for (auto v : object.mNormalVectorsInFaces)
+  {
+    os << v;
+  }
+  os << "\n";
+  
+  os << "Vertice normals:" << "\n";
+  for (auto v : object.mNormalVectorsInVertices)
+  {
+    os << v;
+  }
+  os << "\n";
+
   return os;
 }

@@ -5,8 +5,8 @@
 
 #include <vector>
 
-using Vertex = Vertex3D<short>;
-using Vector = Vector3D<short>;
+using Vertex = Vertex3D<int>;
+using Vector = Vector3D<int>;
 using Vectors = std::vector<Vector>;
 
 

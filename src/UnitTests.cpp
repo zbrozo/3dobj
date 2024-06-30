@@ -1,6 +1,8 @@
 #include "Vertex3D.hpp"
 #define BOOST_TEST_MODULE tests
 #include <boost/test/unit_test.hpp>
+#include <boost/test/data/test_case.hpp>
+#include <boost/test/data/monomorphic.hpp>
 
 #include "IGenerator.hpp"
 #include "ObjectFactories.hpp"
@@ -19,12 +21,23 @@ BOOST_AUTO_TEST_CASE(vertex_add_operations_test)
   BOOST_CHECK_EQUAL(vertex1, Vertex3D<int>(2,3,4));
 }
 
-BOOST_AUTO_TEST_CASE(vector_crossproduct_test)
+BOOST_DATA_TEST_CASE(vector_crossproduct_test,
+  boost::unit_test::data::make({
+      Vector3D<int>({10, 5, 10}),
+      Vector3D<int>({200, 0, 0}),
+      Vector3D<int>({0, 0, 0})})
+  ^ boost::unit_test::data::make({
+      Vector3D<int>({5, 10, 5}),
+      Vector3D<int>({0, 200, 0}),
+      Vector3D<int>({0, 0, 0})})
+  ^ boost::unit_test::data::make({
+      Vector3D<int>({-75, 0, 75}),
+      Vector3D<int>({0, 0, 40000}),
+      Vector3D<int>({0, 0, 0})}),
+  firstVector, secondVector, resultVector)    
 {
-  Vector3D<int> vector1 {{0,0,0}, {10, 5, 10}};
-  Vector3D<int> vector2 {{0,0,0}, {5, 10, 5}};
-  const auto result = vector1.calculateCrossProduct(vector2);
-  BOOST_CHECK_EQUAL(result, Vector3D<int>(Vertex3D<int>(-75, 0, 75)));
+  const auto result = firstVector.calculateCrossProduct(secondVector);
+  BOOST_CHECK_EQUAL(result, resultVector);
 }
 
 BOOST_AUTO_TEST_CASE(vector_normalize_test)

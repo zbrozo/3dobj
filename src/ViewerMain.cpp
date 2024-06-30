@@ -21,14 +21,14 @@
 
 using namespace std::placeholders;
 
-const int maxColorNumber = 64;
-const int maxLightValue = 64;
+constexpr int maxColorNumber = 64;
+constexpr int maxLightValue = 64;
 SDL_Color colors[maxColorNumber];
 
-const int WindowW = 800;
-const int WindowH = 800;
-const int CenterX = WindowW / 2;
-const int CenterY = WindowH / 2;
+constexpr int WindowW = 800;
+constexpr int WindowH = 800;
+constexpr int CenterX = WindowW / 2;
+constexpr int CenterY = WindowH / 2;
 
 enum DrawMode
 {
@@ -116,7 +116,7 @@ void CalculateLight(int light,
 {
   auto calcColorNumber = [light](const Vector& v){
     Vertex lightVector(0,0,light);
-    const auto z = (v.getZ() * lightVector.getZ()) + (maxLightValue * maxLightValue);
+    const int z = (v.getZ() * lightVector.getZ()) + (maxLightValue * maxLightValue);
     const int id = (z * maxColorNumber) / (maxLightValue * 2 * maxLightValue);
     return id;
   };

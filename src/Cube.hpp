@@ -6,7 +6,7 @@
 class Cube : public Object3D, public IGenerator
 {
 
-  int mSize;
+  int mSize = 50;
   
 public:
 
