@@ -15,6 +15,7 @@
 #include "AmigaFile.hpp"
 
 #include "ViewerSortingFaces.hpp"
+#include "ViewerPerspective.hpp"
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_timer.h>
@@ -34,13 +35,13 @@ constexpr int CenterY = WindowH / 2;
 
 enum DrawMode
 {
-  DrawMode_None = 0,
-  DrawMode_LineVectors = 1,
-  DrawMode_NormalVectorsInFaces = 1 << 1,
-  DrawMode_NormalVectorsInVertices = 1 << 2,
-  DrawMode_FlatShading = 1 << 3,
-  DrawMode_GouraudShading = 1 << 4,
-  DrawMode_TextureMapping = 1 << 5,
+  DrawMode_None                    = 0,
+  DrawMode_LineVectors             = 0b0000'0001,
+  DrawMode_NormalVectorsInFaces    = 0b0000'0010,
+  DrawMode_NormalVectorsInVertices = 0b0000'0100,
+  DrawMode_FlatShading             = 0b0000'1000,
+  DrawMode_GouraudShading          = 0b0001'0000,
+  DrawMode_TextureMapping          = 0b0010'0000,
 };
 
 void PrepareColors()
@@ -51,27 +52,6 @@ void PrepareColors()
     unsigned char col = ((-i + maxColorNumber) * maxValue) /  maxColorNumber;
     colors[i] = SDL_Color{col, col, col, maxValue};
   }
-}
-
-template<typename T>
-Vertex CalculatePerspective(const T& v, int zoom = 400)
-{
-  auto z = v.getZ() + zoom;
-  auto x = (v.getX() << 10) / z;
-  auto y = (v.getY() << 10) / z;
-  return Vertex(x, y, v.getZ());
-}
-
-Vertices CalculatePerspective(const Vertices& vertices, int zoom)
-{
-  Vertices vertices2d;
-  for (const auto& vertex : vertices)
-  {
-    const auto v = CalculatePerspective<Vertex>(vertex, zoom);
-    vertices2d.push_back(v);
-  }
-  
-  return vertices2d;
 }
 
 const char *help = "press h for help";
@@ -428,7 +408,7 @@ int main(int argc, char* argv[])
   {
     std::cout << "No object files provided\n"
               << "Command line:\n"
-              << "  viewer file..." << std::endl;
+              << "  viewer path file..." << std::endl;
     return 0;
   }
   

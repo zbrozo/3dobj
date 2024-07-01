@@ -5,6 +5,8 @@
 
 #include <algorithm>
 
+namespace {
+
 FaceNumbers PrepareFaceNumbers(const Vertices& vertices2d, const Faces &faces)
 {
   FaceNumbers faceNumbers;
@@ -27,6 +29,8 @@ FaceNumbers PrepareFaceNumbers(const Vertices& vertices2d, const Faces &faces)
   
   return faceNumbers;
 }
+
+} // namespace
 
 FaceNumbers SortFaceNumbers(const Vertices& vertices2d, const Faces &faces)
 {
