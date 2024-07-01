@@ -37,6 +37,7 @@ set(generator_SRC
 
 set(viewer_SRC
   src/ViewerMain.cpp
+  src/ViewerSortingFaces.cpp
   src/AmigaFile.cpp
   src/Face.cpp
   src/Rotation.cpp

@@ -14,6 +14,8 @@
 #include "Rotation.hpp"
 #include "AmigaFile.hpp"
 
+#include "ViewerSortingFaces.hpp"
+
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_timer.h>
 #include <SDL2/SDL_image.h>
@@ -57,7 +59,19 @@ Vertex CalculatePerspective(const T& v, int zoom = 400)
   auto z = v.getZ() + zoom;
   auto x = (v.getX() << 10) / z;
   auto y = (v.getY() << 10) / z;
-  return Vertex(x, y, 0);
+  return Vertex(x, y, v.getZ());
+}
+
+Vertices CalculatePerspective(const Vertices& vertices, int zoom)
+{
+  Vertices vertices2d;
+  for (const auto& vertex : vertices)
+  {
+    const auto v = CalculatePerspective<Vertex>(vertex, zoom);
+    vertices2d.push_back(v);
+  }
+  
+  return vertices2d;
 }
 
 const char *help = "press h for help";
@@ -162,24 +176,21 @@ void DrawFlatShading(SDL_Renderer* rend,
   const std::vector<int>& colorNumbersInFaces
   )
 {
-  unsigned int faceNr = 0;
-    
-  for (auto face : faces)
+  const auto sortedFaces = SortFaceNumbers(vertices2d, faces);
+  
+  for (const auto& faceNr : sortedFaces)
   {
-    if (!face.IsVisible(vertices2d))
-    {
-      ++faceNr;
-      continue;
-    }
-
     std::vector<SDL_Vertex> geometryVertices;
 
     SDL_Vertex vertex;
     vertex.tex_coord.x = 0;
     vertex.tex_coord.y = 0;
     vertex.color = colors[colorNumbersInFaces[faceNr]];
-        
-    for (size_t i = 0; i < face.size(); ++i)
+
+    const auto& face = faces[faceNr];
+    const size_t size = face.size();
+    
+    for (size_t i = 0; i < size; ++i)
     {
       const auto x = vertices2d[face[i]].getX();
       const auto y = vertices2d[face[i]].getY();
@@ -188,9 +199,7 @@ void DrawFlatShading(SDL_Renderer* rend,
       geometryVertices.push_back(vertex);
     }
 
-    RenderFace(rend, face.size(), geometryVertices);
-      
-    ++faceNr;
+    RenderFace(rend, size, geometryVertices);
   }
 }
 
@@ -306,7 +315,7 @@ void DrawNormalVectorsInVertices(SDL_Renderer* rend,
   )
 {
   unsigned int faceNr = 0;
-    
+  
   for (auto face : faces)
   {
     if (!face.IsVisible(vertices2d))
@@ -608,12 +617,7 @@ int main(int argc, char* argv[])
         colorNumbersInFaces,
         colorNumbersInVertices);
 
-      Vertices vertices2d;
-      for (const auto& v : vertices)
-      {
-        const auto v2d = CalculatePerspective<Vertex>(v, zoom);
-        vertices2d.push_back(v2d);
-      }
+      Vertices vertices2d = CalculatePerspective(vertices, zoom);
 
       if (drawMode & DrawMode_FlatShading)
       {

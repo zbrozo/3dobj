@@ -39,9 +39,9 @@ Vertex Face::GetCenter(const std::vector<Vertex>& vertices) const
   
   const unsigned int size = this->size();
   
-  short x = 0;
-  short y = 0;
-  short z = 0;
+  int x = 0;
+  int y = 0;
+  int z = 0;
   
   for (unsigned int i = 0; i < size; ++i)
   {
