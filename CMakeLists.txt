@@ -39,6 +39,8 @@ set(viewer_SRC
   src/ViewerMain.cpp
   src/ViewerSortingFaces.cpp
   src/ViewerPerspective.cpp
+  src/ViewerLight.cpp
+  src/ViewerRotate.cpp
   src/AmigaFile.cpp
   src/Face.cpp
   src/Rotation.cpp
