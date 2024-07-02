@@ -26,8 +26,8 @@ cd ./objects
 ../generator --v --o cube2 --t cube-ext --c SquareHolePart1 SquareHolePart2 --p 100 --f 0 0 100
 ../generator --v --o cube3 --t cube-ext --c Pyramid --p 100 --f 0 0 100
 ../generator --v --o thorus1 --t thorus 20 40 30 100
-../generator --v --o thorus2 --t thorus 20 40 30 100 0 0 6 10 0 0
-../generator --v --o thorus3 --t thorus 20 20 30 100 0 0 3 5 0 0 0 0 1 20 0 0
+../generator --v --o thorus2 --t thorus 20 40 30 100 --s 0 0 6 10 0 0
+../generator --v --o thorus3 --t thorus 20 20 30 100 --s 0 0 1 5 0 0 0.2 10 1.5 20 0.2 10
 ../generator --v --o taper1 --t composite --c0 Taper --p0 3 100 100 --c1 Taper --p1 3 100 -100
 ../generator --v --o taper2 --t composite --c0 Taper --p0 6 100 100 --c1 Taper --p1 6 100 -100
 ../generator --v --o composite1 --t composite --c0 Pyramid --p0 100 100 --f0 0 0 0 0 0 0 --c1 Pyramid --p1 100 100 --f1 0 0 0 0 180 0

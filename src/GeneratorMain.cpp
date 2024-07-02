@@ -128,6 +128,7 @@ int main(int argc, char* argv[])
     ("o", po::value<std::string>(), "output name")
     ("t", po::value<std::string>(), "object3d type")
     ("f", po::value<ParamsVector>()->multitoken(), "")
+    ("s", po::value<SinusParamsVector>()->multitoken(), "")
     ("c", po::value<ComponentNamesVector>()->multitoken(),
       "Possible components: Square, SquareHolePart1, SquareHolePart2, Pyramid, Taper")
     ("p", po::value<ParamsVector>()->multitoken(), "params for component")
@@ -186,6 +187,7 @@ int main(int argc, char* argv[])
   AddParams<ParamsVector>(options, "p", ParamsId::ComponentsParams, paramsMap);
   AddParams<ParamsVector>(options, "f", ParamsId::Params, paramsMap);
   AddParams<ParamsVector>(options, "a", ParamsId::AdditionalParams, paramsMap);
+  AddParams<SinusParamsVector>(options, "s", ParamsId::SinusParams, paramsMap);
 
   AddParams<ComponentNamesVector>(options, "c0", ParamsId::ComponentsList0, paramsMap);
   AddParams<ComponentNamesVector>(options, "c1", ParamsId::ComponentsList1, paramsMap);

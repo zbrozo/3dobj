@@ -37,6 +37,9 @@ void appendParams (std::string& result, const T& params) {
     if constexpr (std::is_same_v<T, ParamsVector>) {
       result += "_" + std::to_string(value);
     }
+    if constexpr (std::is_same_v<T, SinusParamsVector>) {
+      result += "_" + std::to_string(value);
+    }
     else {
       result += "_" + value;
     }

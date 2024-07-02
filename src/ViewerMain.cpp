@@ -27,8 +27,6 @@
 
 using namespace std::placeholders;
 
-SDL_Color colors[maxColorNumber];
-
 constexpr int WindowW = 800;
 constexpr int WindowH = 800;
 constexpr int CenterX = WindowW / 2;
@@ -64,7 +62,6 @@ const char *helpDetailed =
   ", - zoom in\n"
   ". - zoom out\n"
   ;
-
 
 void RenderFace(
   SDL_Renderer* rend,
@@ -219,6 +216,8 @@ int main(int argc, char* argv[])
   };
   
   SwitchDrawLineMode(DrawLineMode_LineVectors);
+
+  SDL_Color colors[maxColorNumber];
 
   PrepareColors(colors);
 

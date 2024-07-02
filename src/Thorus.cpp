@@ -174,7 +174,7 @@ Vertices Thorus::ApplySinusToCircle(const Vertices& vertices, int index)
 {
   Vertices resultVertices;
 
-  auto calcTranslation = [&](auto step, int amp){
+  auto calcTranslation = [&](double step, double amp){
     const auto translation =  index * step * 360 / mCircleAmount;
     return sin(getRadian(translation)) * amp;
   };
@@ -206,7 +206,7 @@ Vertices Thorus::ApplySinusToRing(const Vertices& vertices)
   int i = 0;
   for (auto& v : vertices)
   {
-    auto calcTranslation = [&](int add, int amp){
+    auto calcTranslation = [&](double add, double amp){
       const auto deg = add * 360 / mCircleAmount;
       return sin(getRadian(deg)) * amp;
     };
@@ -241,18 +241,18 @@ Thorus::Thorus(
   std::optional<int> ringAmount,
   std::optional<int> circleRadius,
   std::optional<int> circleOffset,
-  std::optional<int> circleSinusStepX,
-  std::optional<int> circleSinusAmpX,
-  std::optional<int> circleSinusStepY,
-  std::optional<int> circleSinusAmpY,
-  std::optional<int> circleSinusStepZ,
-  std::optional<int> circleSinusAmpZ,
-  std::optional<int> ringSinusStepX,
-  std::optional<int> ringSinusAmpX,
-  std::optional<int> ringSinusStepY,
-  std::optional<int> ringSinusAmpY,
-  std::optional<int> ringSinusStepZ,
-  std::optional<int> ringSinusAmpZ  
+  std::optional<double> circleSinusStepX,
+  std::optional<double> circleSinusAmpX,
+  std::optional<double> circleSinusStepY,
+  std::optional<double> circleSinusAmpY,
+  std::optional<double> circleSinusStepZ,
+  std::optional<double> circleSinusAmpZ,
+  std::optional<double> ringSinusStepX,
+  std::optional<double> ringSinusAmpX,
+  std::optional<double> ringSinusStepY,
+  std::optional<double> ringSinusAmpY,
+  std::optional<double> ringSinusStepZ,
+  std::optional<double> ringSinusAmpZ 
   ) :
   Object3D(name)
 {

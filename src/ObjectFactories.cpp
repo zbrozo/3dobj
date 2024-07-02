@@ -34,7 +34,7 @@ auto findParamsVector = [](const ParamsPair& params,  ParamsId id)
   return params.first == id;
 };
 
-auto getParam(ParamsVector values, unsigned int index)
+auto getParam(const ParamsVector& values, unsigned int index)
 {
   if (values.size() > index)
   {
@@ -42,6 +42,16 @@ auto getParam(ParamsVector values, unsigned int index)
   }
   
   return std::optional<int>();
+}
+
+auto getParam(const SinusParamsVector& values, unsigned int index)
+{
+  if (values.size() > index)
+  {
+    return std::optional<double>{values[index]};
+  }
+  
+  return std::optional<double>();
 }
 
 }
@@ -106,6 +116,7 @@ std::unique_ptr<Object3D> ThorusFactory::FactoryMethod(
   const ParamsMap& params) const
 {
   ParamsVector foundParams;
+  SinusParamsVector foundSinusParams;
   
   if (auto it = std::find_if(params.begin(), params.end(),
       std::bind(findParamsVector, _1,  ParamsId::AdditionalParams)); it != params.end())
@@ -113,24 +124,30 @@ std::unique_ptr<Object3D> ThorusFactory::FactoryMethod(
     foundParams = std::get<ParamsVector>(params.at(ParamsId::AdditionalParams));
   }
 
+  if (auto it = std::find_if(params.begin(), params.end(),
+      std::bind(findParamsVector, _1,  ParamsId::SinusParams)); it != params.end())
+  {
+    foundSinusParams = std::get<SinusParamsVector>(params.at(ParamsId::SinusParams));
+  }
+  
   return std::make_unique<Thorus>(
     CreateFullName(name, params).c_str(),
     getParam(foundParams, 0),
     getParam(foundParams, 1),
     getParam(foundParams, 2),
     getParam(foundParams, 3),
-    getParam(foundParams, 4),
-    getParam(foundParams, 5),
-    getParam(foundParams, 6),
-    getParam(foundParams, 7),
-    getParam(foundParams, 8),
-    getParam(foundParams, 9),
-    getParam(foundParams, 10),
-    getParam(foundParams, 11),
-    getParam(foundParams, 12),
-    getParam(foundParams, 13),
-    getParam(foundParams, 14),
-    getParam(foundParams, 15));
+    getParam(foundSinusParams, 0),
+    getParam(foundSinusParams, 1),
+    getParam(foundSinusParams, 2),
+    getParam(foundSinusParams, 3),
+    getParam(foundSinusParams, 4),
+    getParam(foundSinusParams, 5),
+    getParam(foundSinusParams, 6),
+    getParam(foundSinusParams, 7),
+    getParam(foundSinusParams, 8),
+    getParam(foundSinusParams, 9),
+    getParam(foundSinusParams, 10),
+    getParam(foundSinusParams, 11));
 }
 
 std::unique_ptr<Object3D> CompositeFactory::FactoryMethod(
