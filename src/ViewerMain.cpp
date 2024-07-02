@@ -296,7 +296,6 @@ int main(int argc, char* argv[])
   // animation loop
   while (!close) {
     SDL_Event event;
-
    
     // Events management
     while (SDL_PollEvent(&event)) {

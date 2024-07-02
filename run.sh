@@ -36,7 +36,7 @@ cd ./objects
 
 cd ..
 
-if [ $1 == "small" ]; then
+if [[ "$1" == "small" ]]; then
     ./viewer objects_small cube1 cube2 cube3 thorus1 thorus2 thorus3 taper1 taper2 composite1 composite2 composite3
 else
     ./viewer objects cube1 cube2 cube3 thorus1 thorus2 thorus3 taper1 taper2 composite1 composite2 composite3

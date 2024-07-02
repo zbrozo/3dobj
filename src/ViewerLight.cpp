@@ -30,7 +30,6 @@ void CalculateLight(
     return id;
   };
   
-  
   for (auto v : normalVectorsInFaces)
   {
     colorNumbersInFaces.push_back(calcColorNumber(v));
