@@ -33,15 +33,19 @@ constexpr int WindowH = 800;
 constexpr int CenterX = WindowW / 2;
 constexpr int CenterY = WindowH / 2;
 
-enum DrawMode
+enum DrawLineMode
 {
-  DrawMode_None                    = 0,
-  DrawMode_LineVectors             = 0b0000'0001,
-  DrawMode_NormalVectorsInFaces    = 0b0000'0010,
-  DrawMode_NormalVectorsInVertices = 0b0000'0100,
-  DrawMode_FlatShading             = 0b0000'1000,
-  DrawMode_GouraudShading          = 0b0001'0000,
-  DrawMode_TextureMapping          = 0b0010'0000,
+  DrawLineMode_None                    = 0,
+  DrawLineMode_LineVectors             = 0b0000'0001,
+  DrawLineMode_NormalVectorsInFaces    = 0b0000'0010,
+  DrawLineMode_NormalVectorsInVertices = 0b0000'0100,
+};
+
+enum DrawFilledMode {
+  DrawFilledMode_None                    = 0,
+  DrawFilledMode_FlatShading             = 0b0000'0001,
+  DrawFilledMode_GouraudShading          = 0b0000'0010,
+  DrawFilledMode_TextureMapping          = 0b0000'0100,
 };
 
 void PrepareColors()
@@ -70,11 +74,10 @@ const char *helpDetailed =
   ". - zoom out\n"
   ;
 
-void RotateObject(Object3D* object,
-  int degx, int degy, int degz,
-  Vertices& vertices,
-  Vectors& normalVectorsInFaces,
-  Vectors& normalVectorsInVertices)
+auto RotateObject(int degx, int degy, int degz,
+  const Vertices& vertices,
+  const Vectors& normalVectorsInFaces,
+  const Vectors& normalVectorsInVertices)
 {
   auto rotate = [degx, degy, degz](const Vertex& v){
     VertexRotation rotation;
@@ -85,21 +88,30 @@ void RotateObject(Object3D* object,
     VectorRotation rotation;
     return rotation.rotateZ(rotation.rotateY(rotation.rotateX(v, degx) ,degy), degz);
   };
+
+  Vertices resultVertices;
+  Vectors resultNormalVectorsInFaces;
+  Vectors resultNormalVectorsInVertices;
   
-  for (auto v : object->mVertices)
+  for (auto v : vertices)
   {
-    vertices.push_back(rotate(v));
+    resultVertices.push_back(rotate(v));
   }
 
-  for (auto v : object->mNormalVectorsInFaces)
+  for (auto v : normalVectorsInFaces)
   {
-    normalVectorsInFaces.push_back(rotateVector(v));
+    resultNormalVectorsInFaces.push_back(rotateVector(v));
   }
 
-  for (auto v : object->mNormalVectorsInVertices)
+  for (auto v : normalVectorsInVertices)
   {
-    normalVectorsInVertices.push_back(rotateVector(v));
+    resultNormalVectorsInVertices.push_back(rotateVector(v));
   }
+
+  return std::tuple<Vertices, Vectors, Vectors>(
+    resultVertices,
+    resultNormalVectorsInFaces,
+    resultNormalVectorsInVertices);
 }
 
 void CalculateLight(int light,
@@ -362,7 +374,7 @@ void DrawLines(SDL_Renderer* rend,
   }
 }
 
-void LoadObjects(int argc, char* argv[], std::vector<std::unique_ptr<Object3D>>& objects)
+void LoadObjects(int argc, char* argv[], std::vector<std::shared_ptr<Object3D>>& objects)
 {
   AmigaFile file;
   std::string path;
@@ -412,7 +424,7 @@ int main(int argc, char* argv[])
     return 0;
   }
   
-  std::vector<std::unique_ptr<Object3D>> objects;
+  std::vector<std::shared_ptr<Object3D>> objects;
   LoadObjects(argc, argv, objects);
 
   if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
@@ -470,35 +482,43 @@ int main(int argc, char* argv[])
   
   bool help = false;
   
-  unsigned short drawMode = 0;
-  auto SwitchDrawMode = [&](DrawMode mode){
-    drawMode = (drawMode & mode) ? (drawMode ^ mode) : (drawMode | mode);
+  unsigned short lineMode = 0;
+  unsigned short filledMode = 0;
+  
+  auto SwitchDrawLineMode = [&](DrawLineMode mode){
+    lineMode = (lineMode & mode) ? (lineMode ^ mode) : (lineMode | mode);
   };
 
-  SwitchDrawMode(DrawMode_LineVectors);
+  auto SwitchDrawFilledMode = [&](DrawFilledMode mode){
+    filledMode = 0;
+    filledMode = (filledMode & mode) ? (filledMode ^ mode) : (filledMode | mode);
+  };
+  
+  SwitchDrawLineMode(DrawLineMode_LineVectors);
   PrepareColors();
   
-  Object3D* object = objects[0].get();
-
   auto SelectObject = [&](unsigned int nr) {
-    //    unsigned int nr = event.key.keysym.scancode - SDL_SCANCODE_F1;
     if (nr < objects.size())
     {
-      object = objects[nr].get();
+      return std::weak_ptr<Object3D>(objects[nr]);
     }
+
+    return std::weak_ptr<Object3D>();
   };
 
+  auto selectedObject = SelectObject(0);
+  
   std::map<int, std::function<void()>> keyActions{
     {SDL_SCANCODE_COMMA, [&](){ zoom -= 10; }},
     {SDL_SCANCODE_PERIOD, [&](){ zoom += 10; }},
     {SDL_SCANCODE_ESCAPE, [&](){ close = 1; }},
     {SDL_SCANCODE_H, [&](){ help = !help; }},
-    {SDL_SCANCODE_1, [&](){ SwitchDrawMode(DrawMode_LineVectors); }},
-    {SDL_SCANCODE_2, [&](){ SwitchDrawMode(DrawMode_NormalVectorsInFaces); }},
-    {SDL_SCANCODE_3, [&](){ SwitchDrawMode(DrawMode_NormalVectorsInVertices); }},
-    {SDL_SCANCODE_4, [&](){ SwitchDrawMode(DrawMode_FlatShading); }},
-    {SDL_SCANCODE_5, [&](){ SwitchDrawMode(DrawMode_GouraudShading); }},
-    {SDL_SCANCODE_6, [&](){ SwitchDrawMode(DrawMode_TextureMapping); }},
+    {SDL_SCANCODE_1, [&](){ SwitchDrawLineMode(DrawLineMode_LineVectors); }},
+    {SDL_SCANCODE_2, [&](){ SwitchDrawLineMode(DrawLineMode_NormalVectorsInFaces); }},
+    {SDL_SCANCODE_3, [&](){ SwitchDrawLineMode(DrawLineMode_NormalVectorsInVertices); }},
+    {SDL_SCANCODE_4, [&](){ SwitchDrawFilledMode(DrawFilledMode_FlatShading); }},
+    {SDL_SCANCODE_5, [&](){ SwitchDrawFilledMode(DrawFilledMode_GouraudShading); }},
+    {SDL_SCANCODE_6, [&](){ SwitchDrawFilledMode(DrawFilledMode_TextureMapping); }},
     {SDL_SCANCODE_UP, [&](){ degx += 1; }},
     {SDL_SCANCODE_DOWN, [&](){ degx -= 1; }},
     {SDL_SCANCODE_LEFT, [&](){ degy += 1; }},
@@ -529,18 +549,18 @@ int main(int argc, char* argv[])
         speedz = 0;
       }
     }},
-    {SDL_SCANCODE_F1, [&](){ SelectObject(0); }},
-    {SDL_SCANCODE_F2, [&](){ SelectObject(1); }},
-    {SDL_SCANCODE_F3, [&](){ SelectObject(2); }},
-    {SDL_SCANCODE_F4, [&](){ SelectObject(3); }},
-    {SDL_SCANCODE_F5, [&](){ SelectObject(4); }},
-    {SDL_SCANCODE_F6, [&](){ SelectObject(5); }},
-    {SDL_SCANCODE_F7, [&](){ SelectObject(6); }},
-    {SDL_SCANCODE_F8, [&](){ SelectObject(7); }},
-    {SDL_SCANCODE_F9, [&](){ SelectObject(8); }},
-    {SDL_SCANCODE_F10, [&](){ SelectObject(9); }},
-    {SDL_SCANCODE_F11, [&](){ SelectObject(10); }},
-    {SDL_SCANCODE_F12, [&](){ SelectObject(11); }},
+    {SDL_SCANCODE_F1, [&](){ selectedObject = SelectObject(0); }},
+    {SDL_SCANCODE_F2, [&](){ selectedObject = SelectObject(1); }},
+    {SDL_SCANCODE_F3, [&](){ selectedObject = SelectObject(2); }},
+    {SDL_SCANCODE_F4, [&](){ selectedObject = SelectObject(3); }},
+    {SDL_SCANCODE_F5, [&](){ selectedObject = SelectObject(4); }},
+    {SDL_SCANCODE_F6, [&](){ selectedObject = SelectObject(5); }},
+    {SDL_SCANCODE_F7, [&](){ selectedObject = SelectObject(6); }},
+    {SDL_SCANCODE_F8, [&](){ selectedObject = SelectObject(7); }},
+    {SDL_SCANCODE_F9, [&](){ selectedObject = SelectObject(8); }},
+    {SDL_SCANCODE_F10, [&](){ selectedObject = SelectObject(9); }},
+    {SDL_SCANCODE_F11, [&](){ selectedObject = SelectObject(10); }},
+    {SDL_SCANCODE_F12, [&](){ selectedObject = SelectObject(11); }},
   };
 
   // animation loop
@@ -578,37 +598,37 @@ int main(int argc, char* argv[])
     SDL_SetRenderDrawColor(rend, 0, 0, 0, 0);
     SDL_RenderClear(rend);
     SDL_SetRenderDrawColor(rend, 0xFF, 0, 0, 0xFF);
+
+    auto object = selectedObject.lock();
     
-    if (object)
+    if (!object)
     {
-      Vertices vertices;
-      Vectors normalVectorsInFaces;
-      Vectors normalVectorsInVertices;
-      RotateObject(object, degx, degy, degz,
-        vertices,
-        normalVectorsInFaces,
-        normalVectorsInVertices);
+      continue;
+    }
+    
+    const auto [vertices, normalVectorsInFaces, normalVectorsInVertices] = RotateObject(degx, degy, degz,
+      object->mVertices, object->mNormalVectorsInFaces, object->mNormalVectorsInVertices);
 
-      std::vector<int> colorNumbersInFaces;
-      std::vector<int> colorNumbersInVertices;
-      CalculateLight(light,
-        normalVectorsInFaces,
-        normalVectorsInVertices,
-        colorNumbersInFaces,
-        colorNumbersInVertices);
+    std::vector<int> colorNumbersInFaces;
+    std::vector<int> colorNumbersInVertices;
+    CalculateLight(light,
+      normalVectorsInFaces,
+      normalVectorsInVertices,
+      colorNumbersInFaces,
+      colorNumbersInVertices);
 
-      Vertices vertices2d = CalculatePerspective(vertices, zoom);
+    Vertices vertices2d = CalculatePerspective(vertices, zoom);
 
-      if (drawMode & DrawMode_FlatShading)
-      {
-        DrawFlatShading(rend,
-          vertices2d,
-          object->mFaces,
-          colorNumbersInFaces
-          );
-      }
+    if (filledMode & DrawFilledMode_FlatShading)
+    {
+      DrawFlatShading(rend,
+        vertices2d,
+        object->mFaces,
+        colorNumbersInFaces
+        );
+    }
 
-      if (drawMode & DrawMode_GouraudShading)
+      if (filledMode & DrawFilledMode_GouraudShading)
       {
         DrawGouraudShading(rend,
           vertices2d,
@@ -617,7 +637,7 @@ int main(int argc, char* argv[])
           );
       }
 
-      if (drawMode & DrawMode_TextureMapping)
+      if (filledMode & DrawFilledMode_TextureMapping)
       {
         DrawTextureMapping(rend,
           vertices2d,
@@ -625,7 +645,7 @@ int main(int argc, char* argv[])
           texture);
       }
         
-      if (drawMode & DrawMode_NormalVectorsInFaces)
+      if (lineMode & DrawLineMode_NormalVectorsInFaces)
       {
         DrawNormalVectorsInFaces(rend,
           vertices,
@@ -635,7 +655,7 @@ int main(int argc, char* argv[])
           std::bind(CalculatePerspective<Vertex>, _1, zoom));
       }
 
-      if (drawMode & DrawMode_NormalVectorsInVertices)
+      if (lineMode & DrawLineMode_NormalVectorsInVertices)
       {
         DrawNormalVectorsInVertices(rend,
           vertices,
@@ -645,11 +665,10 @@ int main(int argc, char* argv[])
           std::bind(CalculatePerspective<Vector>, _1, zoom));
       }
         
-      if (drawMode & DrawMode_LineVectors)
+      if (lineMode & DrawLineMode_LineVectors)
       {
         DrawLines(rend, vertices2d, object->mFaces);
       }
-    }
 
     degx += speedx;
     degy += speedy;
