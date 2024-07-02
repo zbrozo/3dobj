@@ -18,6 +18,7 @@
 #include "ViewerPerspective.hpp"
 #include "ViewerLight.hpp"
 #include "ViewerRotate.hpp"
+#include "ViewerDraw.hpp"
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_timer.h>
@@ -88,111 +89,6 @@ void RenderFace(
     throw std::invalid_argument("Face is not handled");
   }
 }
-
-void DrawFlatShading(SDL_Renderer* rend,
-  const Vertices& vertices2d,
-  const Faces& faces,
-  const std::vector<int>& colorNumbersInFaces
-  )
-{
-  const auto sortedFaces = SortFaceNumbers(vertices2d, faces);
-  
-  for (const auto& faceNr : sortedFaces)
-  {
-    std::vector<SDL_Vertex> geometryVertices;
-
-    SDL_Vertex vertex;
-    vertex.tex_coord.x = 0;
-    vertex.tex_coord.y = 0;
-    vertex.color = colors[colorNumbersInFaces[faceNr]];
-
-    const auto& face = faces[faceNr];
-    const size_t size = face.size();
-    
-    for (size_t i = 0; i < size; ++i)
-    {
-      const auto x = vertices2d[face[i]].getX();
-      const auto y = vertices2d[face[i]].getY();
-      vertex.position.x = x + CenterX;
-      vertex.position.y = y + CenterY;
-      geometryVertices.push_back(vertex);
-    }
-
-    RenderFace(rend, size, geometryVertices);
-  }
-}
-
-void DrawGouraudShading(SDL_Renderer* rend,
-  const Vertices& vertices2d,
-  const Faces& faces,
-  const std::vector<int>& colorNumbersInVertices
-  )
-{
-  for (auto face : faces)
-  {
-    if (!face.IsVisible(vertices2d))
-    {
-      continue;
-    }
-
-    std::vector<SDL_Vertex> geometryVertices;
-
-    SDL_Vertex vertex;
-    vertex.tex_coord.x = 0;
-    vertex.tex_coord.y = 0;
-        
-    for (size_t i = 0; i < face.size(); ++i)
-    {
-      vertex.color = colors[colorNumbersInVertices[face[i]]];
-                
-      const auto x = vertices2d[face[i]].getX();
-      const auto y = vertices2d[face[i]].getY();
-      vertex.position.x = x + CenterX;
-      vertex.position.y = y + CenterY;
-      geometryVertices.push_back(vertex);
-    }
-
-    RenderFace(rend, face.size(), geometryVertices);
-  }
-}
-
-void DrawTextureMapping(SDL_Renderer* rend,
-  const Vertices& vertices2d,
-  const Faces& faces,
-  SDL_Texture* texture)
-{
-  for (auto face : faces)
-  {
-    if (!face.IsVisible(vertices2d))
-    {
-      continue;
-    }
-
-    std::vector<SDL_Vertex> geometryVertices;
-
-    float textureCoords[][2] = {
-      {0.0f, 0.0f},
-      {0.0f,1.0f},
-      {1.0f, 1.0f},
-      {1.0f, 0.0f}};
-      
-    for (size_t i = 0; i < face.size(); ++i)
-    {
-      SDL_Vertex vertex;
-      const auto x = vertices2d[face[i]].getX();
-      const auto y = vertices2d[face[i]].getY();
-      vertex.position.x = x + CenterX;
-      vertex.position.y = y + CenterY;
-      vertex.tex_coord.x = textureCoords[i][0];
-      vertex.tex_coord.y = textureCoords[i][1];
-      vertex.color = SDL_Color{255,255,255,255};
-      geometryVertices.push_back(vertex);
-    }
-
-    RenderFace(rend, face.size(), geometryVertices, texture);
-  }
-}
-
 
 void DrawNormalVectorsInFaces(SDL_Renderer* rend,
   const Vertices& vertices,
@@ -491,6 +387,8 @@ int main(int argc, char* argv[])
     {SDL_SCANCODE_F12, [&](){ SelectObject(11); }},
   };
 
+  auto renderFunction = std::bind(&RenderFace, rend, _1, _2, _3);
+  
   // animation loop
   while (!close) {
     SDL_Event event;
@@ -561,28 +459,37 @@ int main(int argc, char* argv[])
 
     if (filledMode & DrawFilledMode_FlatShading)
     {
-      DrawFlatShading(rend,
+      DrawFlatShadedFaces(
+        CenterX, CenterY,
+        colors,
         vertices2d,
         object->mFaces,
-        colorNumbersInFaces
+        colorNumbersInFaces,
+        renderFunction
         );
     }
 
     if (filledMode & DrawFilledMode_GouraudShading)
     {
-      DrawGouraudShading(rend,
+      DrawGouraudShadedFaces(
+        CenterX, CenterY,
+        colors,
         vertices2d,
         object->mFaces,
-        colorNumbersInVertices
+        colorNumbersInVertices,
+        renderFunction
         );
     }
 
     if (filledMode & DrawFilledMode_TextureMapping)
     {
-      DrawTextureMapping(rend,
+      DrawTextureMapping(
+        CenterX, CenterY,
         vertices2d,
         object->mFaces,
-        texture);
+        texture,
+        renderFunction
+        );
     }
         
     if (lineMode & DrawLineMode_NormalVectorsInFaces)
