@@ -6,6 +6,7 @@
 #include "ViewerDraw.hpp"
 
 #include <SDL2/SDL.h>
+
 #include <functional>
 
 void DrawFlatShadedFaces(
@@ -122,5 +123,118 @@ void DrawTextureMapping(
     }
 
     render(size, geometryVertices, texture);
+  }
+}
+
+void DrawNormalVectorsInFaces(
+  int CenterX, int CenterY,
+  const Vertices& vertices,
+  const Vertices& vertices2d,
+  const Faces& faces,
+  const Vectors& normalVectorsInFaces,
+  CalculatePerspectiveFunction calcPerspectiveFunction,
+  DrawLineFunction drawLine
+  )
+{
+  unsigned int faceNr = 0;
+    
+  for (auto face : faces)
+  {
+    if (!face.IsVisible(vertices2d))
+    {
+      ++faceNr;
+      continue;
+    }
+
+    const auto v = face.GetCenter(vertices);
+    const auto vBegin = calcPerspectiveFunction(v);
+    const auto vEnd = calcPerspectiveFunction(v + normalVectorsInFaces[faceNr].getEnd());
+
+    drawLine(
+      vBegin.getX() + CenterX, vBegin.getY() + CenterY,
+      vEnd.getX() + CenterX, vEnd.getY() + CenterY
+      );
+
+    ++faceNr;
+  }
+}
+
+void DrawNormalVectorsInVertices(
+  int CenterX, int CenterY,
+  const Vertices& vertices,
+  const Vertices& vertices2d,
+  const Faces& faces,
+  const Vectors& normalVectorsInVertices,
+  CalculatePerspectiveFunction calcPerspectiveFunction,
+  DrawLineFunction drawLine
+  )
+{
+  unsigned int faceNr = 0;
+  
+  for (auto face : faces)
+  {
+    if (!face.IsVisible(vertices2d))
+    {
+      ++faceNr;
+      continue;
+    }
+
+    const unsigned int size = face.size();
+            
+    for (unsigned int i = 0; i < size; ++i)
+    {
+      const auto vBegin = vertices2d[face[i]];
+      const auto vEnd = calcPerspectiveFunction(vertices[face[i]] + normalVectorsInVertices[face[i]].getEnd());
+                
+      drawLine(
+        vBegin.getX() + CenterX, vBegin.getY() + CenterY,
+        vEnd.getX() + CenterX, vEnd.getY() + CenterY
+        );
+    }
+
+    ++faceNr;
+  }
+}
+
+void DrawLines(
+  int CenterX, int CenterY,
+  const Vertices& vertices2d,
+  const Faces& faces,
+  DrawLineFunction drawLine
+  )
+{
+  for (auto face : faces)
+  {
+    if (!face.IsVisible(vertices2d))
+    {
+      continue;
+    }
+
+    const unsigned int size = face.size();
+            
+    for (unsigned int i = 0; i < size; ++i)
+    {
+      auto x1 = vertices2d[face[i]].getX();
+      auto y1 = vertices2d[face[i]].getY();
+            
+      int x2 = 0;
+      int y2 = 0;
+            
+      if (i == size-1)
+      {  
+        x2 = vertices2d[face[0]].getX();
+        y2 = vertices2d[face[0]].getY();
+      }
+      else
+      {
+        x2 = vertices2d[face[i + 1]].getX();
+        y2 = vertices2d[face[i + 1]].getY();
+      }
+                
+      drawLine(
+        x1 + CenterX, y1 + CenterY,
+        x2 + CenterX, y2 + CenterY
+        );
+    }
   }
 }

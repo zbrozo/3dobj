@@ -90,111 +90,12 @@ void RenderFace(
   }
 }
 
-void DrawNormalVectorsInFaces(SDL_Renderer* rend,
-  const Vertices& vertices,
-  const Vertices& vertices2d,
-  const Faces& faces,
-  const Vectors& normalVectorsInFaces,
-  const std::function<Vertex(const Vertex&)> calcPerspectiveFunction
-  )
+void DrawLine(SDL_Renderer* rend, int x1, int y1, int x2, int y2)
 {
-  unsigned int faceNr = 0;
-    
-  for (auto face : faces)
-  {
-    if (!face.IsVisible(vertices2d))
-    {
-      ++faceNr;
-      continue;
-    }
-
-    const auto v = face.GetCenter(vertices);
-    const auto vBegin = calcPerspectiveFunction(v);
-    const auto vEnd = calcPerspectiveFunction(v + normalVectorsInFaces[faceNr].getEnd());
-      
-    SDL_RenderDrawLine(rend,
-      vBegin.getX() + CenterX, vBegin.getY() + CenterY,
-      vEnd.getX() + CenterX, vEnd.getY() + CenterY
-      );
-
-    ++faceNr;
-  }
-}
-
-void DrawNormalVectorsInVertices(SDL_Renderer* rend,
-  const Vertices& vertices,
-  const Vertices& vertices2d,
-  const Faces& faces,
-  const Vectors& normalVectorsInVertices,
-  const std::function<Vector(const Vector&)> calcPerspectiveFunction
-  )
-{
-  unsigned int faceNr = 0;
-  
-  for (auto face : faces)
-  {
-    if (!face.IsVisible(vertices2d))
-    {
-      ++faceNr;
-      continue;
-    }
-
-    const unsigned int size = face.size();
-            
-    for (unsigned int i = 0; i < size; ++i)
-    {
-      const auto vBegin = vertices2d[face[i]];
-      const auto vEnd = calcPerspectiveFunction(vertices[face[i]] + normalVectorsInVertices[face[i]].getEnd());
-                
-      SDL_RenderDrawLine(rend,
-        vBegin.getX() + CenterX, vBegin.getY() + CenterY,
-        vEnd.getX() + CenterX, vEnd.getY() + CenterY
-        );
-    }
-
-    ++faceNr;
-  }
-}
-
-void DrawLines(SDL_Renderer* rend,
-  const Vertices& vertices2d,
-  const Faces& faces
-  )
-{
-  for (auto face : faces)
-  {
-    if (!face.IsVisible(vertices2d))
-    {
-      continue;
-    }
-
-    const unsigned int size = face.size();
-            
-    for (unsigned int i = 0; i < size; ++i)
-    {
-      auto x1 = vertices2d[face[i]].getX();
-      auto y1 = vertices2d[face[i]].getY();
-            
-      int x2 = 0;
-      int y2 = 0;
-            
-      if (i == size-1)
-      {  
-        x2 = vertices2d[face[0]].getX();
-        y2 = vertices2d[face[0]].getY();
-      }
-      else
-      {
-        x2 = vertices2d[face[i + 1]].getX();
-        y2 = vertices2d[face[i + 1]].getY();
-      }
-                
-      SDL_RenderDrawLine(rend,
-        x1 + CenterX, y1 + CenterY,
-        x2 + CenterX, y2 + CenterY
-        );
-    }
-  }
+  SDL_RenderDrawLine(rend,
+    x1, y1,
+    x2, y2
+    );
 }
 
 void LoadObjects(int argc, char* argv[], std::vector<std::shared_ptr<Object3D>>& objects)
@@ -388,6 +289,9 @@ int main(int argc, char* argv[])
   };
 
   auto renderFunction = std::bind(&RenderFace, rend, _1, _2, _3);
+  auto calculateVertexPerspectiveFunction = std::bind(CalculatePerspective<Vertex>, _1, zoom);
+  auto calculateVectorPerspectiveFunction = std::bind(CalculatePerspective<Vector>, _1, zoom);
+  auto drawLineFunction = std::bind(&DrawLine, rend, _1, _2, _3, _4);
   
   // animation loop
   while (!close) {
@@ -465,8 +369,7 @@ int main(int argc, char* argv[])
         vertices2d,
         object->mFaces,
         colorNumbersInFaces,
-        renderFunction
-        );
+        renderFunction);
     }
 
     if (filledMode & DrawFilledMode_GouraudShading)
@@ -477,8 +380,7 @@ int main(int argc, char* argv[])
         vertices2d,
         object->mFaces,
         colorNumbersInVertices,
-        renderFunction
-        );
+        renderFunction);
     }
 
     if (filledMode & DrawFilledMode_TextureMapping)
@@ -488,33 +390,40 @@ int main(int argc, char* argv[])
         vertices2d,
         object->mFaces,
         texture,
-        renderFunction
-        );
+        renderFunction);
     }
         
     if (lineMode & DrawLineMode_NormalVectorsInFaces)
     {
-      DrawNormalVectorsInFaces(rend,
+      DrawNormalVectorsInFaces(
+        CenterX, CenterY,
         vertices,
         vertices2d,
         object->mFaces,
         normalVectorsInFaces,
-        std::bind(CalculatePerspective<Vertex>, _1, zoom));
+        calculateVertexPerspectiveFunction,
+        drawLineFunction);
     }
 
     if (lineMode & DrawLineMode_NormalVectorsInVertices)
     {
-      DrawNormalVectorsInVertices(rend,
+      DrawNormalVectorsInVertices(
+        CenterX, CenterY,
         vertices,
         vertices2d,
         object->mFaces,
         normalVectorsInVertices,
-        std::bind(CalculatePerspective<Vector>, _1, zoom));
+        calculateVectorPerspectiveFunction,
+        drawLineFunction);
     }
         
     if (lineMode & DrawLineMode_LineVectors)
     {
-      DrawLines(rend, vertices2d, object->mFaces);
+      DrawLines(
+        CenterX, CenterY,
+        vertices2d,
+        object->mFaces,
+        drawLineFunction);
     }
 
     degx += speedx;

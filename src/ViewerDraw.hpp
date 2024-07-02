@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ViewerPerspective.hpp"
 struct SDL_Color;
 struct SDL_Vertex;
 struct SDL_Texture;
@@ -15,6 +16,10 @@ using RenderFunction = std::function<void(
                                        const std::vector<SDL_Vertex> &,
                                        SDL_Texture *texture)
                                      >;
+
+using DrawLineFunction = std::function<void(int, int, int, int)>;
+
+using CalculatePerspectiveFunction = std::function<Vertex(const Vertex &)>;
 
 void DrawFlatShadedFaces(
   int CenterX, int CenterY,
@@ -40,4 +45,31 @@ void DrawTextureMapping(
   const Faces& faces,
   SDL_Texture* texture,
   RenderFunction render
+  );
+
+void DrawNormalVectorsInFaces(
+  int CenterX, int CenterY,
+  const Vertices& vertices,
+  const Vertices& vertices2d,
+  const Faces& faces,
+  const Vectors& normalVectorsInFaces,
+  CalculatePerspectiveFunction calcPerspectiveFunction,
+  DrawLineFunction drawLine
+  );
+
+void DrawNormalVectorsInVertices(
+  int CenterX, int CenterY,
+  const Vertices& vertices,
+  const Vertices& vertices2d,
+  const Faces& faces,
+  const Vectors& normalVectorsInVertices,
+  CalculatePerspectiveFunction calcPerspectiveFunction,
+  DrawLineFunction drawLine
+  );
+
+void DrawLines(
+  int CenterX, int CenterY,
+  const Vertices& vertices2d,
+  const Faces& faces,
+  DrawLineFunction drawLine
   );
